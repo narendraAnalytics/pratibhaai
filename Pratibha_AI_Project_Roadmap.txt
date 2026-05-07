@@ -1,0 +1,285 @@
+﻿
+Pratibha AI
+Autonomous AI Recruitment & Hiring Agent Platform
+Complete Project Roadmap & Technical Reference
+Built with Google ADK  |  Gemini 3.1  |  Next.js 15  |  Neon  |  Clerk
+
+Narendra Kumar  |  nk-analytics  |  Full-Stack AI Developer
+Palakollu, Andhra Pradesh, India  |  2026
+
+
+1. Project Overview
+1.1 Project Title
+Pratibha AI - Autonomous AI Recruitment & Hiring Agent Platform
+
+1.2 Project Description
+Pratibha AI is a production-grade multi-agent SaaS platform that acts as a fully autonomous senior recruiter. A hiring manager posts a job and uploads candidate resumes - the system then independently researches, evaluates, scores, and delivers a ranked shortlist report with zero manual effort.
+
+The platform is built using Google Agent Development Kit (ADK) with a hierarchical multi-agent architecture. At the center is an Orchestrator Agent that routes tasks to 9 specialized agents, each responsible for a single, clearly defined step of the recruitment pipeline. The system uses a mixed-model strategy - Gemini 3.1 Pro for complex reasoning tasks and Gemini 3.1 Flash / Flash-Lite for high-volume extraction and scoring tasks - ensuring both quality and cost efficiency.
+
+The frontend is built in Next.js 15 with Clerk authentication, Neon PostgreSQL with Drizzle ORM for data persistence, and Resend for email delivery. All Google ADK agents are written in TypeScript and run directly inside Next.js API routes - there is no separate backend server. The entire project is a single Next.js monorepo deployed to Vercel. The final output is a ranked candidate shortlist with explainable AI decisions, delivered as an interactive dashboard, downloadable PDF report, and optional email notification.
+
+1.3 Mission Statement
+To empower recruiters with autonomous AI agents that save time, reduce hiring bias, and ensure you hire the right talent, every time - with explainable, auditable decisions that keep humans in control.
+
+1.4 Key Features
+• 10-agent multi-agent orchestration using Google ADK hierarchical tree
+• Parallel resume processing - multiple resumes evaluated simultaneously
+• GitHub & portfolio analysis via GitHub REST API v3
+• Culture & behavioral fit scoring from career trajectory signals
+• Fraud detection - timeline inconsistencies, skill inflation, fake claims
+• Structured Hiring Blueprint from raw job descriptions
+• Explainable AI decisions - WHY each candidate is recommended
+• Recruiter dashboard with ranked candidate list and score breakdowns
+• Downloadable PDF reports + email delivery via Resend
+• Human-in-the-loop approval - approve, reject, or adjust rankings
+• Full audit trail of all agent runs and human overrides in Neon DB
+• Mixed Gemini model strategy for cost efficiency at scale
+
+
+2. Real-World Problems Solved
+Pratibha AI directly addresses the most painful and expensive problems in the recruitment process:
+Real-World ProblemHow Pratibha AI Solves ItManual resume screening takes 15-20 hours per hireCandidate Extraction + Evaluation Aggregator Agent automates 100% of screening in minutesGeneric ATS tools cannot evaluate niche technical skillsTechnical Validation Agent analyses real GitHub repos, commits, code quality - not just keywordsResume fraud and skill inflation go undetectedVerification / Risk Agent flags timeline inconsistencies, impossible experience claims, inflationVague job descriptions cause poor candidate matchingJob Intelligence Agent converts messy JDs into structured Hiring Blueprint JSONAI hiring tools are black boxes - no explanationDecision Agent provides explainable WHY recommendations with confidence scoresLegal risk from fully automated AI hiring decisionsHuman Override Layer ensures humans make final decisions - AI is decision support onlyHigh cost of bad hires ($15,000-$50,000 per wrong hire)Multi-agent validation reduces mismatch probability significantly
+Industry context: The average cost of a bad hire is $15,000-$50,000. Recruiters spend 23 hours on average screening resumes per hire. Pratibha AI compresses this entire screening phase to minutes with higher accuracy and full auditability.
+
+
+3. Multi-Agent Workflow
+3.1 How It Starts - User Actions
+The hiring manager performs only two actions to initiate the full pipeline:
+Step 1 - Create a Job Post:
+• Job Title (e.g. Senior React Developer)
+• Job Description (full JD text)
+• Required Skills (tags - React, TypeScript, Node.js)
+• Experience Level (Junior / Mid / Senior)
+• Culture Notes (e.g. fast-paced startup, remote-first, collaborative)
+• GitHub Evaluation Toggle (ON / OFF)
+Step 2 - Upload Resumes:
+• One or multiple resume files in PDF or DOCX format
+• Files are stored in UploadThing / ImageKit with secure URLs
+• The full agent pipeline triggers automatically after upload
+
+3.2 Agent Pipeline - Visual Flow
+Hiring Manager creates Job Post + uploads Resumes
+                         |
+              [1] Orchestrator Agent (Pro)
+              Creates session state, routes tasks
+                         |
+          [2] Job Intelligence Agent (Pro)
+          Converts JD --> Hiring Blueprint JSON
+                         |
+     [3] Candidate Extraction Agent (Flash-Lite)
+     Parses PDF/DOCX resumes --> Candidate Profile JSON
+     (Runs in parallel for multiple resumes)
+                         |
+       [4] Verification / Risk Agent (Flash-Lite)
+       Detects inflation, fake claims, timeline gaps
+                         |
+       [5] Technical Validation Agent (Flash)
+       GitHub API analysis --> Technical Depth Score
+                         |
+       [6] Behavioral Alignment Agent (Flash-Lite)
+       Culture + soft skills --> Culture Fit Score
+                         |
+     [7] Evaluation Aggregator Agent (Flash-Lite)
+     Weighted scoring --> Final Composite Score + Ranking
+                         |
+            [8] Decision Agent (Pro)
+            WHY recommendation + Interview Questions
+                         |
+        [9] Report Generator Agent (Flash-Lite)
+        PDF Report + Dashboard Data + Email via Resend
+                         |
+          [10] Human Override Layer (Next.js UI)
+          Approve / Reject / Adjust --> Logged in Neon
+                         |
+    FINAL OUTPUT: Dashboard + PDF + Email Notification
+
+3.3 Agent Detail Table
+#Agent NameModelResponsibilitiesOutput1Orchestrator AgentGemini 3.1 ProRoot ADK agent - creates session state, routes tasks between all agents, manages execution orderJSON / Score / Report2Job Intelligence AgentGemini 3.1 ProParses job description → extracts must-have skills, preferred skills, seniority, weights → produces Hiring Blueprint JSONJSON / Score / Report3Candidate Extraction AgentGemini 3.1 Flash-LiteReads PDF/DOCX resumes in parallel → extracts name, skills, experience, education, links → outputs structured Candidate Profile JSONJSON / Score / Report4Verification / Risk AgentGemini 3.1 Flash-LiteDetects timeline overlaps, skill inflation, fake claims, impossible durations → produces Risk Score + FlagsJSON / Score / Report5Technical Validation AgentGemini 3.1 FlashCalls GitHub API → analyzes repos, commits, languages, stars → produces Technical Depth Score (0-100)JSON / Score / Report6Behavioral Alignment AgentGemini 3.1 Flash-LiteAnalyzes career trajectory, job stability, leadership signals → matches against company culture notes → Culture Fit ScoreJSON / Score / Report7Evaluation Aggregator AgentGemini 3.1 Flash-LiteMerges all scores using weighted formula (Skills 40%, Technical 35%, Culture 25%) → Final Composite Score → ranks candidatesJSON / Score / Report8Decision AgentGemini 3.1 ProReasoning-based: explains WHY each candidate is recommended, generates exec summary, suggests interview questionsJSON / Score / Report9Report Generator AgentGemini 3.1 Flash-LiteConverts all outputs into PDF report + recruiter dashboard view + sends email via ResendJSON / Score / Report10Human Override LayerN/A (UI)Hiring manager reviews ranked list → Approve / Reject / Adjust weights → All overrides logged in Neon for auditJSON / Score / Report
+
+4. Gemini Model Mapping
+Pratibha AI uses a mixed-model strategy to balance quality and cost efficiency:
+AgentsModelReasonOrchestrator Agent + Job Intelligence + Decision AgentGemini 3.1 ProComplex reasoning, planning, orchestration - Pro-level intelligence requiredTechnical Validation AgentGemini 3.1 FlashGitHub API analysis - reasoning needed, Flash handles efficientlyCandidate Extraction, Verification, Behavioral Alignment, Aggregator, Report GeneratorGemini 3.1 Flash-LiteRepetitive structured extraction, high-volume, low-latency tasks
+4.1 Why Not Use Pro Everywhere?
+A common developer mistake is using Gemini Pro for every agent. This approach:
+• Increases API cost by 3-5x unnecessarily
+• Increases latency per agent call significantly
+• Reduces throughput when processing multiple resumes
+The correct enterprise pattern: use Pro only where complex reasoning, planning, or explainability is critical. Use Flash-Lite for high-volume, structured extraction where speed matters more than depth.
+
+
+5. Tech Stack
+LayerTechnologyPurposeFrontendNext.js 15React framework - app router, server components, API routesAuthenticationClerkMulti-user auth, JWT session management, webhooksDatabaseNeon PostgreSQLServerless Postgres - scales to zero, branching for dev/prodORMDrizzle ORMTypeScript-first, type-safe queries, migration managementAgent FrameworkGoogle ADKMulti-agent orchestration, hierarchical tree, session state, A2A protocolAgent ModelsGemini 3.1 Pro / Flash / Flash-LiteMixed-model strategy - Pro for reasoning, Flash for speed, Flash-Lite for extractionFile StorageUploadThing / ImageKitResume PDF/DOCX upload, secure file URL managementEmail DeliveryResendTransactional email - final report delivery to stakeholdersGitHub IntegrationGitHub REST API v3Public repo analysis - commits, languages, stars, activityPDF Generationpdf-lib / puppeteerGenerate downloadable recruiter reportsDeploymentVercelFrontend + API routes deployment, edge functionsAgent FrameworkGoogle ADK (TypeScript)ADK agents written in TypeScript, run directly inside Next.js API routes - no separate backend server needed
+
+6. Packages to Install
+6.1 All Packages Reference Table
+ContextPackagesPurposeFrontendnext, react, react-dom, @clerk/nextjs, drizzle-orm, @neondatabase/serverlessCore Next.js 15 app with auth and DBFrontendtailwindcss, lucide-react, shadcn/ui, sonner, react-hook-form, zodUI components, icons, forms, validationFrontenduploadthing, @uploadthing/reactResume file upload handlingFrontendaxios, swrAPI calls and data fetchingFrontendpdf-lib, @react-pdf/rendererPDF report generation and previewADK / Agents@google/genai, @google/adkGoogle ADK TypeScript SDK - agents run inside Next.js API routesADK / Agentspdf-parse, mammothResume PDF/DOCX text extraction inside API route handlersADK / AgentsaxiosGitHub REST API calls from inside agent tool functionsADK / AgentsresendEmail delivery - final report sent from Next.js API routeDev Toolsdrizzle-kit, tsx, eslint, prettierDB migrations and code quality
+6.2 Frontend Install Commands
+# Create Next.js 15 app
+npx create-next-app@latest pratibha-ai --typescript --tailwind --app
+ 
+# Core dependencies
+npm install @clerk/nextjs drizzle-orm @neondatabase/serverless
+npm install drizzle-kit tsx dotenv
+ 
+# UI & Forms
+npm install lucide-react sonner react-hook-form zod
+npm install @radix-ui/react-dialog @radix-ui/react-select
+ 
+# File Upload
+npm install uploadthing @uploadthing/react
+ 
+# Data Fetching
+npm install axios swr
+ 
+# PDF Report
+npm install pdf-lib @react-pdf/renderer
+
+6.3 ADK Agent Packages (added to Next.js project)
+# Install Google ADK TypeScript SDK in your Next.js project
+# (No separate backend needed - agents run inside Next.js API routes)
+ 
+# Google ADK + Gemini
+npm install @google/genai @google/adk
+ 
+# Resume parsing (PDF + DOCX) - used in API routes
+npm install pdf-parse mammoth
+npm install @types/pdf-parse --save-dev
+ 
+# GitHub API calls from inside agent tools
+npm install axios
+ 
+# Email delivery via Resend
+npm install resend
+ 
+# All agents and tools live inside:
+# app/api/agents/         <- agent files (.ts)
+# app/api/run-pipeline/   <- main orchestration route
+
+
+7. Environment Variables (.env)
+Since all ADK agents run inside Next.js, there is only one .env.local file in the project root - no separate backend .env needed.
+7.1 Next.js Frontend - .env.local
+# ── CLERK AUTH ──────────────────────────────
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_xxxxxxxxxxxx
+CLERK_SECRET_KEY=sk_live_xxxxxxxxxxxx
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+ 
+# ── NEON DATABASE ───────────────────────────
+DATABASE_URL=postgresql://user:password@ep-xxxx.neon.tech/pratibhaai?sslmode=require
+ 
+# ── UPLOADTHING (Resume File Upload) ────────
+UPLOADTHING_SECRET=sk_live_xxxxxxxxxxxx
+UPLOADTHING_APP_ID=your_app_id
+ 
+# ── GOOGLE ADK + GEMINI ─────────────────────
+# ADK agents run inside Next.js API routes - keys go here directly
+GOOGLE_API_KEY=AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+GOOGLE_GENAI_USE_VERTEXAI=false
+ 
+# ── GEMINI MODEL NAMES ──────────────────────
+MODEL_PRO=gemini-3.1-pro
+MODEL_FLASH=gemini-3.1-flash
+MODEL_FLASH_LITE=gemini-3.1-flash-lite
+ 
+# ── GITHUB API ──────────────────────────────
+GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
+ 
+# ── RESEND EMAIL ────────────────────────────
+RESEND_API_KEY=re_xxxxxxxxxxxx
+EMAIL_FROM=noreply@pratibha-ai.com
+
+IMPORTANT: Never commit .env.local to Git. Add it to .gitignore immediately after project setup.
+
+
+8. Database Schema (Neon PostgreSQL)
+All tables use Drizzle ORM with TypeScript for type-safe queries. Run migrations with: npx drizzle-kit push:pg
+TableKey ColumnsPurposejobsid, title, description, required_skills, experience_level, culture_notes, github_toggle, user_id, created_atStores each job post created by the hiring managercandidatesid, job_id, name, email, phone, resume_url, github_url, portfolio_url, created_atOne record per uploaded resume linked to a jobhiring_blueprintsid, job_id, must_have_skills, preferred_skills, seniority, leadership_required, culture_type, priority_weights, created_atStructured JSON output from Job Intelligence Agentevaluationsid, candidate_id, job_id, skills_score, technical_score, culture_score, risk_level, risk_flags, composite_score, recommendation, created_atAll scores per candidate from all agentsagent_runsid, job_id, candidate_id, agent_name, status, input_summary, output_summary, model_used, duration_ms, error, created_atFull audit trail of every agent executionreportsid, job_id, report_url, dashboard_data (JSON), email_sent, email_recipients, created_atFinal generated PDF report metadataoverridesid, candidate_id, job_id, action (approve/reject/adjust), adjusted_weights, override_by, override_atHuman override actions for audit and compliance
+8.1 Key Relationships
+• jobs → candidates (one job has many candidates)
+• jobs → hiring_blueprints (one job has one blueprint from Job Intelligence Agent)
+• candidates → evaluations (one candidate has one evaluation per job)
+• jobs → agent_runs (all agent executions are linked to a job for debugging)
+• jobs → reports (one final report per job)
+• candidates → overrides (hiring manager actions logged per candidate)
+
+
+9. Implementation Roadmap
+Estimated total time: 4-6 weeks for a solo developer working part-time.
+PhaseFocusTasksPhase 1Project SetupInit Next.js 15, configure Clerk auth, set up Neon DB with Drizzle ORM, create base layout and job creation UIPhase 2ADK Agent SetupInstall @google/adk and @google/genai in the Next.js project, configure Gemini models, scaffold all 9 agent files inside app/api/agents/ directoryPhase 3File UploadIntegrate UploadThing for resume uploads, implement PDF/DOCX extraction with pdf-parse and mammoth inside Next.js API routesPhase 4Core Agents (1-4)Build Orchestrator, Job Intelligence, Candidate Extraction, Verification/Risk agents - test with sample resumesPhase 5Scoring Agents (5-7)Build Technical Validation (GitHub API), Behavioral Alignment, Evaluation Aggregator agentsPhase 6Decision & ReportBuild Decision Agent + Report Generator - integrate PDF export and Resend emailPhase 7Frontend DashboardBuild recruiter dashboard - ranked candidate list, score breakdowns, human override UIPhase 8Testing & PolishEnd-to-end testing with real job posts and resumes, fix edge cases, performance optimizationPhase 9DeploymentDeploy full Next.js monorepo to Vercel - frontend, API routes, and ADK agents all in one deployment, configure all env vars in Vercel dashboardPhase 10Resume & LaunchDocument the project, record demo video, publish GitHub repo, add to LinkedIn and resume
+9.1 Recommended Folder Structure
+pratibha-ai/                    # Single Next.js monorepo - no separate backend
+├── app/                        # Next.js 15 App Router
+│   ├── (auth)/                 # Clerk sign-in / sign-up pages
+│   ├── dashboard/              # Main recruiter dashboard
+│   ├── jobs/                   # Job creation and management
+│   ├── candidates/[id]/        # Individual candidate view
+│   └── api/                    # All API routes + ADK agents live here
+│       ├── agents/             # One file per ADK agent (.ts)
+│       │   ├── orchestrator.ts
+│       │   ├── job-intelligence.ts
+│       │   ├── candidate-extraction.ts
+│       │   ├── verification-risk.ts
+│       │   ├── technical-validation.ts
+│       │   ├── behavioral-alignment.ts
+│       │   ├── evaluation-aggregator.ts
+│       │   ├── decision-agent.ts
+│       │   └── report-generator.ts
+│       ├── tools/              # Shared agent tools (GitHub API, PDF parser)
+│       └── run-pipeline/       # Main route.ts - triggers full agent pipeline
+├── components/                 # Reusable UI components
+├── lib/                        # DB client, utilities
+│   ├── db.ts                   # Drizzle + Neon client
+│   └── schema.ts               # All Drizzle table definitions
+├── drizzle/                    # DB migration files
+├── public/
+├── .env.local                  # Single env file - all keys here
+└── package.json
+
+
+10. Resume & LinkedIn Positioning
+10.1 How to Describe This on Your Resume
+Project Title:
+Pratibha AI - Autonomous Multi-Agent AI Recruitment Platform
+
+One-line description:
+Built a 10-agent autonomous recruitment SaaS using Google ADK, Gemini 3.1, and Next.js 15 that screens resumes, validates GitHub profiles, detects fraud, scores candidates, and generates explainable hiring reports with human-in-the-loop approval.
+
+Key Technical Skills Demonstrated:
+• Multi-agent system orchestration - Google ADK hierarchical agent tree
+• Parallel agent execution - multiple resumes processed simultaneously
+• External API integration inside agents - GitHub REST API v3
+• Session state management across 10 agents
+• Mixed Gemini model strategy - Pro / Flash / Flash-Lite allocation
+• Production SaaS architecture - auth, DB, file upload, email, PDF
+• Human-in-the-loop design pattern for enterprise AI compliance
+• Full audit trail system for AI decision accountability
+
+10.2 LinkedIn Post Angle
+Frame the project as: 'Built an AI that replaced 15 hours of manual resume screening per hire using 10 specialized Google ADK agents - here's how the architecture works.' This kind of technical story gets significant traction in the AI developer community on LinkedIn in 2026.
+
+10.3 Target Clients / Monetization
+• HR Tech startups looking to add AI screening to their platform
+• Recruitment agencies handling 50+ hires per month
+• SaaS pricing: $99-$299/month per company or pay-per-hire at $15-$50 per evaluated batch
+• Freelance: offer as a white-label solution to HR consulting firms
+• Future: multi-tenant SaaS with usage-based billing on Stripe
+
+
+11. Security & Compliance Considerations
+These must be implemented before any enterprise client demo:
+• Principle of least privilege - each agent only accesses the data it needs
+• Full agent run audit logging - every agent action stored in agent_runs table
+• Human override required - no automated hiring decision without human approval (EEOC compliance)
+• Resume data encryption at rest in Neon DB
+• Secure file URLs - UploadThing generates signed, time-limited URLs
+• GitHub token stored server-side only - never exposed to frontend
+• Clerk JWT verification on all API routes
+• Bias detection note in report - the system flags when scoring confidence is low
+
+
+Pratibha AI - Complete Project Roadmap
+Narendra Kumar  |  nk-analytics  |  2026  |  Built with Google ADK + Gemini 3.1 + Next.js 15

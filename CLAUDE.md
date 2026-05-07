@@ -1,1 +1,234 @@
-@AGENTS.md
+# Pratibha AI — Claude Code Project Context
+
+> **Autonomous AI Recruitment & Hiring Agent Platform**
+> Built with Google ADK (TypeScript) · Gemini 3.1 · Next.js 15 · Neon · Clerk
+
+---
+
+## Project Overview
+
+Pratibha AI is a multi-agent SaaS platform that autonomously screens resumes, validates GitHub profiles, detects fraud, scores candidates, and delivers explainable hiring reports — all triggered from a single Next.js monorepo with no separate backend.
+
+**Key facts Claude must always remember:**
+- All Google ADK agents are written in **TypeScript**
+- Agents run directly inside **Next.js 15 API routes** — no Express, no separate server, no separate backend folder
+- Single monorepo deployed to **Vercel**
+- Single **`.env.local`** file — all keys live here
+- Stack: Next.js 15 · Clerk · Neon PostgreSQL · Drizzle ORM · Google ADK (TS) · Gemini 3.1 · UploadThing · Resend
+
+---
+
+## Skills
+
+### Frontend & UI
+For ALL frontend/UI work — landing page, dashboard, session page, components — use the skill at:
+`C:\Users\ES\.claude\skills\nextstack.skill`
+`C:\Users\ES\.claude\skills\multigentsadk.skill`
+
+### Google ADK Agent Work
+For ALL Google ADK agent work — writing agent code, building agents, adding tools, creating callbacks — use the skill at:
+`C:\Users\ES\.claude\skills\google-agents-cli-adk-code`
+`C:\Users\ES\.claude\skills\google-agents-cli-workflow`
+
+---
+
+## Folder Structure
+
+```
+pratibha-ai/                    # Single Next.js monorepo — no separate backend
+├── app/
+│   ├── (auth)/                 # Clerk sign-in / sign-up pages
+│   ├── dashboard/              # Recruiter dashboard UI
+│   ├── jobs/                   # Job creation and management
+│   ├── candidates/[id]/        # Individual candidate view
+│   └── api/
+│       ├── agents/             # All ADK agent files (.ts)
+│       │   ├── orchestrator.ts
+│       │   ├── job-intelligence.ts
+│       │   ├── candidate-extraction.ts
+│       │   ├── verification-risk.ts
+│       │   ├── technical-validation.ts
+│       │   ├── behavioral-alignment.ts
+│       │   ├── evaluation-aggregator.ts
+│       │   ├── decision-agent.ts
+│       │   └── report-generator.ts
+│       ├── tools/              # Shared agent tools (GitHub API, PDF parser)
+│       └── run-pipeline/       # route.ts — triggers the full agent pipeline
+├── components/                 # Reusable UI components
+├── lib/
+│   ├── db.ts                   # Drizzle + Neon client
+│   └── schema.ts               # All Drizzle table definitions
+├── drizzle/                    # DB migration files
+├── .env.local                  # Single env file — ALL keys here
+└── package.json
+```
+
+---
+
+## Multi-Agent Pipeline (10 Agents)
+
+```
+Hiring Manager creates Job + uploads Resumes
+                  |
+      [1] Orchestrator Agent          ← Gemini 3.1 Pro
+      [2] Job Intelligence Agent      ← Gemini 3.1 Pro
+      [3] Candidate Extraction Agent  ← Gemini 3.1 Flash-Lite  (parallel per resume)
+      [4] Verification / Risk Agent   ← Gemini 3.1 Flash-Lite
+      [5] Technical Validation Agent  ← Gemini 3.1 Flash       (GitHub API)
+      [6] Behavioral Alignment Agent  ← Gemini 3.1 Flash-Lite
+      [7] Evaluation Aggregator Agent ← Gemini 3.1 Flash-Lite
+      [8] Decision Agent              ← Gemini 3.1 Pro
+      [9] Report Generator Agent      ← Gemini 3.1 Flash-Lite
+     [10] Human Override Layer        ← Next.js UI (Approve / Reject / Adjust)
+                  |
+     Dashboard + PDF Report + Email
+```
+
+### Agent Responsibilities
+
+| # | Agent | Model | Role |
+|---|-------|-------|------|
+| 1 | Orchestrator Agent | Pro | Root ADK agent — creates session state, routes all tasks |
+| 2 | Job Intelligence Agent | Pro | Converts raw JD → structured Hiring Blueprint JSON |
+| 3 | Candidate Extraction Agent | Flash-Lite | Parses PDF/DOCX → Candidate Profile JSON (runs in parallel) |
+| 4 | Verification / Risk Agent | Flash-Lite | Detects inflation, fake claims, timeline inconsistencies |
+| 5 | Technical Validation Agent | Flash | GitHub API analysis → Technical Depth Score (0–100) |
+| 6 | Behavioral Alignment Agent | Flash-Lite | Culture + soft skills → Culture Fit Score (0–100) |
+| 7 | Evaluation Aggregator Agent | Flash-Lite | Weighted scoring → Final Composite Score + ranking |
+| 8 | Decision Agent | Pro | Explainable WHY recommendation + interview questions |
+| 9 | Report Generator Agent | Flash-Lite | PDF report + dashboard data + Resend email |
+| 10 | Human Override Layer | N/A (UI) | Approve / Reject / Adjust — logged in Neon for audit |
+
+---
+
+## Gemini Model Rules
+
+| Model | Used For |
+|-------|----------|
+| `gemini-3.1-pro` | Orchestrator, Job Intelligence, Decision Agent — complex reasoning only |
+| `gemini-3.1-flash` | Technical Validation Agent — GitHub analysis |
+| `gemini-3.1-flash-lite` | Candidate Extraction, Verification, Behavioral Alignment, Aggregator, Report Generator |
+
+> **Rule:** Never use Pro for every agent — it inflates cost and latency. Use Flash-Lite for all repetitive structured extraction tasks.
+
+---
+
+## Database Tables (Neon + Drizzle ORM)
+
+| Table | Purpose |
+|-------|---------|
+| `jobs` | Job posts created by hiring manager |
+| `candidates` | One record per uploaded resume |
+| `hiring_blueprints` | Structured JSON output from Job Intelligence Agent |
+| `evaluations` | All scores per candidate (skills, technical, culture, composite) |
+| `agent_runs` | Full audit trail of every agent execution |
+| `reports` | Final PDF report metadata and email status |
+| `overrides` | Human override actions (approve/reject/adjust) with timestamps |
+
+---
+
+## Environment Variables (.env.local)
+
+```bash
+# CLERK AUTH
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+
+# NEON DATABASE
+DATABASE_URL=
+
+# UPLOADTHING
+UPLOADTHING_SECRET=
+UPLOADTHING_APP_ID=
+
+# GOOGLE ADK + GEMINI (agents run inside Next.js API routes)
+GOOGLE_API_KEY=
+GOOGLE_GENAI_USE_VERTEXAI=false
+MODEL_PRO=gemini-3.1-pro
+MODEL_FLASH=gemini-3.1-flash
+MODEL_FLASH_LITE=gemini-3.1-flash-lite
+
+# GITHUB API
+GITHUB_TOKEN=
+
+# RESEND EMAIL
+RESEND_API_KEY=
+EMAIL_FROM=noreply@pratibha-ai.com
+```
+
+---
+
+## Key Packages
+
+```bash
+# Core Next.js stack
+npm install @clerk/nextjs drizzle-orm @neondatabase/serverless drizzle-kit
+
+# Google ADK TypeScript SDK
+npm install @google/genai @google/adk
+
+# Resume parsing
+npm install pdf-parse mammoth
+npm install @types/pdf-parse --save-dev
+
+# File upload
+npm install uploadthing @uploadthing/react
+
+# GitHub API calls
+npm install axios
+
+# Email
+npm install resend
+
+# UI
+npm install lucide-react sonner react-hook-form zod
+```
+
+---
+
+## Critical Rules for Claude
+
+1. **No separate backend** — ADK agents always go inside `app/api/agents/`
+2. **No Express / Hono / Fastify** — Next.js API routes handle everything
+3. **No Python** — All agents are TypeScript only
+4. **One env file** — `.env.local` at project root, never a second `.env`
+5. **Mixed models** — Never use Pro for extraction tasks; always use Flash-Lite
+6. **Parallel execution** — Candidate Extraction Agent must run in parallel for multiple resumes
+7. **Human override always last** — No final hiring decision without human approval step
+8. **Audit everything** — All agent runs and overrides must be logged to `agent_runs` and `overrides` tables in Neon
+
+---
+
+## Scoring Formula (Evaluation Aggregator Agent)
+
+```
+Final Composite Score =
+  (Skills Match Score × 40%) +
+  (Technical Depth Score × 35%) +
+  (Culture Fit Score × 25%)
+
+Recommendation Tags:
+  90–100  → ✅ Strong Hire
+  65–89   → 🟡 Consider
+  0–64    → ❌ Not Recommended
+```
+
+---
+
+## External Integrations
+
+| Service | Purpose | Docs |
+|---------|---------|------|
+| GitHub REST API v3 | Repo analysis in Technical Validation Agent | api.github.com |
+| UploadThing | Resume PDF/DOCX file upload | uploadthing.com/docs |
+| Resend | Final report email delivery | resend.com/docs |
+| Clerk | Auth + user management | clerk.com/docs |
+| Neon | Serverless PostgreSQL | neon.tech/docs |
+
+---
+
+*Pratibha AI · Narendra Kumar · nk-analytics · 2026*
