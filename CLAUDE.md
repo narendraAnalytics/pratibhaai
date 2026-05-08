@@ -36,25 +36,41 @@ For ALL Google ADK agent work — writing agent code, building agents, adding to
 
 ```
 pratibha-ai/                    # Single Next.js monorepo — no separate backend
-├── app/
-│   ├── (auth)/                 # Clerk sign-in / sign-up pages
-│   ├── dashboard/              # Recruiter dashboard UI
-│   ├── jobs/                   # Job creation and management
-│   ├── candidates/[id]/        # Individual candidate view
-│   └── api/
-│       ├── agents/             # All ADK agent files (.ts)
-│       │   ├── orchestrator.ts
-│       │   ├── job-intelligence.ts
-│       │   ├── candidate-extraction.ts
-│       │   ├── verification-risk.ts
-│       │   ├── technical-validation.ts
-│       │   ├── behavioral-alignment.ts
-│       │   ├── evaluation-aggregator.ts
-│       │   ├── decision-agent.ts
-│       │   └── report-generator.ts
-│       ├── tools/              # Shared agent tools (GitHub API, PDF parser)
-│       └── run-pipeline/       # route.ts — triggers the full agent pipeline
-├── components/                 # Reusable UI components
+├── src/
+│   ├── app/
+│   │   ├── (auth)/                 # Clerk sign-in / sign-up pages
+│   │   ├── dashboard/              # Recruiter dashboard UI
+│   │   ├── jobs/                   # Job creation and management
+│   │   ├── candidates/[id]/        # Individual candidate view
+│   │   ├── globals.css             # Global styles + design system tokens
+│   │   ├── layout.tsx              # Root layout (fonts: Plus Jakarta Sans, Inter)
+│   │   ├── page.tsx                # Landing page entry — renders <LandingPage />
+│   │   └── api/
+│   │       ├── agents/             # All ADK agent files (.ts)
+│   │       │   ├── orchestrator.ts
+│   │       │   ├── job-intelligence.ts
+│   │       │   ├── candidate-extraction.ts
+│   │       │   ├── verification-risk.ts
+│   │       │   ├── technical-validation.ts
+│   │       │   ├── behavioral-alignment.ts
+│   │       │   ├── evaluation-aggregator.ts
+│   │       │   ├── decision-agent.ts
+│   │       │   └── report-generator.ts
+│   │       ├── tools/              # Shared agent tools (GitHub API, PDF parser)
+│   │       └── run-pipeline/       # route.ts — triggers the full agent pipeline
+│   └── components/
+│       ├── landing/                # Landing page (8-section animated SPA)
+│       │   ├── LandingPage.tsx     # Navigation shell — keyboard/wheel/touch/dots
+│       │   ├── shared.tsx          # MeshBg, Section, CountUp, PrimaryBtn, Icons
+│       │   ├── HeroSection.tsx     # Animated 10-agent SVG network + stats
+│       │   ├── ProblemSection.tsx  # Before/after comparison cards
+│       │   ├── PipelineSection.tsx # 10-agent pipeline 5×2 grid + flow arrows
+│       │   ├── FeaturesSection.tsx # 6-feature hover-lift grid
+│       │   ├── ModelsSection.tsx   # Gemini Pro / Flash / Flash-Lite floating cards
+│       │   ├── StatsSection.tsx    # 4 count-up stats + 3 testimonials
+│       │   ├── PricingSection.tsx  # 3 plans with monthly/yearly toggle
+│       │   └── CTASection.tsx      # Email sign-up form + footer links
+│       └── ui/                    # Reusable UI components (shared across pages)
 ├── lib/
 │   ├── db.ts                   # Drizzle + Neon client
 │   └── schema.ts               # All Drizzle table definitions
