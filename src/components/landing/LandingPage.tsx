@@ -112,15 +112,23 @@ export default function LandingPage() {
           <motion.div
             animate={{ rotate: [0, 8, -6, 0] }}
             transition={{ duration: 6, repeat: Infinity }}
-            className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg,#7C3AED,#A855F7,#FB7185)' }}
+            className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center"
           >
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
-              <path d="M12 2l1.8 4.6 4.7 1.6-4 3 1 4.8L12 13.6 8.5 16l1-4.8-4-3 4.7-1.6L12 2z" fill="white" />
-            </svg>
+            <img
+              src="https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1778217940/logo_x82dia.png"
+              alt="Pratibha AI"
+              width={36}
+              height={36}
+              className="w-full h-full object-cover"
+            />
           </motion.div>
-          <div className="font-display font-extrabold text-[17px] tracking-tight" style={{ color: '#1F1035' }}>
-            Pratibha<span style={{ color: '#7C3AED' }}> AI</span>
+          <div className="font-display font-extrabold text-[17px] tracking-tight">
+            <span style={{
+              background: 'linear-gradient(135deg, #7C3AED, #A855F7, #FB7185)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>Pratibha</span><span style={{ color: '#7C3AED' }}> AI</span>
           </div>
         </div>
 

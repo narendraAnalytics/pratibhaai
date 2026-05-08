@@ -18,10 +18,18 @@ const inter = Inter({
   display: "swap",
 });
 
+const LOGO =
+  "https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1778217940/logo_x82dia.png";
+
 export const metadata: Metadata = {
   title: "Pratibha AI — Autonomous AI Recruitment Platform",
   description:
     "10 specialized AI agents screen, score, and shortlist your best candidates — autonomously. Powered by Google ADK + Gemini.",
+  icons: {
+    icon: [{ url: LOGO, type: "image/png" }],
+    shortcut: [{ url: LOGO, type: "image/png" }],
+    apple: [{ url: LOGO, type: "image/png" }],
+  },
 };
 
 export default function RootLayout({
