@@ -11,4 +11,16 @@
 - **Do NOT** pass `afterSignOutUrl` as a prop to `<UserButton />` — use env var instead
 - **Always** use `useUser()` for auth state: `const { isSignedIn, user } = useUser()`
 - Username field on sign-up: enabled via **Clerk Dashboard** 
-     only (Configure → User & Authentication → Sign-up → Username → Required) — no code needed
+     only (Configure → User & Authentication → Sign-up → Username → Required) — no code needed.
+
+------------------------------------------------- -------------------------------------------
+### Errors Encountered & Fixed
+| Error | Cause | Fix |
+|-------|-------|-----|
+| User logs in via Clerk but no row in `users` table | `getOrCreateUser()` only runs when an API route is called — no routes existed yet | Created `POST /api/sync-user` route + added `useEffect` in `LandingPage.tsx` to call it silently on login |
+
+User signs in via Clerk but no row appears in the Neon users table.                                                                  
+     Root cause: getOrCreateUser() in src/lib/auth.ts is only called from API routes — and no API routes exist yet. Nothing triggers the DB
+     write after login.
+
+     Fix: add a lightweight /api/sync-user POST route + call it silently from LandingPage.tsx the moment isSignedIn becomes true.

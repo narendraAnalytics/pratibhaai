@@ -133,6 +133,7 @@ Hiring Manager creates Job + uploads Resumes
 
 | Table | Purpose |
 |-------|---------|
+| `users` | Clerk user details synced on first login (id TEXT, email, username, name, plan default 'free') |
 | `jobs` | Job posts created by hiring manager |
 | `candidates` | One record per uploaded resume |
 | `hiring_blueprints` | Structured JSON output from Job Intelligence Agent |
@@ -140,6 +141,64 @@ Hiring Manager creates Job + uploads Resumes
 | `agent_runs` | Full audit trail of every agent execution |
 | `reports` | Final PDF report metadata and email status |
 | `overrides` | Human override actions (approve/reject/adjust) with timestamps |
+
+---
+
+## Neon + Drizzle ORM Integration (Completed)
+
+### Files Added
+| File | Status | Notes |
+|------|--------|-------|
+| `src/db/index.ts` | NEW | Neon HTTP client + Drizzle instance |
+| `src/db/schema.ts` | NEW | All 8 tables — `users`, `jobs`, `candidates`, `hiring_blueprints`, `evaluations`, `agent_runs`, `reports`, `overrides` |
+| `src/lib/auth.ts` | NEW | `getOrCreateUser()` — lazy Clerk → Neon sync, no webhooks |
+| `drizzle.config.ts` | NEW | Drizzle config at project root pointing to `src/db/schema.ts` |
+| `src/app/api/sync-user/route.ts` | NEW | POST route — calls `getOrCreateUser()`, triggered silently on login |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `package.json` | Added `db:push`, `db:generate`, `db:studio` scripts |
+| `src/components/landing/LandingPage.tsx` | Added `useEffect` to call `POST /api/sync-user` when `isSignedIn` becomes true |
+
+### Neon Project
+- **Project name:** pratibhai
+- **Project ID:** `proud-dew-50438611`
+- **Region:** `aws-us-east-1`
+- **Database:** default (`neondb`) — tables pushed directly via Neon MCP
+- **DATABASE_URL format:** direct URL (no `-pooler`, no `channel_binding`) — already correct in `.env`
+
+### Schema Rules (must follow forever)
+- `users.id` → `text` (Clerk IDs are `user_xxx` strings — **NEVER** uuid)
+- All FK columns referencing `users.id` → also `text`
+- All other PKs → `uuid().defaultRandom()`
+- All FK constraints → `{ onDelete: 'cascade' }`
+- Drizzle driver → `drizzle-orm/neon-http` (**NOT** `pg` or websocket)
+
+### Errors Encountered & Fixed
+| Error | Cause | Fix |
+|-------|-------|-----|
+| User logs in via Clerk but no row in `users` table | `getOrCreateUser()` only runs when an API route is called — no routes existed yet | Created `POST /api/sync-user` route + added `useEffect` in `LandingPage.tsx` to call it silently on login |
+| `database not found` when using Neon MCP with `databaseName: 'pratibhai'` | Neon MCP uses the default database (`neondb`), not the project name | Always omit `databaseName` in Neon MCP calls — it defaults to `neondb` correctly |
+
+### User Sync Flow
+```
+User signs in/up via Clerk
+  → LandingPage mounts → isSignedIn = true
+  → useEffect fires → POST /api/sync-user
+  → getOrCreateUser() runs:
+      1. auth() → gets Clerk userId
+      2. DB query → user exists? return existing
+      3. First login → currentUser() → insert row with id, email, username, name, plan='free'
+  → Row appears in Neon users table
+```
+
+### getOrCreateUser() usage
+Call at the top of **every protected API route**:
+```typescript
+import { getOrCreateUser } from '@/lib/auth'
+const user = await getOrCreateUser() // creates row on first call, returns existing on subsequent
+```
 
 ---
 

@@ -92,6 +92,12 @@ export default function LandingPage() {
     };
   }, [idx, go]);
 
+  // Sync Clerk user to Neon on login
+  useEffect(() => {
+    if (!isSignedIn) return;
+    fetch('/api/sync-user', { method: 'POST' }).catch(() => {});
+  }, [isSignedIn]);
+
   const { Component: Current } = SECTIONS[idx];
 
   return (
