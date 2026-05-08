@@ -1,0 +1,14 @@
+
+### clerck Errors Encountered & Fixed
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `Export SignedIn doesn't exist in target module` | `<SignedIn>` not exported by installed Clerk version | Replaced with `useUser()` hook — `const { isSignedIn } = useUser()` |
+| `Property 'afterSignOutUrl' does not exist on UserButton` | Prop removed from `UserButton` in this Clerk version | 
+   Removed prop; added `NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL=/` to `.env` |
+
+### Clerk Version Constraints (this project)
+- **Do NOT** use `<SignedIn>` / `<SignedOut>` components — not exported in installed version
+- **Do NOT** pass `afterSignOutUrl` as a prop to `<UserButton />` — use env var instead
+- **Always** use `useUser()` for auth state: `const { isSignedIn, user } = useUser()`
+- Username field on sign-up: enabled via **Clerk Dashboard** 
+     only (Configure → User & Authentication → Sign-up → Username → Required) — no code needed

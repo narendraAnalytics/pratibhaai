@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { EASE, PrimaryBtn } from './shared';
+import { useUser, UserButton } from '@clerk/nextjs';
+import { EASE } from './shared';
 import HeroSection from './HeroSection';
 import ProblemSection from './ProblemSection';
 import PipelineSection from './PipelineSection';
@@ -24,6 +25,7 @@ const SECTIONS = [
 ];
 
 export default function LandingPage() {
+  const { isSignedIn, user } = useUser();
   const [idx, setIdx] = useState(0);
   const [dir, setDir] = useState(1);
   const lockRef = useRef(false);
@@ -137,16 +139,16 @@ export default function LandingPage() {
           </span>
         </div>
 
-        {/* CTA buttons */}
-        <div className="flex items-center gap-2 pointer-events-auto">
-          <button
-            className="px-4 py-2 text-sm font-semibold rounded-full hover:bg-white/60 transition"
-            style={{ color: '#1F1035' }}
-          >
-            Sign In
-          </button>
-          <PrimaryBtn onClick={() => go(7)}>Get Started</PrimaryBtn>
-        </div>
+        {/* Welcome greeting + avatar — shown only when signed in */}
+        {isSignedIn && (
+          <div className="flex items-center gap-2.5 pointer-events-auto">
+            <span className="text-[13px] font-semibold hidden md:block" style={{ color: '#1F1035' }}>
+              Hi, {user?.username ?? user?.firstName ?? 'there'}!
+            </span>
+            <UserButton />
+          </div>
+        )}
+
       </div>
 
       {/* Section viewport with transitions */}

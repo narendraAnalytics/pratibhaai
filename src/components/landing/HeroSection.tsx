@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { Section, PrimaryBtn, GhostBtn, Icons, CountUp, EASE } from './shared';
 
 const agents = Array.from({ length: 10 }).map((_, i) => {
@@ -23,6 +24,12 @@ const item = {
 };
 
 export default function HeroSection({ active }: { active: boolean }) {
+  const router = useRouter();
+
+  const handleStartTrial = () => {
+    router.push('/sign-up');
+  };
+
   return (
     <Section>
       <div className="relative w-full h-full px-12 lg:px-20 flex items-center">
@@ -61,7 +68,7 @@ export default function HeroSection({ active }: { active: boolean }) {
             </motion.p>
 
             <motion.div variants={item} className="mt-9 flex flex-wrap gap-3">
-              <PrimaryBtn large>
+              <PrimaryBtn large onClick={handleStartTrial}>
                 Start Free Trial
                 <Icons.Arrow width={18} height={18} />
               </PrimaryBtn>

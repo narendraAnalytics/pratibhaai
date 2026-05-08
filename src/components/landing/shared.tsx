@@ -101,7 +101,7 @@ export function PrimaryBtn({ children, onClick, className = '', large = false }:
       whileHover={{ y: -2, boxShadow: '0 14px 36px -8px rgba(124,58,237,0.45)' }}
       whileTap={{ scale: 0.97 }}
       transition={{ duration: 0.2 }}
-      className={`relative inline-flex items-center gap-2 rounded-full text-white font-semibold shadow-glow-violet
+      className={`relative inline-flex items-center gap-2 rounded-full text-white font-semibold shadow-glow-violet cursor-pointer
         ${large ? 'px-7 py-4 text-base' : 'px-5 py-2.5 text-sm'} ${className}`}
       style={{ background: 'linear-gradient(135deg,#7C3AED 0%,#A855F7 60%,#C084FC 100%)' }}
     >

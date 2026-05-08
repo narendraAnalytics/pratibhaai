@@ -143,6 +143,56 @@ Hiring Manager creates Job + uploads Resumes
 
 ---
 
+## Clerk Auth Implementation (Completed)
+
+### Files Added
+| File | Status | Notes |
+|------|--------|-------|
+| `src/middleware.ts` | NEW | Clerk middleware — protects all routes except `/`, `/sign-in(.*)`, `/sign-up(.*)`, `/api/inngest` |
+| `src/app/sign-in/[[...sign-in]]/page.tsx` | NEW | Centered Clerk `<SignIn />` with Pratibha AI logo on `#FAFAFA` background |
+| `src/app/sign-up/[[...sign-up]]/page.tsx` | NEW | Centered Clerk `<SignUp />` with Pratibha AI logo on `#FAFAFA` background |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/app/layout.tsx` | Wrapped `{children}` with `<ClerkProvider>` |
+| `src/components/landing/LandingPage.tsx` | Added `useUser()` + `UserButton` — shows `Hi, {username}!` + avatar when signed in; removed Sign In / Get Started nav buttons |
+| `src/components/landing/HeroSection.tsx` | Wired "Start Free Trial" → `router.push('/sign-up')` always |
+| `.env` | Added `NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL=/` (sign-in and sign-up URLs already pointed to `/`) |
+
+### Auth Redirect Rules
+- After sign-up → `/` (landing page)
+- After sign-in → `/` (landing page)
+- After sign-out → `/` (landing page)
+- Controlled via `.env`, NOT code
+
+### Errors Encountered & Fixed
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `Export SignedIn doesn't exist in target module` | `<SignedIn>` not exported by installed Clerk version | Replaced with `useUser()` hook — `const { isSignedIn } = useUser()` |
+| `Property 'afterSignOutUrl' does not exist on UserButton` | Prop removed from `UserButton` in this Clerk version | Removed prop; added `NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL=/` to `.env` |
+
+### Clerk Version Constraints (this project)
+- **Do NOT** use `<SignedIn>` / `<SignedOut>` components — not exported in installed version
+- **Do NOT** pass `afterSignOutUrl` as a prop to `<UserButton />` — use env var instead
+- **Always** use `useUser()` for auth state: `const { isSignedIn, user } = useUser()`
+- Username field on sign-up: enabled via **Clerk Dashboard** only (Configure → User & Authentication → Sign-up → Username → Required) — no code needed
+
+### Middleware Pattern
+```typescript
+// src/middleware.ts
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+const isPublicRoute = createRouteMatcher(['/', '/sign-in(.*)', '/sign-up(.*)', '/api/inngest'])
+export default clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) { await auth.protect() }
+})
+export const config = {
+  matcher: ['/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)', '/(api|trpc)(.*)'],
+}
+```
+
+---
+
 ## Environment Variables (.env.local)
 
 ```bash
