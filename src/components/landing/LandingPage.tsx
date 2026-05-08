@@ -155,7 +155,14 @@ export default function LandingPage() {
 
         {/* Welcome greeting + avatar — shown only when signed in */}
         {isSignedIn && (
-          <div className="flex items-center gap-2.5 pointer-events-auto">
+          <div className="flex items-center gap-3 pointer-events-auto">
+            <a
+              href="/dashboard"
+              className="hidden md:inline-flex items-center text-[13px] font-semibold px-3.5 py-1.5 rounded-lg transition-colors hover:bg-violet-50"
+              style={{ color: '#7C3AED', border: '1px solid rgba(124,58,237,0.18)' }}
+            >
+              Dashboard
+            </a>
             <span className="text-[13px] font-semibold hidden md:block" style={{ color: '#1F1035' }}>
               Hi, {user?.username ?? user?.firstName ?? 'there'}!
             </span>

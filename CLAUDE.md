@@ -2,6 +2,7 @@
 
 > **Autonomous AI Recruitment & Hiring Agent Platform**
 > Built with Google ADK (TypeScript) · Gemini 3.1 · Next.js 15 · Neon · Clerk
+
 > **Production URL:** https://pratibhaai.vercel.app
 
 ---
@@ -32,8 +33,6 @@ For ALL Google ADK agent work — writing agent code, building agents, adding to
 `C:\Users\ES\.claude\skills\google-agents-cli-workflow`
 
 ---
-## Deployed URL
-https://pratibhaai.vercel.app/
 
 ## Folder Structure
 

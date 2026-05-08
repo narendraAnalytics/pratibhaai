@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import { Section, PrimaryBtn, GhostBtn, Icons, CountUp, EASE } from './shared';
 
 const agents = Array.from({ length: 10 }).map((_, i) => {
@@ -25,9 +26,10 @@ const item = {
 
 export default function HeroSection({ active }: { active: boolean }) {
   const router = useRouter();
+  const { isSignedIn } = useUser();
 
   const handleStartTrial = () => {
-    router.push('/sign-up');
+    router.push(isSignedIn ? '/dashboard' : '/sign-up');
   };
 
   return (
