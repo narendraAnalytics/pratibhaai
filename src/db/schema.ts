@@ -13,7 +13,12 @@ export const jobs = pgTable('jobs', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
+  department: text('department'),
   description: text('description').notNull(),
+  locationType: varchar('location_type', { length: 20 }).default('remote'),
+  jobType: varchar('job_type', { length: 20 }).default('full-time'),
+  experienceLevel: varchar('experience_level', { length: 20 }).default('mid'),
+  skills: jsonb('skills').$type<string[]>().default([]),
   status: varchar('status', { length: 20 }).default('active').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
@@ -24,6 +29,9 @@ export const candidates = pgTable('candidates', {
   name: text('name'),
   email: text('email'),
   resumeUrl: text('resume_url'),
+  resumeContent: text('resume_content'),  // base64-encoded file bytes stored in Neon
+  resumeName: text('resume_name'),
+  resumeSize: integer('resume_size'),
   status: varchar('status', { length: 20 }).default('pending').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })

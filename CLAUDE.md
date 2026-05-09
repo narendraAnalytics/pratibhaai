@@ -41,13 +41,27 @@ pratibha-ai/                    # Single Next.js monorepo — no separate backen
 ├── src/
 │   ├── app/
 │   │   ├── (auth)/                 # Clerk sign-in / sign-up pages
-│   │   ├── dashboard/              # Recruiter dashboard UI
-│   │   ├── jobs/                   # Job creation and management
-│   │   ├── candidates/[id]/        # Individual candidate view
+│   │   ├── dashboard/
+│   │   │   ├── layout.tsx          # Dashboard shell — renders Sidebar + DashboardHeader
+│   │   │   ├── page.tsx            # Dashboard home — StatsCards, QuickActions, RecentJobs
+│   │   │   └── jobs/
+│   │   │       ├── new/
+│   │   │       │   └── page.tsx    # Step 1: Job creation form (dark aurora, full-screen z-50)
+│   │   │       └── [jobId]/
+│   │   │           └── upload/
+│   │   │               └── page.tsx  # Step 2: Resume drag-drop upload (dark aurora, full-screen)
+│   │   ├── candidates/[id]/        # Individual candidate view (planned)
 │   │   ├── globals.css             # Global styles + design system tokens
 │   │   ├── layout.tsx              # Root layout (fonts: Plus Jakarta Sans, Inter)
 │   │   ├── page.tsx                # Landing page entry — renders <LandingPage />
 │   │   └── api/
+│   │       ├── jobs/
+│   │       │   ├── route.ts        # POST /api/jobs — create job, returns { job }
+│   │       │   └── [jobId]/
+│   │       │       └── candidates/
+│   │       │           └── route.ts  # POST /api/jobs/[jobId]/candidates — multipart upload → Neon base64
+│   │       ├── sync-user/
+│   │       │   └── route.ts        # POST — syncs Clerk user to Neon on login
 │   │       ├── agents/             # All ADK agent files (.ts)
 │   │       │   ├── orchestrator.ts
 │   │       │   ├── job-intelligence.ts
@@ -60,24 +74,33 @@ pratibha-ai/                    # Single Next.js monorepo — no separate backen
 │   │       │   └── report-generator.ts
 │   │       ├── tools/              # Shared agent tools (GitHub API, PDF parser)
 │   │       └── run-pipeline/       # route.ts — triggers the full agent pipeline
-│   └── components/
-│       ├── landing/                # Landing page (8-section animated SPA)
-│       │   ├── LandingPage.tsx     # Navigation shell — keyboard/wheel/touch/dots
-│       │   ├── shared.tsx          # MeshBg, Section, CountUp, PrimaryBtn, Icons
-│       │   ├── HeroSection.tsx     # Animated 10-agent SVG network + stats
-│       │   ├── ProblemSection.tsx  # Before/after comparison cards
-│       │   ├── PipelineSection.tsx # 10-agent pipeline 5×2 grid + flow arrows
-│       │   ├── FeaturesSection.tsx # 6-feature hover-lift grid
-│       │   ├── ModelsSection.tsx   # Gemini Pro / Flash / Flash-Lite floating cards
-│       │   ├── StatsSection.tsx    # 4 count-up stats + 3 testimonials
-│       │   ├── PricingSection.tsx  # 3 plans with monthly/yearly toggle
-│       │   └── CTASection.tsx      # Email sign-up form + footer links
-│       └── ui/                    # Reusable UI components (shared across pages)
-├── lib/
-│   ├── db.ts                   # Drizzle + Neon client
-│   └── schema.ts               # All Drizzle table definitions
-├── drizzle/                    # DB migration files
-├── .env.local                  # Single env file — ALL keys here
+│   ├── components/
+│   │   ├── dashboard/
+│   │   │   ├── Sidebar.tsx         # Left nav — logo, nav links, sign-out
+│   │   │   ├── DashboardHeader.tsx # Top bar — greeting, user avatar
+│   │   │   ├── StatsCards.tsx      # 4 stat cards (jobs, candidates, screened, hired)
+│   │   │   ├── QuickActions.tsx    # Action buttons (New Job, View Candidates, etc.)
+│   │   │   └── RecentJobs.tsx      # Recent jobs list with status badges
+│   │   ├── landing/                # Landing page (8-section animated SPA)
+│   │   │   ├── LandingPage.tsx     # Navigation shell — keyboard/wheel/touch/dots
+│   │   │   ├── shared.tsx          # MeshBg, Section, CountUp, PrimaryBtn, Icons
+│   │   │   ├── HeroSection.tsx     # Animated 10-agent SVG network + stats
+│   │   │   ├── ProblemSection.tsx  # Before/after comparison cards
+│   │   │   ├── PipelineSection.tsx # 10-agent pipeline 5×2 grid + flow arrows
+│   │   │   ├── FeaturesSection.tsx # 6-feature hover-lift grid
+│   │   │   ├── ModelsSection.tsx   # Gemini Pro / Flash / Flash-Lite floating cards
+│   │   │   ├── StatsSection.tsx    # 4 count-up stats + 3 testimonials
+│   │   │   ├── PricingSection.tsx  # 3 plans with monthly/yearly toggle
+│   │   │   └── CTASection.tsx      # Email sign-up form + footer links
+│   │   └── ui/                    # Reusable UI components (shared across pages)
+│   ├── db/
+│   │   ├── index.ts                # Neon HTTP client + Drizzle instance
+│   │   └── schema.ts               # All 8 Drizzle table definitions
+│   └── lib/
+│       └── auth.ts                 # getOrCreateUser() — lazy Clerk → Neon sync
+├── drizzle/                        # DB migration files
+├── drizzle.config.ts               # Drizzle config pointing to src/db/schema.ts
+├── .env.local                      # Single env file — ALL keys here
 └── package.json
 ```
 
@@ -222,8 +245,8 @@ const user = await getOrCreateUser() // creates row on first call, returns exist
 | `.env` | Added `NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL=/` (sign-in and sign-up URLs already pointed to `/`) |
 
 ### Auth Redirect Rules
-- After sign-up → `/` (landing page)
-- After sign-in → `/` (landing page)
+- After sign-up → `/dashboard`
+- After sign-in → `/dashboard`
 - After sign-out → `/` (landing page)
 - Controlled via `.env`, NOT code
 
@@ -251,6 +274,74 @@ export const config = {
   matcher: ['/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)', '/(api|trpc)(.*)'],
 }
 ```
+
+---
+
+## Dashboard & Job Flow (Completed)
+
+### Files Added
+| File | Status | Notes |
+|------|--------|-------|
+| `src/app/dashboard/layout.tsx` | NEW | Dashboard shell — Sidebar (left) + DashboardHeader (top) |
+| `src/app/dashboard/page.tsx` | NEW | Home — StatsCards, QuickActions, RecentJobs |
+| `src/components/dashboard/Sidebar.tsx` | NEW | Left nav with logo, links, sign-out |
+| `src/components/dashboard/DashboardHeader.tsx` | NEW | Top bar with greeting + Clerk UserButton |
+| `src/components/dashboard/StatsCards.tsx` | NEW | 4 stat cards — jobs posted, candidates, screened, hired |
+| `src/components/dashboard/QuickActions.tsx` | NEW | Action buttons (New Job, etc.) |
+| `src/components/dashboard/RecentJobs.tsx` | NEW | Recent jobs list with status badges |
+| `src/app/dashboard/jobs/new/page.tsx` | NEW | Step 1: Job creation form |
+| `src/app/dashboard/jobs/[jobId]/upload/page.tsx` | NEW | Step 2: Resume upload page |
+| `src/app/api/jobs/route.ts` | NEW | POST — creates job, returns `{ job }` with `job.id` |
+| `src/app/api/jobs/[jobId]/candidates/route.ts` | NEW | POST multipart — base64-encodes files, inserts candidate rows |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/db/schema.ts` | Added `resumeContent text`, `resumeName text`, `resumeSize integer` to `candidates` table |
+
+### Job Creation Flow (Step 1 → Step 2)
+```
+User clicks "New Job" on dashboard
+  → /dashboard/jobs/new  (full-screen dark aurora form, z-index 50 covers sidebar)
+  → Fills form: Job Title (autocomplete), Department, Location Type, Job Type, Experience Level, Skills (chip input), Description
+  → POST /api/jobs → returns { job: { id, ... } }
+  → router.push(`/dashboard/jobs/${job.id}/upload`)
+
+  → /dashboard/jobs/[jobId]/upload  (same dark aurora, drag-drop zone)
+  → Drops PDF/DOCX files (max 10, validated by MIME + extension)
+  → POST /api/jobs/[jobId]/candidates  (multipart form, field: "files")
+  → Each file: ArrayBuffer → base64 → inserted as candidates row in Neon
+  → router.push('/dashboard')
+```
+
+### Job Form Design Details
+- Full-screen fixed overlay (`position: fixed; inset: 0; z-index: 50`) — covers sidebar (z-40)
+- Font: **Fira Sans** (loaded via Google Fonts `<link>` tags)
+- Dark aurora animated background: 4 gradient blobs with CSS keyframe `drift` animations
+- Glass morphism card: `backdrop-filter: blur`, `rgba` backgrounds
+- Conic gradient rotating border (`cardSpin` keyframe, 18s loop)
+- Mouse-tracked spotlight: `mousemove` → CSS `radial-gradient` overlay
+- Floating particles: `useState([]) + useEffect` — **never `useMemo`** (SSR hydration safe)
+- `TitleAutocomplete`: glass input shell, dark dropdown, keyboard nav (↑↓ Enter Esc), bold match highlight
+- `SkillsInput`: chip/tag multi-select with typeahead, backspace removal, aria-label on X buttons
+- `Segment` pills: gradient when selected (`linear-gradient(135deg, #7c5cff, #c084fc, #22d3ee)`)
+- Section 01 (`Basics`) has `zIndex: 10` so autocomplete dropdown floats above sections 02–04
+
+### Resume Upload Design Details
+- Same dark aurora design as job form (z-50 overlay, Fira Sans, identical `Aurora` component)
+- Step indicator: "Step 1 ✓ · Step 2: Resumes" in top bar
+- Drag-drop zone: `onDragOver / onDragLeave / onDrop` handlers; `drop-active` CSS class on drag
+- Accepts: `.pdf`, `.doc`, `.docx` (validated by MIME type AND extension)
+- File list: shows name, formatted size, remove button with `aria-label`
+- Success state: green gradient heading + CheckCircle2 icon before redirect
+
+### Errors Encountered & Fixed
+| Error | Cause | Fix |
+|-------|-------|-----|
+| Hydration mismatch on job form | `Math.random()` in `useMemo` runs on SSR and client, producing different particle positions | Changed particles to `useState([]) + useEffect(() => setDots(...), [])` — client-only |
+| `Removing a style property during rerender (borderColor) when conflicting property is set (border)` | `inputShellStyle` used shorthand `border: '1px solid ...'` while focused override applied `borderColor` | Replaced `border` with `borderWidth + borderStyle + borderColor` longhands everywhere |
+| Autocomplete dropdown hidden behind sections 02–04 | All sections had `position: relative; zIndex: 2`, creating stacking contexts; Section 02+ painted over Section 01's dropdown | Raised Section 01 to `zIndex: 10`; dropdown raised to `zIndex: 200` |
+| Accessibility error — X button in skill chips had no discernible text | `<button>` with only an SVG icon, no text content | Added `aria-label={\`Remove ${skill}\`}` to every chip remove button |
 
 ---
 
