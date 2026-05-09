@@ -3,10 +3,10 @@ import { getOrCreateUser } from '@/lib/auth'
 import { db } from '@/db'
 import { candidates } from '@/db/schema'
 
-export async function POST(req: NextRequest, { params }: { params: { jobId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ jobId: string }> }) {
   try {
     await getOrCreateUser()
-    const { jobId } = params
+    const { jobId } = await params
 
     const formData = await req.formData()
     const files = formData.getAll('files') as File[]
