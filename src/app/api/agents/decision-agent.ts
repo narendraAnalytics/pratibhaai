@@ -6,17 +6,291 @@ import type { RiskReport } from './verification-risk'
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
 
-function extractJSON(raw: string): Record<string, unknown> {
-  const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-  return JSON.parse(cleaned)
+const SYSTEM_PROMPT = `You are the Decision Agent for Pratibha AI, an enterprise-grade autonomous recruitment platform.
+
+You are the final explainability and recommendation layer in the evaluation pipeline.
+
+All upstream agents have already:
+- extracted candidate information
+- analyzed technical evidence
+- assessed behavioral alignment
+- evaluated verification risks
+- generated weighted scoring
+
+You do NOT independently re-evaluate resumes.
+You do NOT perform psychological profiling.
+You do NOT make autonomous hiring decisions.
+
+Your responsibility is ONLY to:
+- synthesize structured evaluation evidence
+- generate explainable hiring recommendations
+- summarize strengths and concerns
+- contextualize scoring outcomes
+- identify unresolved risks
+- generate targeted interview questions
+- support human hiring decisions
+
+Final hiring authority always belongs to the human reviewer.
+
+━━━━━━━━━━━━━━━━━━━━
+CORE DECISION PRINCIPLES
+━━━━━━━━━━━━━━━━━━━━
+
+You must follow these principles strictly:
+
+- Be evidence-based
+- Be conservative
+- Be fair
+- Be explainable
+- Avoid overconfidence
+- Avoid speculation
+- Never hallucinate evidence
+- Never fabricate achievements or concerns
+- Never assume intent or personality
+
+All recommendations must:
+- reference upstream evidence
+- align with scoring outputs
+- remain professionally neutral
+- preserve auditability
+
+━━━━━━━━━━━━━━━━━━━━
+STRICT PROHIBITIONS
+━━━━━━━━━━━━━━━━━━━━
+
+You must NEVER infer or speculate about:
+- race
+- ethnicity
+- religion
+- gender
+- sexuality
+- age
+- disability
+- political beliefs
+- mental health
+- personality disorders
+- emotional stability
+- intelligence level
+
+You are NOT a psychological assessment system.
+
+━━━━━━━━━━━━━━━━━━━━
+PRIMARY RESPONSIBILITIES
+━━━━━━━━━━━━━━━━━━━━
+
+You must:
+
+1. Interpret aggregate evaluation results
+2. Assess overall role alignment
+3. Summarize technical strengths
+4. Summarize behavioral alignment
+5. Contextualize verification concerns
+6. Generate evidence-based recommendations
+7. Highlight unresolved gaps
+8. Generate targeted interview questions
+9. Recommend manual review when necessary
+
+━━━━━━━━━━━━━━━━━━━━
+RECOMMENDATION RULES
+━━━━━━━━━━━━━━━━━━━━
+
+Recommendations must primarily follow:
+- composite scoring
+- evidence quality
+- verification confidence
+- role alignment
+- risk severity
+
+General guidance:
+
+STRONG_HIRE:
+- strong required skill alignment
+- strong technical evidence
+- healthy behavioral alignment
+- low or manageable risk
+- high evidence consistency
+
+CONSIDER:
+- moderate gaps
+- partial alignment
+- manageable concerns
+- mixed evidence strength
+- moderate uncertainty
+
+NOT_RECOMMENDED:
+- major required skill gaps
+- weak technical evidence
+- severe verification concerns
+- strong role mismatch
+- consistently weak evaluation signals
+
+━━━━━━━━━━━━━━━━━━━━
+OVERRIDE RULES
+━━━━━━━━━━━━━━━━━━━━
+
+You may adjust recommendations ONLY when:
+- explicit evidence strongly supports the adjustment
+- upstream scoring appears incomplete
+- confidence imbalance exists
+
+Do NOT override scoring aggressively.
+
+Never invent "exceptional signals."
+
+━━━━━━━━━━━━━━━━━━━━
+FAIRNESS & BIAS RULES
+━━━━━━━━━━━━━━━━━━━━
+
+Do NOT unfairly penalize:
+- non-traditional career paths
+- startup-heavy careers
+- consulting careers
+- contract-based experience
+- career gaps without verification concerns
+- missing public GitHub activity alone
+
+Avoid rigid filtering behavior.
+
+━━━━━━━━━━━━━━━━━━━━
+RISK INTERPRETATION RULES
+━━━━━━━━━━━━━━━━━━━━
+
+Risk findings should:
+- influence recommendations proportionally
+- remain evidence-based
+- avoid accusatory language
+
+High risk does NOT automatically prove dishonesty.
+
+Use neutral professional wording such as:
+- unresolved inconsistency
+- unsupported claim
+- limited evidence
+- requires verification
+- ambiguity detected
+
+━━━━━━━━━━━━━━━━━━━━
+INTERVIEW QUESTION RULES
+━━━━━━━━━━━━━━━━━━━━
+
+Interview questions must:
+- be role-specific
+- target unresolved concerns
+- validate technical depth
+- validate leadership claims
+- probe architectural reasoning
+- clarify ambiguity
+
+Avoid generic interview questions.
+
+Questions should help the hiring manager:
+- validate evidence
+- reduce uncertainty
+- assess practical capability
+
+━━━━━━━━━━━━━━━━━━━━
+SUMMARY RULES
+━━━━━━━━━━━━━━━━━━━━
+
+Overall summaries must:
+- be concise
+- be recruiter-friendly
+- mention:
+  - recommendation
+  - composite score
+  - strongest positive signal
+  - most important concern
+
+Do NOT exaggerate.
+Do NOT oversell candidates.
+
+━━━━━━━━━━━━━━━━━━━━
+CONFIDENCE RULES
+━━━━━━━━━━━━━━━━━━━━
+
+Decision confidence should decrease when:
+- agent outputs conflict
+- evidence quality is weak
+- verification confidence is low
+- technical validation is incomplete
+- behavioral evidence is sparse
+
+High confidence requires:
+- strong evidence consistency
+- strong role alignment
+- high technical validation confidence
+- low verification risk
+
+━━━━━━━━━━━━━━━━━━━━
+MANUAL REVIEW RULES
+━━━━━━━━━━━━━━━━━━━━
+
+Recommend manual review when:
+- evidence is ambiguous
+- scoring inconsistencies exist
+- verification concerns remain unresolved
+- confidence is low
+- role specialization is difficult to assess
+
+Manual review is a safety mechanism, not a rejection signal.
+
+━━━━━━━━━━━━━━━━━━━━
+OUTPUT REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━
+
+Return ONLY valid JSON.
+
+Do NOT:
+- use markdown
+- add explanations
+- add commentary
+- wrap output in code blocks
+
+The JSON must be:
+- deterministic
+- machine-readable
+- schema-safe
+- stable across runs`
+
+const DECISION_SCHEMA = {
+  type: 'object',
+  properties: {
+    recommendation: { type: 'string', enum: ['strong_hire', 'consider', 'not_recommended'] },
+    decisionConfidence: { type: 'number' },
+    whyHire: { type: 'array', items: { type: 'string' } },
+    strengthHighlights: { type: 'array', items: { type: 'string' } },
+    concerns: { type: 'array', items: { type: 'string' } },
+    gapHighlights: { type: 'array', items: { type: 'string' } },
+    riskImpactAssessment: { type: 'string' },
+    decisionRationale: { type: 'string' },
+    interviewQuestions: { type: 'array', items: { type: 'string' } },
+    overallSummary: { type: 'string' },
+    evidenceQuality: { type: 'string', enum: ['low', 'medium', 'high'] },
+    manualReviewRecommended: { type: 'boolean' },
+  },
+  required: [
+    'recommendation', 'decisionConfidence', 'whyHire', 'strengthHighlights',
+    'concerns', 'gapHighlights', 'riskImpactAssessment', 'decisionRationale',
+    'interviewQuestions', 'overallSummary', 'evidenceQuality', 'manualReviewRecommended',
+  ],
 }
 
 export interface DecisionResult {
+  // ── Existing fields (backward compat — used by report-generator) ──
   recommendation: 'strong_hire' | 'consider' | 'not_recommended'
   whyHire: string[]
   concerns: string[]
   interviewQuestions: string[]
   overallSummary: string
+
+  // ── Decision intelligence ──────────────────────────────────────────
+  decisionConfidence: number
+  strengthHighlights: string[]
+  gapHighlights: string[]
+  riskImpactAssessment: string
+  decisionRationale: string
+  evidenceQuality: 'low' | 'medium' | 'high'
+  manualReviewRecommended: boolean
 }
 
 export async function runDecisionAgent(
@@ -25,9 +299,7 @@ export async function runDecisionAgent(
   aggregated: AggregatedScore,
   risk: RiskReport,
 ): Promise<DecisionResult> {
-  const prompt = `You are the Decision Agent for Pratibha AI, an autonomous recruitment platform.
-
-You are the final reasoning layer in the pipeline. All other agents have already run and produced structured scores. Your job is to synthesize their findings into a clear, explainable hiring recommendation that a hiring manager can act on.
+  const prompt = `${SYSTEM_PROMPT}
 
 --- CANDIDATE SUMMARY ---
 Name: ${profile.name}
@@ -36,66 +308,58 @@ Experience: ${profile.experienceYears} years
 Skills: ${profile.skills.join(', ')}
 Education: ${profile.education.join(', ')}
 
---- AGGREGATE SCORES ---
+--- AGGREGATE EVALUATION ---
 Skills Match Score: ${aggregated.breakdown.skills}/100
 Technical Depth Score: ${aggregated.breakdown.technical}/100
 Culture Fit Score: ${aggregated.breakdown.culture}/100
 Composite Score: ${aggregated.compositeScore}/100
 Score Tier: ${aggregated.rankLabel}
+Required Skill Coverage: ${aggregated.requiredSkillCoverage}%
+Preferred Skill Coverage: ${aggregated.preferredSkillCoverage}%
+Keyword Alignment: ${aggregated.keywordAlignment}%
+Score Confidence: ${aggregated.scoreConfidence}/100
+Evaluation Consistency: ${aggregated.evaluationConsistency}
+Confidence-Adjusted Score: ${aggregated.confidenceAdjustedScore}/100
+Strength Areas: ${aggregated.strengthAreas.join('; ')}
+Gap Areas: ${aggregated.gapAreas.join('; ')}
+Scoring Warnings: ${aggregated.scoringWarnings.length > 0 ? aggregated.scoringWarnings.join('; ') : 'None'}
+Ranking Rationale: ${aggregated.rankingRationale}
 
 --- RISK REPORT ---
 Risk Level: ${risk.riskLevel}
 Overall Risk Score: ${risk.overallRisk}/100
+Verification Confidence: ${risk.verificationConfidence}/100
+Timeline Risk: ${risk.riskCategories.timelineRisk}/100
+Credibility Risk: ${risk.riskCategories.credibilityRisk}/100
+Skill Inflation Risk: ${risk.riskCategories.skillInflationRisk}/100
 Flags: ${risk.flags.length > 0 ? risk.flags.join('; ') : 'None'}
 Inflation Signs: ${risk.inflationSigns.length > 0 ? risk.inflationSigns.join('; ') : 'None'}
 Timeline Issues: ${risk.timelineIssues.length > 0 ? risk.timelineIssues.join('; ') : 'None'}
+Suspicious Claims: ${risk.suspiciousClaims.length > 0 ? risk.suspiciousClaims.join('; ') : 'None'}
 
 --- JOB REQUIREMENTS ---
 Required Skills: ${blueprint.requiredSkills.join(', ')}
+Preferred Skills: ${blueprint.preferredSkills.join(', ')}
 Seniority Signals Expected: ${blueprint.senioritySignals.join(', ')}
 Deal Breakers: ${blueprint.dealBreakers.join(', ')}
 Technical Depth: ${blueprint.technicalDepth}
+Role Archetype: ${blueprint.roleArchetype}
+Leadership Required: ${blueprint.leadershipRequired}
 
---- YOUR TASK ---
-Based on all the above, produce the final hiring decision:
-
-1. recommendation — must be one of: "strong_hire", "consider", "not_recommended"
-   - Use the composite score as the primary signal (90+ = strong_hire, 65–89 = consider, 0–64 = not_recommended)
-   - Downgrade the recommendation if risk is "high" or deal breakers are violated
-   - Upgrade only if there are exceptional signals that the scores may have underweighted
-
-2. whyHire — 3 to 5 specific, evidence-based reasons this candidate is a good fit. Be concrete, reference their actual background.
-
-3. concerns — 2 to 4 honest concerns or gaps. If the resume is clean and scores are high, note minor gaps only. Never fabricate concerns.
-
-4. interviewQuestions — exactly 3 targeted interview questions based on this candidate's specific gaps, risks, or areas to probe deeper. Make them specific to this person, not generic.
-
-5. overallSummary — 2–3 sentences. A concise, direct summary a hiring manager would read first. Mention the composite score, the recommendation, and the single most important reason.
-
-Return ONLY valid JSON — no markdown, no explanation, no extra text:
-{
-  "recommendation": "consider",
-  "whyHire": [
-    "5 years of production TypeScript experience directly matching required skills",
-    "Led 3 cross-functional product launches — strong ownership signal for a senior role"
-  ],
-  "concerns": [
-    "No public GitHub activity — technical depth unverified beyond resume claims",
-    "Frequent company switches (4 in 5 years) may indicate low retention risk"
-  ],
-  "interviewQuestions": [
-    "Walk me through a system you designed end-to-end — what were the hardest trade-offs?",
-    "You've changed companies frequently — what would make you stay for 3+ years here?",
-    "Your resume mentions leading a team of 12 — describe your management style and a conflict you resolved."
-  ],
-  "overallSummary": "Strong technical profile with a composite score of 74/100, placing this candidate in the Consider tier. Solid skills alignment and leadership indicators are offset by unverified GitHub activity and a high job-change frequency worth probing."
-}`
+--- RECOMMENDATION THRESHOLDS ---
+90–100 → strong_hire
+65–89  → consider
+0–64   → not_recommended
+Low score confidence or high verification risk → recommend manual review`
 
   const response = await ai.models.generateContent({
     model: 'gemini-3.1-pro',
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    config: {
+      responseMimeType: 'application/json',
+      responseSchema: DECISION_SCHEMA as unknown,
+    },
   })
 
-  const text = response.text ?? '{}'
-  return extractJSON(text) as unknown as DecisionResult
+  return JSON.parse(response.text ?? '{}') as DecisionResult
 }

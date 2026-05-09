@@ -5,17 +5,290 @@ import type { HiringBlueprint } from './job-intelligence'
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
 
-function extractJSON(raw: string): Record<string, unknown> {
-  const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-  return JSON.parse(cleaned)
+const SYSTEM_PROMPT = `You are the Technical Validation Agent for Pratibha AI, an enterprise-grade autonomous recruitment platform.
+
+You are responsible for evaluating the technical capability evidence of candidates using:
+- resume data
+- GitHub activity
+- portfolio evidence
+- technical project indicators
+
+You are NOT a recruiter.
+You are NOT a hiring decision maker.
+You do NOT rank candidates.
+You do NOT make final hiring recommendations.
+
+Your responsibility is ONLY to:
+- assess technical depth
+- validate technical credibility
+- analyze engineering signals
+- compare demonstrated skills against role requirements
+- identify technical strengths and weaknesses
+- generate evidence-based technical assessments
+
+━━━━━━━━━━━━━━━━━━━━
+CORE VALIDATION PRINCIPLES
+━━━━━━━━━━━━━━━━━━━━
+
+You must follow these principles strictly:
+
+- Be evidence-based
+- Be conservative
+- Be technically objective
+- Never hallucinate technical expertise
+- Never assume skill mastery without evidence
+- Never overvalue GitHub popularity metrics
+- Focus on demonstrated engineering capability
+
+Do NOT:
+- equate stars with engineering skill
+- penalize candidates solely for lacking public GitHub activity
+- assume all strong engineers maintain open-source projects
+
+━━━━━━━━━━━━━━━━━━━━
+PRIMARY RESPONSIBILITIES
+━━━━━━━━━━━━━━━━━━━━
+
+You must analyze:
+
+1. Technical Skill Alignment
+2. Engineering Depth
+3. Project Complexity
+4. Technology Relevance
+5. Architecture Signals
+6. Production Engineering Signals
+7. Technical Consistency
+8. Active Development Signals
+9. Specialization Areas
+10. Technical Maturity
+
+━━━━━━━━━━━━━━━━━━━━
+GITHUB ANALYSIS RULES
+━━━━━━━━━━━━━━━━━━━━
+
+When GitHub data is available:
+
+Analyze:
+- repository relevance
+- technology alignment
+- contribution consistency
+- project recency
+- engineering complexity
+- architecture indicators
+- documentation quality
+- production-readiness signals
+
+Look for evidence of:
+- real implementation work
+- scalable systems
+- testing practices
+- CI/CD workflows
+- containerization
+- infrastructure knowledge
+- deployment awareness
+
+Do NOT rely heavily on:
+- follower counts
+- stars alone
+- repository quantity alone
+
+Quality matters more than popularity.
+
+━━━━━━━━━━━━━━━━━━━━
+TECHNICAL DEPTH ANALYSIS
+━━━━━━━━━━━━━━━━━━━━
+
+Evaluate:
+- whether claimed technologies appear supported
+- whether project complexity matches seniority claims
+- whether architecture exposure exists
+- whether production engineering experience exists
+- whether system design capability is evident
+
+Examples of strong technical signals:
+- scalable architectures
+- API design
+- distributed systems
+- infrastructure automation
+- testing frameworks
+- deployment pipelines
+- AI/ML implementation depth
+- cloud-native engineering
+
+━━━━━━━━━━━━━━━━━━━━
+TECHNOLOGY ALIGNMENT RULES
+━━━━━━━━━━━━━━━━━━━━
+
+Compare demonstrated technical evidence against:
+- required skills
+- preferred skills
+- must-have keywords
+- expected technical depth
+
+You must identify:
+- strong alignment
+- partial alignment
+- unsupported skill claims
+- specialization mismatches
+
+━━━━━━━━━━━━━━━━━━━━
+SPECIALIZATION DETECTION
+━━━━━━━━━━━━━━━━━━━━
+
+Infer dominant specialization areas such as:
+- frontend engineering
+- backend systems
+- machine learning
+- DevOps
+- cloud engineering
+- data engineering
+- mobile development
+- infrastructure/platform engineering
+- AI research
+- full-stack engineering
+
+Use only evidence strongly supported by:
+- repositories
+- technologies
+- project descriptions
+- work history
+
+━━━━━━━━━━━━━━━━━━━━
+GITHUB ABSENCE POLICY
+━━━━━━━━━━━━━━━━━━━━
+
+Candidates without GitHub activity must NOT be heavily penalized automatically.
+
+Many strong engineers:
+- work on private enterprise systems
+- work under NDA
+- contribute internally
+- avoid public open-source work
+
+If GitHub is absent:
+- rely more heavily on resume evidence
+- reduce confidence moderately
+- avoid aggressive negative scoring
+
+━━━━━━━━━━━━━━━━━━━━
+TECHNICAL SCORING GUIDELINES
+━━━━━━━━━━━━━━━━━━━━
+
+0–30:
+- major technical gaps
+- insufficient supporting evidence
+- weak alignment
+
+31–60:
+- partial alignment
+- moderate capability
+- may require mentoring or upskilling
+
+61–80:
+- strong practical alignment
+- solid engineering capability
+- likely productive quickly
+
+81–100:
+- exceptional technical depth
+- strong architecture signals
+- advanced engineering maturity
+- highly aligned specialization
+
+━━━━━━━━━━━━━━━━━━━━
+CONFIDENCE RULES
+━━━━━━━━━━━━━━━━━━━━
+
+Technical confidence should decrease when:
+- GitHub data is limited
+- repositories are outdated
+- project evidence is weak
+- technical descriptions are vague
+- resume claims lack supporting evidence
+
+High confidence requires:
+- clear implementation evidence
+- active technical work
+- strong alignment with role requirements
+- technically detailed projects
+
+━━━━━━━━━━━━━━━━━━━━
+MANUAL REVIEW RULES
+━━━━━━━━━━━━━━━━━━━━
+
+Recommend manual review when:
+- evidence is ambiguous
+- highly specialized domains are involved
+- GitHub is unavailable for senior roles
+- technical claims exceed visible evidence
+- project complexity is unclear
+
+━━━━━━━━━━━━━━━━━━━━
+OUTPUT REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━
+
+Return ONLY valid JSON.
+
+Do NOT:
+- use markdown
+- add explanations
+- add commentary
+- wrap output in code blocks
+
+The JSON must be:
+- deterministic
+- machine-readable
+- schema-safe
+- stable across runs`
+
+const TECHNICAL_SCHEMA = {
+  type: 'object',
+  properties: {
+    score: { type: 'number' },
+    technologyAlignmentScore: { type: 'number' },
+    githubActivityLevel: { type: 'string', enum: ['inactive', 'low', 'moderate', 'high'] },
+    projectComplexity: { type: 'string', enum: ['low', 'medium', 'high'] },
+    productionReadiness: { type: 'string', enum: ['low', 'medium', 'high'] },
+    openSourceContributionLevel: { type: 'string', enum: ['none', 'low', 'moderate', 'high'] },
+    specializationAreas: { type: 'array', items: { type: 'string' } },
+    technicalStrengths: { type: 'array', items: { type: 'string' } },
+    technicalWeaknesses: { type: 'array', items: { type: 'string' } },
+    architectureSignals: { type: 'array', items: { type: 'string' } },
+    languagesDetected: { type: 'array', items: { type: 'string' } },
+    repoCount: { type: 'number' },
+    githubAnalysis: { type: 'string' },
+    techDepthAssessment: { type: 'string' },
+    technicalConfidence: { type: 'number' },
+    manualReviewRecommended: { type: 'boolean' },
+  },
+  required: [
+    'score', 'technologyAlignmentScore', 'githubActivityLevel', 'projectComplexity',
+    'productionReadiness', 'openSourceContributionLevel', 'specializationAreas',
+    'technicalStrengths', 'technicalWeaknesses', 'architectureSignals', 'languagesDetected',
+    'repoCount', 'githubAnalysis', 'techDepthAssessment', 'technicalConfidence', 'manualReviewRecommended',
+  ],
 }
 
 export interface TechnicalValidationResult {
+  // ── Existing fields (backward compat — used by evaluation-aggregator + report-generator) ──
   score: number
   githubAnalysis: string
   techDepthAssessment: string
   repoCount: number
   languagesDetected: string[]
+
+  // ── Technical intelligence ─────────────────────────────────────────────────────────────────
+  technologyAlignmentScore: number
+  githubActivityLevel: 'inactive' | 'low' | 'moderate' | 'high'
+  projectComplexity: 'low' | 'medium' | 'high'
+  productionReadiness: 'low' | 'medium' | 'high'
+  openSourceContributionLevel: 'none' | 'low' | 'moderate' | 'high'
+  specializationAreas: string[]
+  technicalStrengths: string[]
+  technicalWeaknesses: string[]
+  architectureSignals: string[]
+  technicalConfidence: number
+  manualReviewRecommended: boolean
 }
 
 async function fetchGitHubSummary(githubUrl: string): Promise<string> {
@@ -34,16 +307,35 @@ async function fetchGitHubSummary(githubUrl: string): Promise<string> {
     ])
 
     const user = userRes.data as { public_repos: number; followers: number; created_at: string }
-    const repos = reposRes.data as Array<{ name: string; language: string | null; stargazers_count: number; description: string | null; fork: boolean }>
+    const repos = reposRes.data as Array<{
+      name: string
+      language: string | null
+      stargazers_count: number
+      description: string | null
+      fork: boolean
+      pushed_at: string | null
+      topics: string[]
+    }>
+
     const ownRepos = repos.filter(r => !r.fork)
+    const forkCount = repos.length - ownRepos.length
     const languages = [...new Set(ownRepos.map(r => r.language).filter(Boolean))]
+    const lastPushed = ownRepos[0]?.pushed_at?.slice(0, 7) ?? 'unknown'
+
+    const topRepos = ownRepos.slice(0, 5).map(r => {
+      const topics = r.topics?.length ? ` [${r.topics.slice(0, 3).join(', ')}]` : ''
+      const desc = r.description ? ` — ${r.description.slice(0, 60)}` : ''
+      return `  • ${r.name} (${r.language ?? 'unknown'}, ⭐${r.stargazers_count})${topics}${desc}`
+    })
 
     return `GitHub Profile (@${username}):
-- Public repositories: ${user.public_repos}
+- Public repositories: ${user.public_repos} (${ownRepos.length} original, ${forkCount} forks)
 - Followers: ${user.followers}
 - Account created: ${user.created_at?.slice(0, 4) ?? 'unknown'}
-- Top 5 repos: ${ownRepos.slice(0, 5).map(r => `${r.name} (${r.language ?? 'unknown'}, ⭐${r.stargazers_count})`).join(' | ')}
-- Languages detected: ${languages.join(', ') || 'none'}`
+- Last push activity: ${lastPushed}
+- Languages detected: ${languages.join(', ') || 'none'}
+- Top 5 repos:
+${topRepos.join('\n')}`
   } catch {
     return 'GitHub profile could not be fetched (may be private or URL invalid)'
   }
@@ -57,14 +349,14 @@ export async function runTechnicalValidation(
     ? await fetchGitHubSummary(profile.githubUrl)
     : 'No GitHub URL provided by the candidate.'
 
-  const prompt = `You are the Technical Validation Agent for Pratibha AI, an autonomous recruitment platform.
-
-Your role is to assess how technically strong this candidate is for the given role. You evaluate their claimed skills against their actual demonstrated output (GitHub activity) and overall experience depth.
+  const prompt = `${SYSTEM_PROMPT}
 
 --- CANDIDATE TECHNICAL PROFILE ---
-Skills Claimed: ${profile.skills.join(', ')}
-Years of Experience: ${profile.experienceYears}
+Name: ${profile.name}
 Current Role: ${profile.currentRole}
+Seniority: ${profile.candidateSeniority}
+Years of Experience: ${profile.experienceYears}
+Skills Claimed: ${profile.skills.join(', ')}
 Past Companies: ${profile.companies.join(', ')}
 
 --- GITHUB ACTIVITY ---
@@ -75,35 +367,16 @@ Required Skills: ${blueprint.requiredSkills.join(', ')}
 Preferred Skills: ${blueprint.preferredSkills.join(', ')}
 Technical Depth Expected: ${blueprint.technicalDepth}
 Must-Have Keywords: ${blueprint.mustHaveKeywords.join(', ')}
-
---- YOUR TASK ---
-Score this candidate's technical depth on a scale of 0–100 where:
-- 0–30: Significant skill gap, not ready for this role
-- 31–60: Partial match, may need upskilling
-- 61–80: Good match, can do the job
-- 81–100: Excellent match, strong technical depth
-
-Provide:
-1. score — 0 to 100
-2. githubAnalysis — what the GitHub activity tells you (or note if unavailable)
-3. techDepthAssessment — your overall assessment of their technical depth for this role
-4. repoCount — number of own (non-fork) repos identified (0 if no GitHub)
-5. languagesDetected — programming languages seen in GitHub repos
-
-Return ONLY valid JSON — no markdown, no explanation, no extra text:
-{
-  "score": 74,
-  "githubAnalysis": "Candidate has 18 repos with active contributions in TypeScript and Python...",
-  "techDepthAssessment": "Strong frontend background with production-grade projects. Limited backend exposure.",
-  "repoCount": 12,
-  "languagesDetected": ["TypeScript", "JavaScript", "Python"]
-}`
+GitHub Importance: ${blueprint.githubImportance}`
 
   const response = await ai.models.generateContent({
     model: 'gemini-3.1-flash',
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    config: {
+      responseMimeType: 'application/json',
+      responseSchema: TECHNICAL_SCHEMA as unknown,
+    },
   })
 
-  const text = response.text ?? '{}'
-  return extractJSON(text) as unknown as TechnicalValidationResult
+  return JSON.parse(response.text ?? '{}') as TechnicalValidationResult
 }
