@@ -1,26 +1,15 @@
+Pratibha AI — Agent Summary
+============================
 
-### clerck Errors Encountered & Fixed
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `Export SignedIn doesn't exist in target module` | `<SignedIn>` not exported by installed Clerk version | Replaced with `useUser()` hook — `const { isSignedIn } = useUser()` |
-| `Property 'afterSignOutUrl' does not exist on UserButton` | Prop removed from `UserButton` in this Clerk version | 
-   Removed prop; added `NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL=/` to `.env` |
-
-### Clerk Version Constraints (this project)
-- **Do NOT** use `<SignedIn>` / `<SignedOut>` components — not exported in installed version
-- **Do NOT** pass `afterSignOutUrl` as a prop to `<UserButton />` — use env var instead
-- **Always** use `useUser()` for auth state: `const { isSignedIn, user } = useUser()`
-- Username field on sign-up: enabled via **Clerk Dashboard** 
-     only (Configure → User & Authentication → Sign-up → Username → Required) — no code needed.
-
-------------------------------------------------- -------------------------------------------
-### Errors Encountered & Fixed
-| Error | Cause | Fix |
-|-------|-------|-----|
-| User logs in via Clerk but no row in `users` table | `getOrCreateUser()` only runs when an API route is called — no routes existed yet | Created `POST /api/sync-user` route + added `useEffect` in `LandingPage.tsx` to call it silently on login |
-
-User signs in via Clerk but no row appears in the Neon users table.                                                                  
-     Root cause: getOrCreateUser() in src/lib/auth.ts is only called from API routes — and no API routes exist yet. Nothing triggers the DB
-     write after login.
-
-     Fix: add a lightweight /api/sync-user POST route + call it silently from LandingPage.tsx the moment isSignedIn becomes true.
+#  Agent Name                  Model               Purpose
+-  ----------                  -----               -------
+1  Orchestrator Agent          gemini-3.1-pro      Plans the pipeline — decides which agents to run and in what order
+2  Job Intelligence Agent      gemini-3.1-pro      Reads the job description and pulls out required skills, deal-breakers, and what a good candidate looks like
+3  Candidate Extraction Agent  gemini-3.1-flash-lite  Reads the resume and extracts name, skills, experience, education, GitHub link
+4  Verification & Risk Agent   gemini-3.1-flash-lite  Checks for fake claims, inflated skills, and timeline gaps in the resume
+5  Technical Validation Agent  gemini-3.1-flash    Looks at the candidate's GitHub — repos, languages, activity — and gives a technical score (0–100)
+6  Behavioral Alignment Agent  gemini-3.1-flash-lite  Checks soft skills, leadership signals, and culture fit — gives a culture score (0–100)
+7  Evaluation Aggregator Agent gemini-3.1-flash-lite  Combines all scores: Skills 40% + Technical 35% + Culture 25% = Final Composite Score
+8  Decision Agent              gemini-3.1-pro      Explains WHY the candidate is recommended or not, and suggests 3 interview questions
+9  Report Generator Agent      gemini-3.1-flash-lite  Converts all agent outputs into a clean report + email content for the recruiter
+10 Human Override Layer        N/A (Next.js UI)    Hiring manager reviews the ranked list and clicks Approve / Reject / Adjust — all actions are logged in Neon for audit

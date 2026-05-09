@@ -102,7 +102,13 @@ export default function UploadPage() {
       const res = await fetch(`/api/jobs/${jobId}/candidates`, { method: 'POST', body: formData })
       if (!res.ok) throw new Error('Upload failed')
       setSuccess(true)
-      setTimeout(() => router.push('/dashboard'), 2000)
+      // Fire-and-forget — pipeline runs in background, user doesn't wait
+      fetch('/api/run-pipeline', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobId }),
+      }).catch(() => {})
+      setTimeout(() => router.push(`/dashboard/jobs/${jobId}/screening`), 1000)
     } catch {
       setError('Upload failed. Please try again.')
     } finally {
@@ -183,7 +189,7 @@ export default function UploadPage() {
               margin: '14px 0 8px',
               fontSize: 'clamp(30px, 4.5vw, 46px)', fontWeight: 600,
               letterSpacing: '-0.025em', lineHeight: 1.05,
-              background: success
+              backgroundImage: success
                 ? 'linear-gradient(180deg, #6ee7b7, #34d399)'
                 : 'linear-gradient(180deg, #ffffff 0%, #d2c4ff 60%, #a08bff 100%)',
               WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
@@ -258,6 +264,7 @@ export default function UploadPage() {
                   type="file"
                   multiple
                   accept=".pdf,.doc,.docx"
+                  aria-label="Upload resume files (PDF, DOC, DOCX)"
                   style={{ display: 'none' }}
                   onChange={e => e.target.files && addFiles(e.target.files)}
                 />

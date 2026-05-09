@@ -156,21 +156,24 @@ function Particles() {
 
 // ─── Glass field wrapper ───────────────────────────────────────────────────────
 
-function Field({ label, icon: Icon, hint, children }: {
-  label: string; icon: React.ElementType; hint?: string; children: React.ReactNode
+function Field({ label, icon: Icon, hint, error, children }: {
+  label: string; icon: React.ElementType; hint?: string; error?: string; children: React.ReactNode
 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <label style={{
         display: 'inline-flex', alignItems: 'center', gap: 7,
         fontSize: 11.5, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase',
-        color: 'rgba(230,226,255,0.72)',
+        color: error ? 'rgba(255,100,120,0.90)' : 'rgba(230,226,255,0.72)',
       }}>
-        <Icon size={13} style={{ color: '#b9a4ff' }} />
+        <Icon size={13} style={{ color: error ? '#ff6b8a' : '#b9a4ff' }} />
         {label}
       </label>
       {children}
-      {hint && <p style={{ margin: '2px 0 0', fontSize: 12, color: 'rgba(230,226,255,0.45)' }}>{hint}</p>}
+      {error
+        ? <p style={{ margin: '3px 0 0', fontSize: 12, color: '#ff6b8a', display: 'flex', alignItems: 'center', gap: 4, animation: 'riseIn 0.22s ease both' }}>⚠ {error}</p>
+        : hint && <p style={{ margin: '2px 0 0', fontSize: 12, color: 'rgba(230,226,255,0.45)' }}>{hint}</p>
+      }
     </div>
   )
 }
@@ -195,7 +198,7 @@ const inputStyle: React.CSSProperties = {
 
 // ─── Title Autocomplete ───────────────────────────────────────────────────────
 
-function TitleAutocomplete({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function TitleAutocomplete({ value, onChange, hasError }: { value: string; onChange: (v: string) => void; hasError?: boolean }) {
   const [open, setOpen] = useState(false)
   const [cursor, setCursor] = useState(-1)
   const [focused, setFocused] = useState(false)
@@ -229,7 +232,7 @@ function TitleAutocomplete({ value, onChange }: { value: string; onChange: (v: s
           borderColor: 'rgba(186,168,255,0.55)',
           boxShadow: '0 0 0 4px rgba(124,92,255,0.14), 0 8px 24px -8px rgba(124,92,255,0.35)',
           background: 'linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03))',
-        } : {}),
+        } : hasError ? { borderColor: 'rgba(255,100,120,0.55)' } : {}),
       }}>
         <Search size={15} style={{ marginLeft: 12, color: 'rgba(230,226,255,0.5)', flexShrink: 0 }} />
         <input
@@ -332,7 +335,7 @@ function TitleAutocomplete({ value, onChange }: { value: string; onChange: (v: s
 
 // ─── Skills typeahead ─────────────────────────────────────────────────────────
 
-function SkillsInput({ skills, onChange }: { skills: string[]; onChange: (s: string[]) => void }) {
+function SkillsInput({ skills, onChange, hasError }: { skills: string[]; onChange: (s: string[]) => void; hasError?: boolean }) {
   const [input, setInput] = useState('')
   const [open, setOpen] = useState(false)
   const [cursor, setCursor] = useState(-1)
@@ -374,12 +377,13 @@ function SkillsInput({ skills, onChange }: { skills: string[]; onChange: (s: str
           display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6,
           minHeight: 50, padding: '8px 10px', borderRadius: 14,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))',
-          borderWidth: '1px', borderStyle: 'solid', borderColor: 'rgba(255,255,255,0.10)', cursor: 'text',
+          borderWidth: '1px', borderStyle: 'solid', cursor: 'text',
           transition: 'border-color 0.18s ease, box-shadow 0.18s ease',
-          ...(focused ? {
-            borderColor: 'rgba(186,168,255,0.55)',
-            boxShadow: '0 0 0 4px rgba(124,92,255,0.14)',
-          } : {}),
+          ...(focused
+            ? { borderColor: 'rgba(186,168,255,0.55)', boxShadow: '0 0 0 4px rgba(124,92,255,0.14)' }
+            : hasError
+            ? { borderColor: 'rgba(255,100,120,0.55)' }
+            : { borderColor: 'rgba(255,255,255,0.10)' }),
         }}
         onClick={() => setOpen(true)}
       >
@@ -553,7 +557,11 @@ export default function NewJobPage() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [jobId, setJobId] = useState<string | null>(null)
+
+  const clearFieldError = (field: string) =>
+    setFieldErrors(prev => { const n = { ...prev }; delete n[field]; return n })
 
   // Mouse spotlight on card
   const cardRef = useRef<HTMLFormElement>(null)
@@ -573,8 +581,13 @@ export default function NewJobPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!title.trim()) { setError('Job title is required.'); return }
-    if (!description.trim()) { setError('Job description is required.'); return }
+    const errs: Record<string, string> = {}
+    if (!title.trim()) errs.title = 'Job title is required'
+    if (!department.trim()) errs.department = 'Department is required'
+    if (!description.trim()) errs.description = 'Role description is required'
+    if (skills.length === 0) errs.skills = 'Add at least one required skill'
+    if (Object.keys(errs).length > 0) { setFieldErrors(errs); return }
+    setFieldErrors({})
     setLoading(true)
     try {
       const res = await fetch('/api/jobs', {
@@ -682,7 +695,7 @@ export default function NewJobPage() {
             </h1>
             <p style={{ margin: 0, fontSize: 16, color: 'rgba(230,226,255,0.72)', maxWidth: 560, lineHeight: 1.55 }}>
               {success
-                ? 'Redirecting you to the dashboard…'
+                ? 'Redirecting to Upload Candidate Resumes…'
                 : "Describe the role — we'll build a hiring blueprint and start screening candidates the moment you publish."}
             </p>
           </div>
@@ -738,16 +751,16 @@ export default function NewJobPage() {
               <section style={{ padding: '8px 0', position: 'relative', zIndex: 10 }}>
                 <SectionHead num="01" title="Basics" sub="What's the role and where does it live?" />
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
-                  <Field label="Job Title" icon={Briefcase} hint="Type to search, or write your own.">
-                    <TitleAutocomplete value={title} onChange={setTitle} />
+                  <Field label="Job Title" icon={Briefcase} hint="Type to search, or write your own." error={fieldErrors.title}>
+                    <TitleAutocomplete value={title} onChange={v => { setTitle(v); if (fieldErrors.title) clearFieldError('title') }} hasError={!!fieldErrors.title} />
                   </Field>
-                  <Field label="Department" icon={Building2}>
-                    <div style={inputShellStyle}>
+                  <Field label="Department" icon={Building2} error={fieldErrors.department}>
+                    <div style={{ ...inputShellStyle, ...(fieldErrors.department ? { borderColor: 'rgba(255,100,120,0.55)' } : {}) }}>
                       <input
                         style={inputStyle}
                         placeholder="e.g. Engineering, Design"
                         value={department}
-                        onChange={e => setDepartment(e.target.value)}
+                        onChange={e => { setDepartment(e.target.value); if (fieldErrors.department) clearFieldError('department') }}
                       />
                     </div>
                   </Field>
@@ -798,8 +811,8 @@ export default function NewJobPage() {
               {/* ── Section 3: Description ── */}
               <section style={{ padding: '8px 0', position: 'relative', zIndex: 2 }}>
                 <SectionHead num="03" title="Description" sub="The AI will pull requirements straight from this." />
-                <Field label="Role Description" icon={FileText} hint={`${description.length} characters · aim for 200+ for best results`}>
-                  <div style={{ ...inputShellStyle, padding: 0 }}>
+                <Field label="Role Description" icon={FileText} hint={`${description.length} characters · aim for 200+ for best results`} error={fieldErrors.description}>
+                  <div style={{ ...inputShellStyle, padding: 0, ...(fieldErrors.description ? { borderColor: 'rgba(255,100,120,0.55)' } : {}) }}>
                     <textarea
                       style={{
                         ...inputStyle, padding: 14, resize: 'vertical',
@@ -808,7 +821,7 @@ export default function NewJobPage() {
                       rows={7}
                       placeholder="Describe the role, responsibilities, and what you're looking for…"
                       value={description}
-                      onChange={e => setDescription(e.target.value)}
+                      onChange={e => { setDescription(e.target.value); if (fieldErrors.description) clearFieldError('description') }}
                     />
                   </div>
                 </Field>
@@ -819,8 +832,8 @@ export default function NewJobPage() {
               {/* ── Section 4: Skills ── */}
               <section style={{ padding: '8px 0', position: 'relative', zIndex: 2 }}>
                 <SectionHead num="04" title="Required Skills" sub="Pick from suggestions or add your own — these power matching." />
-                <Field label="Skills" icon={Tag} hint="Enter to add · Backspace removes the last chip">
-                  <SkillsInput skills={skills} onChange={setSkills} />
+                <Field label="Skills" icon={Tag} hint="Enter to add · Backspace removes the last chip" error={fieldErrors.skills}>
+                  <SkillsInput skills={skills} onChange={s => { setSkills(s); if (s.length > 0 && fieldErrors.skills) clearFieldError('skills') }} hasError={!!fieldErrors.skills} />
                 </Field>
               </section>
 
