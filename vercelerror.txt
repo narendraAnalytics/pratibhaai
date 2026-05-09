@@ -1,38 +1,47 @@
-09:24:07.676 Running build in Washington, D.C., USA (East) – iad1
-09:24:07.677 Build machine configuration: 2 cores, 8 GB
-09:24:07.805 Cloning github.com/narendraAnalytics/pratibhaai (Branch: main, Commit: 525898f)
-09:24:08.147 Cloning completed: 341.000ms
-09:24:09.402 Restored build cache from previous deployment (71Bw62D73YSYYKtj3TSzgtztYZmv)
-09:24:09.699 Running "vercel build"
-09:24:10.407 Vercel CLI 53.2.0
-09:24:10.754 Installing dependencies...
-09:24:13.893 
-09:24:13.894 up to date in 3s
-09:24:13.895 
-09:24:13.895 111 packages are looking for funding
-09:24:13.896   run `npm fund` for details
-09:24:13.925 Detected Next.js version: 16.2.5
-09:24:13.930 Running "npm run build"
-09:24:14.033 
-09:24:14.034 > pratibhai@0.1.0 build
-09:24:14.034 > next build
-09:24:14.034 
-09:24:15.543   Applying modifyConfig from Vercel
-09:24:15.559 ▲ Next.js 16.2.5 (Turbopack)
-09:24:15.560 
-09:24:15.563 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
-09:24:15.594   Creating an optimized production build ...
-09:24:28.405 ✓ Compiled successfully in 12.4s
-09:24:28.412   Running TypeScript ...
-09:24:35.669 Failed to type check.
-09:24:35.670 
-09:24:35.670 Type error: Type 'typeof import("/vercel/path0/src/app/api/jobs/[jobId]/candidates/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/jobs/[jobId]/candidates">'.
-09:24:35.670   Types of property 'POST' are incompatible.
-09:24:35.671     Type '(req: NextRequest, { params }: { params: { jobId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ candidates: { id: string; email: string | null; name: string | null; ... 6 more ...; resumeSize: number | null; }[]; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ jobId: string; }>; }) => void | Response | Promise<void | Response>'.
-09:24:35.671       Types of parameters '__1' and 'context' are incompatible.
-09:24:35.671         Type '{ params: Promise<{ jobId: string; }>; }' is not assignable to type '{ params: { jobId: string; }; }'.
-09:24:35.672           Types of property 'params' are incompatible.
-09:24:35.672             Property 'jobId' is missing in type 'Promise<{ jobId: string; }>' but required in type '{ jobId: string; }'.
-09:24:35.672 
-09:24:35.713 Next.js build worker exited with code: 1 and signal: null
-09:24:35.764 Error: Command "npm run build" exited with 1
+12:16:54.233 Running build in Washington, D.C., USA (East) – iad1
+12:16:54.234 Build machine configuration: 2 cores, 8 GB
+12:16:54.348 Cloning github.com/narendraAnalytics/pratibhaai (Branch: main, Commit: 7d6cf8f)
+12:16:54.844 Cloning completed: 496.000ms
+12:16:56.388 Restored build cache from previous deployment (9sTU2ezNYDzWrgJH3N63185L4J98)
+12:16:56.593 Running "vercel build"
+12:16:57.347 Vercel CLI 53.2.0
+12:16:57.609 Installing dependencies...
+12:17:00.899 
+12:17:00.900 up to date in 3s
+12:17:00.901 
+12:17:00.901 111 packages are looking for funding
+12:17:00.902   run `npm fund` for details
+12:17:00.936 Detected Next.js version: 16.2.5
+12:17:00.941 Running "npm run build"
+12:17:01.042 
+12:17:01.042 > pratibhai@0.1.0 build
+12:17:01.042 > next build
+12:17:01.042 
+12:17:01.723   Applying modifyConfig from Vercel
+12:17:01.738 ▲ Next.js 16.2.5 (Turbopack)
+12:17:01.738 
+12:17:01.745 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+12:17:01.770   Creating an optimized production build ...
+12:17:16.082 ✓ Compiled successfully in 14.0s
+12:17:16.093   Running TypeScript ...
+12:17:23.297   Finished TypeScript in 7.2s ...
+12:17:23.301   Collecting page data using 1 worker ...
+12:17:23.952 Warning: Cannot load "@napi-rs/canvas" package: "Error: Cannot find module '@napi-rs/canvas'
+12:17:23.953 Require stack:
+12:17:23.953 - /ROOT/node_modules/pdf-parse/dist/pdf-parse/cjs/index.cjs".
+12:17:23.953 Warning: Cannot polyfill `DOMMatrix`, rendering may be broken.
+12:17:23.953 Warning: Cannot polyfill `ImageData`, rendering may be broken.
+12:17:23.953 Warning: Cannot polyfill `Path2D`, rendering may be broken.
+12:17:23.956 ReferenceError: DOMMatrix is not defined
+12:17:23.957     at module evaluation (.next/server/chunks/[root-of-the-server]__0b6e1ax._.js:539:117830)
+12:17:23.957     at instantiateModule (.next/server/chunks/[turbopack]_runtime.js:853:9)
+12:17:23.957     at getOrInstantiateModuleFromParent (.next/server/chunks/[turbopack]_runtime.js:877:12)
+12:17:23.957     at Context.commonJsRequire [as r] (.next/server/chunks/[turbopack]_runtime.js:302:12)
+12:17:23.957     at <unknown> (.next/server/chunks/[root-of-the-server]__0b6e1ax._.js:544:8271)
+12:17:24.464 
+12:17:24.464 > Build error occurred
+12:17:24.490 Error: Failed to collect page data for /api/run-pipeline
+12:17:24.490     at ignore-listed frames {
+12:17:24.490   type: 'Error'
+12:17:24.490 }
+12:17:24.525 Error: Command "npm run build" exited with 1

@@ -48,8 +48,10 @@ pratibha-ai/                    # Single Next.js monorepo — no separate backen
 │   │   │       ├── new/
 │   │   │       │   └── page.tsx    # Step 1: Job creation form (dark aurora, full-screen z-50)
 │   │   │       └── [jobId]/
-│   │   │           └── upload/
-│   │   │               └── page.tsx  # Step 2: Resume drag-drop upload (dark aurora, full-screen)
+│   │   │           ├── upload/
+│   │   │           │   └── page.tsx  # Step 2: Resume drag-drop upload (dark aurora, full-screen)
+│   │   │           └── screening/
+│   │   │               └── page.tsx  # Step 3: AI Screening progress — 9 agents animated + polling
 │   │   ├── candidates/[id]/        # Individual candidate view (planned)
 │   │   ├── globals.css             # Global styles + design system tokens
 │   │   ├── layout.tsx              # Root layout (fonts: Plus Jakarta Sans, Inter)
@@ -58,8 +60,10 @@ pratibha-ai/                    # Single Next.js monorepo — no separate backen
 │   │       ├── jobs/
 │   │       │   ├── route.ts        # POST /api/jobs — create job, returns { job }
 │   │       │   └── [jobId]/
-│   │       │       └── candidates/
-│   │       │           └── route.ts  # POST /api/jobs/[jobId]/candidates — multipart upload → Neon base64
+│   │       │       ├── candidates/
+│   │       │       │   └── route.ts  # POST /api/jobs/[jobId]/candidates — multipart upload → Neon base64
+│   │       │       └── pipeline-status/
+│   │       │           └── route.ts  # GET — returns { total, screened, isComplete } for polling
 │   │       ├── sync-user/
 │   │       │   └── route.ts        # POST — syncs Clerk user to Neon on login
 │   │       ├── agents/             # All ADK agent files (.ts)
@@ -73,7 +77,8 @@ pratibha-ai/                    # Single Next.js monorepo — no separate backen
 │   │       │   ├── decision-agent.ts
 │   │       │   └── report-generator.ts
 │   │       ├── tools/              # Shared agent tools (GitHub API, PDF parser)
-│   │       └── run-pipeline/       # route.ts — triggers the full agent pipeline
+│   │       └── run-pipeline/
+│   │           └── route.ts        # POST — triggers full 9-agent pipeline; maxDuration=300
 │   ├── components/
 │   │   ├── dashboard/
 │   │   │   ├── Sidebar.tsx         # Left nav — logo, nav links, sign-out
@@ -342,6 +347,53 @@ User clicks "New Job" on dashboard
 | `Removing a style property during rerender (borderColor) when conflicting property is set (border)` | `inputShellStyle` used shorthand `border: '1px solid ...'` while focused override applied `borderColor` | Replaced `border` with `borderWidth + borderStyle + borderColor` longhands everywhere |
 | Autocomplete dropdown hidden behind sections 02–04 | All sections had `position: relative; zIndex: 2`, creating stacking contexts; Section 02+ painted over Section 01's dropdown | Raised Section 01 to `zIndex: 10`; dropdown raised to `zIndex: 200` |
 | Accessibility error — X button in skill chips had no discernible text | `<button>` with only an SVG icon, no text content | Added `aria-label={\`Remove ${skill}\`}` to every chip remove button |
+
+---
+
+## AI Screening Progress — Step 3 (Completed)
+
+### Files Added
+| File | Status | Notes |
+|------|--------|-------|
+| `src/app/dashboard/jobs/[jobId]/screening/page.tsx` | NEW | Full-screen progress screen — 9 agents animated sequentially, polls completion, redirects to dashboard |
+| `src/app/api/jobs/[jobId]/pipeline-status/route.ts` | NEW | GET — returns `{ total, screened, isComplete }` used by polling |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/app/dashboard/jobs/[jobId]/upload/page.tsx` | After upload success: fires `/api/run-pipeline` (fire-and-forget), redirects to `/dashboard/jobs/[jobId]/screening` after 1 s |
+| `src/app/api/run-pipeline/route.ts` | `maxDuration` raised to 300 s; added per-agent `console.log`; added `console.error` in catch block |
+
+### Screening Flow (Step 2 → Step 3 → Dashboard)
+```
+Upload page: candidates inserted → setSuccess(true)
+  → fetch('/api/run-pipeline', { method: 'POST', body: { jobId } }).catch(() => {})  ← fire-and-forget
+  → setTimeout 1 s → router.push('/dashboard/jobs/[jobId]/screening')
+
+Screening page:
+  → Shows 9 agents: Waiting / Running (purple, spinner, pulsing message) / Done (green ✓)
+  → Animation interval: advances one agent every 6 s
+  → Handoff message pill animates between agents (1.8 s fade)
+  → Polling: GET /api/jobs/[jobId]/pipeline-status every 3 s
+      → isComplete = true → all agents snap green → redirect to /dashboard after 2.5 s
+
+pipeline-status route:
+  total    = all candidates for job
+  screened = candidates with status = 'screened'
+  failed   = agentRuns with status = 'failed' AND agentName = 'full-pipeline'
+  isComplete = total > 0 && (screened + failed) >= total
+```
+
+### Step Indicator (top bar across all 3 steps)
+```
+✓ Step 1: Job Details  ·  ✓ Step 2: Resumes  ·  → Step 3: AI Screening
+```
+
+### Errors Encountered & Fixed
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `isComplete` never becomes `true` — candidates stay `pending` | `maxDuration = 60` — Vercel killed the function before all 9 agent calls completed; DB writes never happened | Raised `maxDuration` to 300; added per-agent logging so stall point is visible in server logs |
+| React warning: `background` vs `backgroundClip` shorthand conflict on upload page h1 | `background` shorthand resets `backgroundClip` on re-render | Changed `background:` to `backgroundImage:` (non-shorthand) on the success heading |
 
 ---
 
