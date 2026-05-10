@@ -37,8 +37,9 @@ const cardConfig = [
     label: 'Active Jobs',
     icon: Briefcase,
     color: '#7C3AED',
-    iconBg: 'rgba(124,58,237,0.10)',
-    gradient: 'linear-gradient(135deg, rgba(124,58,237,0.06), rgba(168,85,247,0.03))',
+    accentSoft: 'oklch(0.93 0.05 305)',
+    accentInk: '#4B1F9B',
+    glow: '#7C3AED',
     suffix: '',
     description: 'Open positions',
   },
@@ -46,9 +47,10 @@ const cardConfig = [
     key: 'candidates' as keyof Stats,
     label: 'Candidates Screened',
     icon: Users,
-    color: '#10B981',
-    iconBg: 'rgba(16,185,129,0.10)',
-    gradient: 'linear-gradient(135deg, rgba(16,185,129,0.07), rgba(16,185,129,0.03))',
+    color: 'oklch(0.84 0.07 155)',
+    accentSoft: 'oklch(0.95 0.03 155)',
+    accentInk: 'oklch(0.40 0.08 155)',
+    glow: 'oklch(0.84 0.07 155)',
     suffix: '',
     description: 'AI-evaluated profiles',
   },
@@ -56,9 +58,10 @@ const cardConfig = [
     key: 'avgScore' as keyof Stats,
     label: 'Avg Composite Score',
     icon: BarChart3,
-    color: '#F59E0B',
-    iconBg: 'rgba(245,158,11,0.10)',
-    gradient: 'linear-gradient(135deg, rgba(245,158,11,0.07), rgba(245,158,11,0.03))',
+    color: 'oklch(0.86 0.10 90)',
+    accentSoft: 'oklch(0.96 0.04 85)',
+    accentInk: 'oklch(0.45 0.10 75)',
+    glow: 'oklch(0.86 0.10 90)',
     suffix: '/100',
     description: 'Across all candidates',
   },
@@ -66,13 +69,17 @@ const cardConfig = [
     key: 'reports' as keyof Stats,
     label: 'Reports Generated',
     icon: FileText,
-    color: '#FB7185',
-    iconBg: 'rgba(251,113,133,0.10)',
-    gradient: 'linear-gradient(135deg, rgba(251,113,133,0.07), rgba(251,113,133,0.03))',
+    color: 'oklch(0.86 0.09 55)',
+    accentSoft: 'oklch(0.95 0.04 60)',
+    accentInk: 'oklch(0.42 0.10 45)',
+    glow: 'oklch(0.86 0.09 55)',
     suffix: '',
     description: 'PDF + email delivered',
   },
 ]
+
+const shadowSm = '0 1px 0 oklch(0.88 0.025 75 / .6), 0 2px 6px oklch(0.6 0.05 60 / .04)'
+const shadowHover = '0 1px 0 oklch(0.88 0.025 75 / .6), 0 8px 24px -8px oklch(0.55 0.06 60 / .10)'
 
 export function StatsCards() {
   const [stats, setStats] = useState<Stats>({ jobs: 0, candidates: 0, avgScore: 0, reports: 0 })
@@ -85,38 +92,83 @@ export function StatsCards() {
   }, [])
 
   return (
-    <div className="grid grid-cols-2 xl:grid-cols-4 gap-5">
+    <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
       {cardConfig.map((card, i) => (
         <motion.div
           key={card.key}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 * i, duration: 0.45, ease: 'easeOut' }}
-          whileHover={{ y: -4, boxShadow: '0 16px 40px rgba(124,58,237,0.12)' }}
-          className="rounded-2xl p-5 cursor-default"
+          whileHover={{ y: -2, boxShadow: shadowHover }}
+          className="cursor-default"
           style={{
-            background: card.gradient,
-            border: '1px solid rgba(124,58,237,0.09)',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+            background: 'oklch(0.988 0.008 80)',
+            border: '1px solid oklch(0.88 0.022 75)',
+            borderRadius: 16,
+            padding: 18,
+            boxShadow: shadowSm,
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
-          {/* Icon */}
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-            style={{ background: card.iconBg }}
-          >
-            <card.icon size={20} style={{ color: card.color }} />
+          {/* Glow blob */}
+          <div style={{
+            position: 'absolute',
+            top: '-40%', right: '-40%',
+            width: 220, height: 220,
+            borderRadius: '50%',
+            background: card.glow,
+            opacity: 0.28,
+            filter: 'blur(40px)',
+            pointerEvents: 'none',
+          }} />
+
+          {/* Icon pill */}
+          <div style={{
+            width: 34, height: 34,
+            borderRadius: 10,
+            background: card.accentSoft,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            marginBottom: 14,
+          }}>
+            <card.icon size={16} style={{ color: card.accentInk }} />
           </div>
 
-          {/* Number */}
-          <p className="text-3xl font-bold mb-1" style={{ color: '#1F1035' }}>
-            <CountUp target={stats[card.key]} />
-            <span className="text-base font-normal text-slate-400 ml-1">{card.suffix}</span>
+          {/* Label */}
+          <p style={{
+            fontSize: 12.5,
+            fontWeight: 500,
+            textTransform: 'uppercase',
+            letterSpacing: '.06em',
+            color: 'oklch(0.46 0.025 40)',
+            margin: '0 0 10px',
+          }}>
+            {card.label}
           </p>
 
-          {/* Label */}
-          <p className="text-sm font-semibold text-slate-700">{card.label}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{card.description}</p>
+          {/* Number */}
+          <p style={{
+            fontFamily: 'var(--font-instrument-serif, Georgia, serif)',
+            fontStyle: 'italic',
+            fontSize: 38,
+            fontWeight: 400,
+            color: 'oklch(0.32 0.025 35)',
+            lineHeight: 1,
+            letterSpacing: '-0.02em',
+            margin: 0,
+          }}>
+            <CountUp target={stats[card.key]} />
+            {card.suffix && (
+              <span style={{ fontSize: 16, fontWeight: 400, color: 'oklch(0.62 0.022 50)', marginLeft: 2 }}>
+                {card.suffix}
+              </span>
+            )}
+          </p>
+
+          {/* Description */}
+          <p style={{ fontSize: 12, color: 'oklch(0.62 0.022 50)', margin: '8px 0 0' }}>
+            {card.description}
+          </p>
         </motion.div>
       ))}
     </div>

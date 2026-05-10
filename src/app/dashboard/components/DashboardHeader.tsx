@@ -31,15 +31,9 @@ export function DashboardHeader() {
     >
       {/* Greeting — left */}
       <div className="flex-1">
-        <h1 className="text-xl font-bold text-slate-800">
+        <h1 style={{ fontFamily: 'var(--font-geist-sans, ui-sans-serif)', fontSize: 20, fontWeight: 700, margin: 0, color: '#b37e7e' }}>
           {greeting},{' '}
-          <span
-            style={{
-              background: 'linear-gradient(90deg, #7C3AED, #A855F7)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
+          <span style={{ color: '#b37e7e' }}>
             {firstName}!
           </span>
         </h1>
@@ -63,11 +57,11 @@ export function DashboardHeader() {
           <Sparkles size={15} className="text-white" />
         </motion.div>
         <span
-          className="font-bold text-lg"
           style={{
-            background: 'linear-gradient(90deg, #7C3AED, #A855F7)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+            fontFamily: "var(--font-fira-sans, 'Fira Sans', sans-serif)",
+            fontWeight: 700,
+            fontSize: 18,
+            color: '#d14c4c',
           }}
         >
           Pratibha AI
