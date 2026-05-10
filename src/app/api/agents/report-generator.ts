@@ -272,6 +272,21 @@ const REPORT_SCHEMA = {
     emailSubject: { type: 'string' },
     emailBody: { type: 'string' },
     reportWarnings: { type: 'array', items: { type: 'string' } },
+    resumeSummary: { type: 'string' },
+    nextRecommendedStage: {
+      type: 'string',
+      enum: ['reject', 'manual_review', 'technical_interview', 'hr_round', 'final_round'],
+    },
+    techStackAlignment: {
+      type: 'object',
+      properties: {
+        matched: { type: 'array', items: { type: 'string' } },
+        partial: { type: 'array', items: { type: 'string' } },
+        missing: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['matched', 'partial', 'missing'],
+    },
+    humanOverrideRequired: { type: 'boolean' },
   },
   required: [
     'candidateName', 'jobTitle', 'compositeScore', 'rankLabel', 'recommendation',
@@ -280,6 +295,7 @@ const REPORT_SCHEMA = {
     'recruiterActionRecommendation', 'decisionConfidence', 'reportConfidence',
     'evidenceQuality', 'riskSeverity', 'manualReviewRecommended',
     'interviewQuestions', 'emailSubject', 'emailBody', 'reportWarnings',
+    'resumeSummary', 'nextRecommendedStage', 'techStackAlignment', 'humanOverrideRequired',
   ],
 }
 
@@ -311,6 +327,17 @@ export interface ReportData {
   riskSeverity: 'low' | 'medium' | 'high' | 'critical'
   manualReviewRecommended: boolean
   reportWarnings: string[]
+
+  // ── Enriched recruiter intelligence ────────────────────────────────────────
+  githubUrl: string | null
+  linkedinUrl: string | null
+  matchedSkills: string[]
+  missingSkills: string[]
+  preferredSkillMatches: string[]
+  resumeSummary: string
+  nextRecommendedStage: 'reject' | 'manual_review' | 'technical_interview' | 'hr_round' | 'final_round'
+  techStackAlignment: { matched: string[]; partial: string[]; missing: string[] }
+  humanOverrideRequired: boolean
 }
 
 const REPORT_FALLBACK: ReportData = {
@@ -322,6 +349,11 @@ const REPORT_FALLBACK: ReportData = {
   executiveSummary: '', recruiterActionRecommendation: '',
   decisionConfidence: 0, reportConfidence: 0,
   evidenceQuality: 'low', riskSeverity: 'low', manualReviewRecommended: true, reportWarnings: ['report generation failed'],
+  githubUrl: null, linkedinUrl: null,
+  matchedSkills: [], missingSkills: [], preferredSkillMatches: [],
+  resumeSummary: '', nextRecommendedStage: 'manual_review',
+  techStackAlignment: { matched: [], partial: [], missing: [] },
+  humanOverrideRequired: true,
 }
 
 export async function runReportGenerator(
@@ -333,6 +365,16 @@ export async function runReportGenerator(
   technical: TechnicalValidationResult,
   jobTitle: string,
 ): Promise<WithMeta<ReportData>> {
+  // Compute passthrough fields from inputs — not delegated to AI
+  const matchedSkills = profile.skills.filter(s =>
+    blueprint.requiredSkills.some(r => r.toLowerCase() === s.toLowerCase()))
+  const missingSkills = blueprint.requiredSkills.filter(r =>
+    !profile.skills.some(s => s.toLowerCase() === r.toLowerCase()))
+  const preferredSkillMatches = profile.skills.filter(s =>
+    blueprint.preferredSkills.some(p => p.toLowerCase() === s.toLowerCase()))
+  const githubUrl = profile.githubUrl ?? null
+  const linkedinUrl = profile.linkedinUrl ?? null
+
   const prompt = `${SYSTEM_PROMPT}
 
 --- CANDIDATE ---
@@ -408,5 +450,5 @@ Technical Confidence: ${technical.technicalConfidence}/100`
     warnings: rawResult.reportWarnings ?? [],
   }
   const exec: AgentExecutionState = { status: 'success', fallbackUsed: false, retryCount: 0, executionTimeMs: 0 }
-  return { ...rawResult, meta, exec }
+  return { ...rawResult, matchedSkills, missingSkills, preferredSkillMatches, githubUrl, linkedinUrl, meta, exec }
 }

@@ -1,7 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getOrCreateUser } from '@/lib/auth'
 import { db } from '@/db'
-import { jobs } from '@/db/schema'
+import { jobs, candidates } from '@/db/schema'
+import { eq, count } from 'drizzle-orm'
+
+export async function GET() {
+  try {
+    const user = await getOrCreateUser()
+
+    const rows = await db
+      .select({
+        id: jobs.id,
+        title: jobs.title,
+        status: jobs.status,
+        createdAt: jobs.createdAt,
+        candidateCount: count(candidates.id),
+      })
+      .from(jobs)
+      .leftJoin(candidates, eq(candidates.jobId, jobs.id))
+      .where(eq(jobs.userId, user.id))
+      .groupBy(jobs.id)
+      .orderBy(jobs.createdAt)
+
+    return NextResponse.json({ jobs: rows })
+  } catch (err) {
+    console.error('GET /api/jobs error:', err)
+    return NextResponse.json({ error: 'Failed to fetch jobs' }, { status: 500 })
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {

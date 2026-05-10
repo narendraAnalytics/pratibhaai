@@ -1,25 +1,55 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Briefcase, Plus, Clock } from 'lucide-react'
+import { Briefcase, Plus, Clock, ArrowRight } from 'lucide-react'
 
-// Replaced with real data when jobs exist
-const mockJobs: {
+interface JobRow {
   id: string
   title: string
   status: string
-  candidates: number
   createdAt: string
-}[] = []
+  candidateCount: number
+}
 
 const statusColors: Record<string, { color: string; bg: string }> = {
-  active: { color: '#10B981', bg: 'rgba(16,185,129,0.10)' },
+  active:    { color: '#10B981', bg: 'rgba(16,185,129,0.10)' },
   screening: { color: '#7C3AED', bg: 'rgba(124,58,237,0.10)' },
-  closed: { color: '#94A3B8', bg: 'rgba(148,163,184,0.10)' },
+  closed:    { color: '#94A3B8', bg: 'rgba(148,163,184,0.10)' },
+}
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 export function RecentJobs() {
-  if (mockJobs.length === 0) {
+  const [jobs, setJobs] = useState<JobRow[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/jobs')
+      .then(r => r.json())
+      .then(data => setJobs((data.jobs ?? []).slice().reverse()))
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) {
+    return (
+      <section>
+        <div className="flex items-center gap-2 mb-4">
+          <Clock size={16} className="text-slate-400" />
+          <h2 className="text-base font-semibold text-slate-700">Recent Jobs</h2>
+        </div>
+        <div className="rounded-2xl py-10 flex items-center justify-center"
+          style={{ border: '1px solid rgba(124,58,237,0.09)', background: 'rgba(124,58,237,0.02)' }}>
+          <span className="text-sm text-slate-400">Loading…</span>
+        </div>
+      </section>
+    )
+  }
+
+  if (jobs.length === 0) {
     return (
       <section>
         <div className="flex items-center gap-2 mb-4">
@@ -69,8 +99,8 @@ export function RecentJobs() {
           <Clock size={16} className="text-slate-400" />
           <h2 className="text-base font-semibold text-slate-700">Recent Jobs</h2>
         </div>
-        <a href="/dashboard/jobs" className="text-xs text-violet-600 hover:underline font-medium">
-          View all
+        <a href="/dashboard/jobs/new" className="inline-flex items-center gap-1 text-xs text-violet-600 hover:underline font-medium">
+          <Plus size={13} /> New Job
         </a>
       </div>
 
@@ -78,16 +108,17 @@ export function RecentJobs() {
         className="rounded-2xl overflow-hidden"
         style={{ border: '1px solid rgba(124,58,237,0.10)', background: 'white' }}
       >
-        {mockJobs.map((job, i) => {
+        {jobs.map((job, i) => {
           const s = statusColors[job.status] ?? statusColors.active
           return (
-            <motion.div
+            <motion.a
               key={job.id}
+              href={`/dashboard/jobs/${job.id}/results`}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.06 * i + 0.4 }}
-              className="flex items-center justify-between px-5 py-4 border-b last:border-b-0 hover:bg-violet-50/40 transition-colors cursor-pointer"
-              style={{ borderColor: 'rgba(124,58,237,0.07)' }}
+              className="flex items-center justify-between px-5 py-4 border-b last:border-b-0 hover:bg-violet-50/40 transition-colors cursor-pointer group"
+              style={{ borderColor: 'rgba(124,58,237,0.07)', textDecoration: 'none' }}
             >
               <div className="flex items-center gap-3">
                 <div
@@ -98,19 +129,20 @@ export function RecentJobs() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-slate-800">{job.title}</p>
-                  <p className="text-xs text-slate-400">{job.createdAt}</p>
+                  <p className="text-xs text-slate-400">{formatDate(job.createdAt)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-xs text-slate-500">{job.candidates} candidates</span>
+                <span className="text-xs text-slate-500">{job.candidateCount} candidate{job.candidateCount !== 1 ? 's' : ''}</span>
                 <span
                   className="text-xs font-semibold px-2.5 py-1 rounded-full capitalize"
                   style={{ color: s.color, background: s.bg }}
                 >
                   {job.status}
                 </span>
+                <ArrowRight size={14} className="text-slate-300 group-hover:text-violet-400 transition-colors" />
               </div>
-            </motion.div>
+            </motion.a>
           )
         })}
       </div>
