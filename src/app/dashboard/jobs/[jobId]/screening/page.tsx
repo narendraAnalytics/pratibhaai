@@ -211,7 +211,7 @@ export default function ScreeningPage() {
                 {isComplete ? 'Screening Complete' : 'Agents Running'}
               </span>
             </div>
-            <h1 style={{ margin: '0 0 12px', fontSize: 30, fontWeight: 700, letterSpacing: '-0.5px', color: '#1F1035' }}>
+            <h1 style={{ margin: '0 0 12px', fontSize: 30, fontWeight: 700, letterSpacing: '-0.5px', color: isComplete ? '#065F46' : '#7C3AED' }}>
               {isComplete ? 'Screening Complete' : 'AI Screening in Progress'}
             </h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>

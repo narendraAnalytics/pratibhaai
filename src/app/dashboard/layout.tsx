@@ -1,5 +1,3 @@
-import { Sidebar } from './components/Sidebar'
-
 export default function DashboardLayout({
   children,
 }: {
@@ -7,10 +5,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen" style={{ background: '#FAFAFA' }}>
-      <Sidebar />
-      <div className="ml-64 min-h-screen">
-        {children}
-      </div>
+      {children}
     </div>
   )
 }

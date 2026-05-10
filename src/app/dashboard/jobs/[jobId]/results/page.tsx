@@ -115,7 +115,7 @@ export default function ResultsPage() {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-      <div style={{ fontFamily: "'Fira Sans', ui-sans-serif, system-ui, sans-serif", minHeight: '100vh', background: '#F8F7FF' }}>
+      <div style={{ fontFamily: "'Fira Sans', ui-sans-serif, system-ui, sans-serif", position: 'fixed', inset: 0, zIndex: 50, background: '#F8F7FF', overflowY: 'auto' }}>
 
         {/* Header */}
         <div style={{
@@ -139,7 +139,7 @@ export default function ResultsPage() {
           <div style={{ width: 1, height: 20, background: 'rgba(124,58,237,0.12)' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Users size={16} style={{ color: '#7C3AED' }} />
-            <span style={{ fontWeight: 700, fontSize: 15, color: '#1F1035' }}>
+            <span style={{ fontWeight: 700, fontSize: 15, color: '#6D28D9' }}>
               {jobTitle || 'Screening Results'}
             </span>
           </div>
@@ -167,7 +167,7 @@ export default function ResultsPage() {
               border: '1.5px dashed rgba(124,58,237,0.18)',
             }}>
               <Users size={36} style={{ color: '#C4B5FD', margin: '0 auto 16px' }} />
-              <p style={{ fontWeight: 600, color: '#475569', marginBottom: 8 }}>No results yet</p>
+              <p style={{ fontWeight: 600, color: '#7C3AED', marginBottom: 8 }}>No results yet</p>
               <p style={{ fontSize: 13, color: '#94A3B8' }}>The pipeline is still running or no resumes were uploaded.</p>
             </div>
           )}
@@ -213,7 +213,7 @@ export default function ResultsPage() {
                   <span style={{ fontSize: 12, fontWeight: 700, color: '#C4B5FD' }}>{i + 1}</span>
 
                   <div>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#1F1035', marginBottom: 2 }}>{c.name}</p>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: '#6D28D9', marginBottom: 2 }}>{c.name}</p>
                     {c.email && <p style={{ fontSize: 12, color: '#94A3B8' }}>{c.email}</p>}
                     {c.dashboardSummary && (
                       <p style={{ fontSize: 11, color: '#7C3AED', marginTop: 3, lineHeight: 1.4 }}>{c.dashboardSummary}</p>

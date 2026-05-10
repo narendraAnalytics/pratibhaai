@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Briefcase, Upload, FileBarChart, Sparkles } from 'lucide-react'
+import { Briefcase, Sparkles } from 'lucide-react'
 
 const actions = [
   {
@@ -14,26 +14,6 @@ const actions = [
     href: '/dashboard/jobs/new',
     badge: 'Step 1',
   },
-  {
-    icon: Upload,
-    title: 'Upload Resumes',
-    description: 'Drop PDF/DOCX files and trigger the 10-agent screening pipeline.',
-    color: '#10B981',
-    bg: 'linear-gradient(135deg, rgba(16,185,129,0.09), rgba(16,185,129,0.04))',
-    border: 'rgba(16,185,129,0.14)',
-    href: '/dashboard/candidates/upload',
-    badge: 'Step 2',
-  },
-  {
-    icon: FileBarChart,
-    title: 'View Reports',
-    description: 'Explainable AI scoring, ranked candidates, and generated interview questions.',
-    color: '#F59E0B',
-    bg: 'linear-gradient(135deg, rgba(245,158,11,0.09), rgba(245,158,11,0.04))',
-    border: 'rgba(245,158,11,0.14)',
-    href: '/dashboard/reports',
-    badge: 'Step 3',
-  },
 ]
 
 export function QuickActions() {
@@ -44,7 +24,7 @@ export function QuickActions() {
         <h2 className="text-base font-semibold text-slate-700">Start Hiring</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="flex justify-center">
         {actions.map((action, i) => (
           <motion.a
             key={action.title}
