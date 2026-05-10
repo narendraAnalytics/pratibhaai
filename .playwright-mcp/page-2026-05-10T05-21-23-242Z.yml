@@ -1,0 +1,742 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - banner [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - text: "skip to:"
+          - link "skip to content" [ref=e8] [cursor=pointer]:
+            - /url: "#main"
+            - text: content
+          - link "skip to package search" [ref=e9] [cursor=pointer]:
+            - /url: "#search"
+            - text: package search
+          - link "skip to sign in" [ref=e10] [cursor=pointer]:
+            - /url: "#signin"
+            - text: sign in
+        - generic [ref=e11]:
+          - button "Light mode — click for dark" [ref=e12] [cursor=pointer]:
+            - img [ref=e13]
+          - navigation "Product Navigation" [ref=e15]:
+            - list [ref=e16]:
+              - listitem [ref=e17]:
+                - link "Pro" [ref=e18] [cursor=pointer]:
+                  - /url: /products/pro
+              - listitem [ref=e19]:
+                - link "Teams" [ref=e20] [cursor=pointer]:
+                  - /url: /products/teams
+              - listitem [ref=e21]:
+                - link "Pricing" [ref=e22] [cursor=pointer]:
+                  - /url: /products
+              - listitem [ref=e23]:
+                - link "Documentation" [ref=e24] [cursor=pointer]:
+                  - /url: https://docs.npmjs.com
+      - generic [ref=e26]:
+        - generic [ref=e27]: npm
+        - link "Npm" [ref=e29] [cursor=pointer]:
+          - /url: /
+          - img [ref=e30]
+        - generic [ref=e33]:
+          - generic [ref=e35]:
+            - img [ref=e37]
+            - combobox "Search packages" [ref=e43]
+          - button "Search" [ref=e45]
+        - generic [ref=e47]:
+          - link "Sign Up" [ref=e48] [cursor=pointer]:
+            - /url: /signup
+          - link "Sign In" [ref=e49] [cursor=pointer]:
+            - /url: /login
+    - main [ref=e50]:
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - heading "@google/genai TypeScript icon, indicating that this package has built-in type declarations" [level=1] [ref=e53]:
+            - generic [ref=e54]: "@google/genai"
+            - img "TypeScript icon, indicating that this package has built-in type declarations" [ref=e56]
+          - generic [ref=e57]: 2.0.1 •
+          - generic [ref=e58]: Public
+          - generic [ref=e59]:
+            - text: • Published
+            - time [ref=e60]: a day ago
+        - tablist [ref=e61]:
+          - tab "Readme" [selected] [ref=e62] [cursor=pointer]:
+            - generic [ref=e63]:
+              - img [ref=e64]
+              - text: Readme
+          - tab "Code Beta" [ref=e66] [cursor=pointer]:
+            - generic [ref=e67]:
+              - img [ref=e68]
+              - text: Code
+              - generic [ref=e71]: Beta
+          - tab "4 Dependencies" [ref=e72] [cursor=pointer]:
+            - generic [ref=e73]:
+              - img [ref=e74]
+              - text: 4 Dependencies
+          - tab "1719 Dependents" [ref=e76] [cursor=pointer]:
+            - generic [ref=e77]:
+              - img [ref=e78]
+              - text: 1719 Dependents
+          - tab "75 Versions" [ref=e80] [cursor=pointer]:
+            - generic [ref=e81]:
+              - img [ref=e82]
+              - text: 75 Versions
+        - generic [ref=e85]:
+          - tabpanel "Readme" [ref=e86]:
+            - article [ref=e88]:
+              - generic [ref=e89]:
+                - generic [ref=e90]:
+                  - heading "Google Gen AI SDK for TypeScript and JavaScript" [level=1] [ref=e91]
+                  - 'link "Permalink: Google Gen AI SDK for TypeScript and JavaScript" [ref=e92] [cursor=pointer]':
+                    - /url: "#google-gen-ai-sdk-for-typescript-and-javascript"
+                - paragraph [ref=e93]:
+                  - link "NPM Downloads" [ref=e94] [cursor=pointer]:
+                    - /url: https://www.npmjs.com/package/@google/genai
+                    - img "NPM Downloads" [ref=e95]
+                  - link "Node Current" [ref=e96] [cursor=pointer]:
+                    - /url: https://www.npmjs.com/package/@google/genai
+                    - img "Node Current" [ref=e97]
+                - separator [ref=e98]
+                - paragraph [ref=e99]:
+                  - strong [ref=e100]: "Documentation:"
+                  - link "https://googleapis.github.io/js-genai/" [ref=e101] [cursor=pointer]:
+                    - /url: https://googleapis.github.io/js-genai/
+                - separator [ref=e102]
+                - paragraph [ref=e103]:
+                  - text: The Google Gen AI JavaScript SDK is designed for TypeScript and JavaScript developers to build applications powered by Gemini. The SDK supports both the
+                  - link "Gemini Developer API" [ref=e104] [cursor=pointer]:
+                    - /url: https://ai.google.dev/gemini-api/docs
+                  - text: and
+                  - link "Gemini Enterprise Agent Platform" [ref=e105] [cursor=pointer]:
+                    - /url: https://docs.cloud.google.com/gemini-enterprise-agent-platform
+                  - text: .
+                - paragraph [ref=e106]: The Google Gen AI SDK is designed to work with Gemini 2.0+ features.
+                - blockquote [ref=e107]:
+                  - paragraph [ref=e108]:
+                    - text: "[!CAUTION]"
+                    - strong [ref=e109]: "API Key Security:"
+                    - text: Avoid exposing API keys in client-side code. Use server-side implementations in production environments.
+                - generic [ref=e110]:
+                  - heading "Code Generation" [level=2] [ref=e111]
+                  - 'link "Permalink: Code Generation" [ref=e112] [cursor=pointer]':
+                    - /url: "#code-generation"
+                - paragraph [ref=e113]: Generative models are often unaware of recent API and SDK updates and may suggest outdated or legacy code.
+                - paragraph [ref=e114]:
+                  - text: We recommend using our Code Generation instructions
+                  - link "codegen_instructions.md" [ref=e115] [cursor=pointer]:
+                    - /url: https://raw.githubusercontent.com/googleapis/js-genai/refs/heads/main/codegen_instructions.md
+                    - code [ref=e116]: codegen_instructions.md
+                  - text: when generating Google Gen AI SDK code to guide your model towards using the more recent SDK features. Copy and paste the instructions into your development environment to provide the model with the necessary context.
+                - generic [ref=e117]:
+                  - heading "Prerequisites" [level=2] [ref=e118]
+                  - 'link "Permalink: Prerequisites" [ref=e119] [cursor=pointer]':
+                    - /url: "#prerequisites"
+                - list [ref=e120]:
+                  - listitem [ref=e121]: Node.js version 20 or later
+                - generic [ref=e122]:
+                  - heading "The following are required for Gemini Enterprise Agent Platform users (excluding Vertex AI Studio)" [level=3] [ref=e123]
+                  - 'link "Permalink: The following are required for Gemini Enterprise Agent Platform users (excluding Vertex AI Studio)" [ref=e124] [cursor=pointer]':
+                    - /url: "#the-following-are-required-for-gemini-enterprise-agent-platform-users-excluding-vertex-ai-studio"
+                - list [ref=e125]:
+                  - listitem [ref=e126]:
+                    - paragraph [ref=e127]:
+                      - link "Select" [ref=e128] [cursor=pointer]:
+                        - /url: https://console.cloud.google.com/project
+                      - text: or
+                      - link "create" [ref=e129] [cursor=pointer]:
+                        - /url: https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project
+                      - text: a Google Cloud project.
+                  - listitem [ref=e130]:
+                    - paragraph [ref=e131]:
+                      - link "Enable billing for your project" [ref=e132] [cursor=pointer]:
+                        - /url: https://cloud.google.com/billing/docs/how-to/modify-project
+                      - text: .
+                  - listitem [ref=e133]:
+                    - paragraph [ref=e134]:
+                      - link "Enable the Vertex AI API" [ref=e135] [cursor=pointer]:
+                        - /url: https://console.cloud.google.com/flows/enableapi?apiid=aiplatform.googleapis.com
+                      - text: .
+                  - listitem [ref=e136]:
+                    - paragraph [ref=e137]:
+                      - link "Configure authentication" [ref=e138] [cursor=pointer]:
+                        - /url: https://cloud.google.com/docs/authentication
+                      - text: for your project.
+                    - list [ref=e139]:
+                      - listitem [ref=e140]:
+                        - link "Install the gcloud CLI" [ref=e141] [cursor=pointer]:
+                          - /url: https://cloud.google.com/sdk/docs/install
+                        - text: .
+                      - listitem [ref=e142]:
+                        - link "Initialize the gcloud CLI" [ref=e143] [cursor=pointer]:
+                          - /url: https://cloud.google.com/sdk/docs/initializing
+                        - text: .
+                      - listitem [ref=e144]: "Create local authentication credentials for your user account:"
+                    - generic [ref=e146]: gcloud auth application-default login
+                - paragraph [ref=e147]:
+                  - text: A list of accepted authentication options are listed in
+                  - link "GoogleAuthOptions" [ref=e148] [cursor=pointer]:
+                    - /url: https://github.com/googleapis/google-auth-library-nodejs/blob/3ae120d0a45c95e36c59c9ac8286483938781f30/src/auth/googleauth.ts#L87
+                  - text: interface of google-auth-library-node.js GitHub repo.
+                - generic [ref=e149]:
+                  - heading "Installation" [level=2] [ref=e150]
+                  - 'link "Permalink: Installation" [ref=e151] [cursor=pointer]':
+                    - /url: "#installation"
+                - paragraph [ref=e152]: "To install the SDK, run the following command:"
+                - generic [ref=e154]: npm install @google/genai
+                - generic [ref=e155]:
+                  - heading "Quickstart" [level=2] [ref=e156]
+                  - 'link "Permalink: Quickstart" [ref=e157] [cursor=pointer]':
+                    - /url: "#quickstart"
+                - paragraph [ref=e158]:
+                  - text: The simplest way to get started is to use an API key from
+                  - link "Google AI Studio" [ref=e159] [cursor=pointer]:
+                    - /url: https://aistudio.google.com/apikey
+                  - text: ":"
+                - generic [ref=e161]: "import {GoogleGenAI} from '@google/genai'; const GEMINI_API_KEY = process.env.GEMINI_API_KEY; const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY}); async function main() { const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: 'Why is the sky blue?', }); console.log(response.text); } main();"
+                - generic [ref=e162]:
+                  - heading "Initialization" [level=2] [ref=e163]
+                  - 'link "Permalink: Initialization" [ref=e164] [cursor=pointer]':
+                    - /url: "#initialization"
+                - paragraph [ref=e165]:
+                  - text: The Google Gen AI SDK provides support for both the
+                  - link "Google AI Studio" [ref=e166] [cursor=pointer]:
+                    - /url: https://ai.google.dev/gemini-api/docs
+                  - text: and
+                  - link "Gemini Enterprise Agent Platform" [ref=e167] [cursor=pointer]:
+                    - /url: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/overview
+                  - text: implementations of the Gemini API.
+                - generic [ref=e168]:
+                  - heading "Gemini Developer API" [level=3] [ref=e169]
+                  - 'link "Permalink: Gemini Developer API" [ref=e170] [cursor=pointer]':
+                    - /url: "#gemini-developer-api"
+                - paragraph [ref=e171]:
+                  - text: For server-side applications, initialize using an API key, which can be acquired from
+                  - link "Google AI Studio" [ref=e172] [cursor=pointer]:
+                    - /url: https://aistudio.google.com/apikey
+                  - text: ":"
+                - generic [ref=e174]: "import { GoogleGenAI } from '@google/genai'; const ai = new GoogleGenAI({apiKey: 'GEMINI_API_KEY'});"
+                - generic [ref=e175]:
+                  - heading "Browser" [level=4] [ref=e176]
+                  - 'link "Permalink: Browser" [ref=e177] [cursor=pointer]':
+                    - /url: "#browser"
+                - blockquote [ref=e178]:
+                  - paragraph [ref=e179]:
+                    - text: "[!CAUTION]"
+                    - strong [ref=e180]: "API Key Security:"
+                    - text: Avoid exposing API keys in client-side code. Use server-side implementations in production environments.
+                - paragraph [ref=e181]: "In the browser the initialization code is identical:"
+                - generic [ref=e183]: "import { GoogleGenAI } from '@google/genai'; const ai = new GoogleGenAI({apiKey: 'GEMINI_API_KEY'});"
+                - generic [ref=e184]:
+                  - heading "Gemini Enterprise Agent Platform" [level=3] [ref=e185]
+                  - 'link "Permalink: Gemini Enterprise Agent Platform" [ref=e186] [cursor=pointer]':
+                    - /url: "#gemini-enterprise-agent-platform"
+                - paragraph [ref=e187]: "Sample code for Gemini Enterprise Agent Platform initialization:"
+                - generic [ref=e189]: "import { GoogleGenAI } from '@google/genai'; const ai = new GoogleGenAI({ enterprise: true, project: 'your_project', location: 'your_location', });"
+                - generic [ref=e190]:
+                  - heading "(Optional) (NodeJS only) Using environment variables:" [level=3] [ref=e191]
+                  - 'link "Permalink: (Optional) (NodeJS only) Using environment variables:" [ref=e192] [cursor=pointer]':
+                    - /url: "#optional-nodejs-only-using-environment-variables"
+                - paragraph [ref=e193]: For NodeJS environments, you can create a client by configuring the necessary environment variables. Configuration setup instructions depends on whether you're using the Gemini Developer API or the Gemini Enterprise Agent Platform.
+                - paragraph [ref=e194]:
+                  - strong [ref=e195]: "Gemini Developer API:"
+                  - text: Set
+                  - code [ref=e196]: GOOGLE_API_KEY
+                  - text: "as shown below:"
+                - generic [ref=e198]:
+                  - text: export GOOGLE_API_KEY=
+                  - generic [ref=e199]: "'your-api-key'"
+                - paragraph [ref=e200]:
+                  - strong [ref=e201]: "Gemini Enterprise Agent Platform:"
+                  - text: Set
+                  - code [ref=e202]: GOOGLE_GENAI_USE_ENTERPRISE
+                  - text: ","
+                  - code [ref=e203]: GOOGLE_CLOUD_PROJECT
+                  - text: and
+                  - code [ref=e204]: GOOGLE_CLOUD_LOCATION
+                  - text: ", as shown below:"
+                - generic [ref=e206]:
+                  - text: export GOOGLE_GENAI_USE_ENTERPRISE=true export GOOGLE_CLOUD_PROJECT=
+                  - generic [ref=e207]: "'your-project-id'"
+                  - text: export GOOGLE_CLOUD_LOCATION=
+                  - generic [ref=e208]: "'us-central1'"
+                - generic [ref=e210]: "import {GoogleGenAI} from '@google/genai'; const ai = new GoogleGenAI();"
+                - generic [ref=e211]:
+                  - heading "API Selection" [level=2] [ref=e212]
+                  - 'link "Permalink: API Selection" [ref=e213] [cursor=pointer]':
+                    - /url: "#api-selection"
+                - paragraph [ref=e214]:
+                  - text: By default, the SDK uses the beta API endpoints provided by Google to support preview features in the APIs. The stable API endpoints can be selected by setting the API version to
+                  - code [ref=e215]: v1
+                  - text: .
+                - paragraph [ref=e216]:
+                  - text: To set the API version use
+                  - code [ref=e217]: apiVersion
+                  - text: . For example, to set the API version to
+                  - code [ref=e218]: v1
+                  - text: "for Gemini Enterprise Agent Platform:"
+                - generic [ref=e220]: "const ai = new GoogleGenAI({ enterprise: true, project: 'your_project', location: 'your_location', apiVersion: 'v1' });"
+                - paragraph [ref=e221]:
+                  - text: To set the API version to
+                  - code [ref=e222]: v1alpha
+                  - text: "for the Gemini Developer API:"
+                - generic [ref=e224]: "const ai = new GoogleGenAI({ apiKey: 'GEMINI_API_KEY', apiVersion: 'v1alpha' });"
+                - generic [ref=e225]:
+                  - heading "GoogleGenAI overview" [level=2] [ref=e226]
+                  - 'link "Permalink: GoogleGenAI overview" [ref=e227] [cursor=pointer]':
+                    - /url: "#googlegenai-overview"
+                - paragraph [ref=e228]:
+                  - text: All API features are accessed through an instance of the
+                  - code [ref=e229]: GoogleGenAI
+                  - text: "classes. The submodules bundle together related API methods:"
+                - list [ref=e230]:
+                  - listitem [ref=e231]:
+                    - link "ai.models" [ref=e232] [cursor=pointer]:
+                      - /url: https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html
+                      - code [ref=e233]: ai.models
+                    - text: ": Use"
+                    - code [ref=e234]: models
+                    - text: to query models (
+                    - code [ref=e235]: generateContent
+                    - text: ","
+                    - code [ref=e236]: generateImages
+                    - text: ", ...), or examine their metadata."
+                  - listitem [ref=e237]:
+                    - link "ai.caches" [ref=e238] [cursor=pointer]:
+                      - /url: https://googleapis.github.io/js-genai/release_docs/classes/caches.Caches.html
+                      - code [ref=e239]: ai.caches
+                    - text: ": Create and manage"
+                    - code [ref=e240]: caches
+                    - text: to reduce costs when repeatedly using the same large prompt prefix.
+                  - listitem [ref=e241]:
+                    - link "ai.chats" [ref=e242] [cursor=pointer]:
+                      - /url: https://googleapis.github.io/js-genai/release_docs/classes/chats.Chats.html
+                      - code [ref=e243]: ai.chats
+                    - text: ": Create local stateful"
+                    - code [ref=e244]: chat
+                    - text: objects to simplify multi turn interactions.
+                  - listitem [ref=e245]:
+                    - link "ai.files" [ref=e246] [cursor=pointer]:
+                      - /url: https://googleapis.github.io/js-genai/release_docs/classes/files.Files.html
+                      - code [ref=e247]: ai.files
+                    - text: ": Upload"
+                    - code [ref=e248]: files
+                    - text: to the API and reference them in your prompts. This reduces bandwidth if you use a file many times, and handles files too large to fit inline with your prompt.
+                  - listitem [ref=e249]:
+                    - link "ai.live" [ref=e250] [cursor=pointer]:
+                      - /url: https://googleapis.github.io/js-genai/release_docs/classes/live.Live.html
+                      - code [ref=e251]: ai.live
+                    - text: ": Start a"
+                    - code [ref=e252]: live
+                    - text: session for real time interaction, allows text + audio + video input, and text or audio output.
+                - generic [ref=e253]:
+                  - heading "Samples" [level=2] [ref=e254]
+                  - 'link "Permalink: Samples" [ref=e255] [cursor=pointer]':
+                    - /url: "#samples"
+                - paragraph [ref=e256]:
+                  - text: More samples can be found in the
+                  - link "github samples directory" [ref=e257] [cursor=pointer]:
+                    - /url: https://github.com/googleapis/js-genai/tree/main/sdk-samples
+                  - text: .
+                - generic [ref=e258]:
+                  - heading "Streaming" [level=3] [ref=e259]
+                  - 'link "Permalink: Streaming" [ref=e260] [cursor=pointer]':
+                    - /url: "#streaming"
+                - paragraph [ref=e261]:
+                  - text: For quicker, more responsive API interactions use the
+                  - code [ref=e262]: generateContentStream
+                  - text: "method which yields chunks as they're generated:"
+                - generic [ref=e264]: "import {GoogleGenAI} from '@google/genai'; const GEMINI_API_KEY = process.env.GEMINI_API_KEY; const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY}); async function main() { const response = await ai.models.generateContentStream({ model: 'gemini-2.5-flash', contents: 'Write a 100-word poem.', }); for await (const chunk of response) { console.log(chunk.text); } } main();"
+                - generic [ref=e265]:
+                  - heading "Function Calling" [level=3] [ref=e266]
+                  - 'link "Permalink: Function Calling" [ref=e267] [cursor=pointer]':
+                    - /url: "#function-calling"
+                - paragraph [ref=e268]:
+                  - text: To let Gemini to interact with external systems, you can provide
+                  - code [ref=e269]: functionDeclaration
+                  - text: objects as
+                  - code [ref=e270]: tools
+                  - text: . To use these tools it's a 4 step
+                - list [ref=e271]:
+                  - listitem [ref=e272]:
+                    - strong [ref=e273]: Declare the function name, description, and parametersJsonSchema
+                  - listitem [ref=e274]:
+                    - strong [ref=e275]:
+                      - text: Call
+                      - code [ref=e276]: generateContent
+                      - text: with function calling enabled
+                  - listitem [ref=e277]:
+                    - strong [ref=e278]:
+                      - text: Use the returned
+                      - code [ref=e279]: FunctionCall
+                      - text: parameters to call your actual function
+                  - listitem [ref=e280]:
+                    - strong [ref=e281]:
+                      - text: Send the result back to the model (with history, easier in
+                      - code [ref=e282]: ai.chat
+                      - text: ) as a
+                      - code [ref=e283]: FunctionResponse
+                - generic [ref=e285]: "import {GoogleGenAI, FunctionCallingConfigMode, FunctionDeclaration, Type} from '@google/genai'; const GEMINI_API_KEY = process.env.GEMINI_API_KEY; async function main() { const controlLightDeclaration: FunctionDeclaration = { name: 'controlLight', parametersJsonSchema: { type: 'object', properties:{ brightness: { type:'number', }, colorTemperature: { type:'string', }, }, required: ['brightness', 'colorTemperature'], }, }; const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY}); const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: 'Dim the lights so the room feels cozy and warm.', config: { toolConfig: { functionCallingConfig: { // Force it to call any function mode: FunctionCallingConfigMode.ANY, allowedFunctionNames: ['controlLight'], } }, tools: [{functionDeclarations: [controlLightDeclaration]}] } }); console.log(response.functionCalls); } main();"
+                - generic [ref=e286]:
+                  - heading "Model Context Protocol (MCP) support (experimental)" [level=4] [ref=e287]
+                  - 'link "Permalink: Model Context Protocol (MCP) support (experimental)" [ref=e288] [cursor=pointer]':
+                    - /url: "#model-context-protocol-mcp-support-experimental"
+                - paragraph [ref=e289]:
+                  - text: Built-in
+                  - link "MCP" [ref=e290] [cursor=pointer]:
+                    - /url: https://modelcontextprotocol.io/introduction
+                  - text: support is an experimental feature. You can pass a local MCP server as a tool directly.
+                - generic [ref=e292]:
+                  - text: "import { GoogleGenAI, FunctionCallingConfigMode , mcpToTool} from '@google/genai'; import { Client } from \"@modelcontextprotocol/sdk/client/index.js\"; import { StdioClientTransport } from \"@modelcontextprotocol/sdk/client/stdio.js\"; // Create server parameters for stdio connection const serverParams = new StdioClientTransport({ command: \"npx\", // Executable args: [\"-y\", \"@philschmid/weather-mcp\"] // MCP Server }); const client = new Client( { name: \"example-client\", version: \"1.0.0\" } ); // Configure the client const ai = new GoogleGenAI({}); // Initialize the connection between client and server await client.connect(serverParams); // Send request to the model with MCP tools const response = await ai.models.generateContent({ model: \"gemini-2.5-flash\", contents:"
+                  - generic [ref=e293]:
+                    - text: "`What is the weather in London in"
+                    - generic [ref=e294]: "${new Date().toLocaleDateString()}"
+                    - text: "?`"
+                  - text: ", config: { tools: [mcpToTool(client)], // uses the session, will automatically call the tool using automatic function calling }, }); console.log(response.text); // Close the connection await client.close();"
+                - generic [ref=e295]:
+                  - heading "Generate Content" [level=3] [ref=e296]
+                  - 'link "Permalink: Generate Content" [ref=e297] [cursor=pointer]':
+                    - /url: "#generate-content"
+                - generic [ref=e298]:
+                  - heading "How to structure contents argument for generateContent" [level=4] [ref=e299]:
+                    - text: How to structure
+                    - code [ref=e300]: contents
+                    - text: argument for
+                    - code [ref=e301]: generateContent
+                  - 'link "Permalink: How to structure contents argument for generateContent" [ref=e302] [cursor=pointer]':
+                    - /url: "#how-to-structure-contents-argument-for-generatecontent"
+                - paragraph [ref=e303]:
+                  - text: The SDK allows you to specify the following types in the
+                  - code [ref=e304]: contents
+                  - text: "parameter:"
+                - generic [ref=e305]:
+                  - heading "Content" [level=4] [ref=e306]
+                  - 'link "Permalink: Content" [ref=e307] [cursor=pointer]':
+                    - /url: "#content"
+                - list [ref=e308]:
+                  - listitem [ref=e309]:
+                    - code [ref=e310]: Content
+                    - text: ": The SDK will wrap the singular"
+                    - code [ref=e311]: Content
+                    - text: instance in an array which contains only the given content instance
+                  - listitem [ref=e312]:
+                    - code [ref=e313]: Content[]
+                    - text: ": No transformation happens"
+                - generic [ref=e314]:
+                  - heading "Part" [level=4] [ref=e315]
+                  - 'link "Permalink: Part" [ref=e316] [cursor=pointer]':
+                    - /url: "#part"
+                - paragraph [ref=e317]: Parts will be aggregated on a singular Content, with role 'user'.
+                - list [ref=e318]:
+                  - listitem [ref=e319]:
+                    - code [ref=e320]: Part | string
+                    - text: ": The SDK will wrap the"
+                    - code [ref=e321]: string
+                    - text: or
+                    - code [ref=e322]: Part
+                    - text: in a
+                    - code [ref=e323]: Content
+                    - text: instance with role 'user'.
+                  - listitem [ref=e324]:
+                    - code [ref=e325]: Part[] | string[]
+                    - text: ": The SDK will wrap the full provided list into a single"
+                    - code [ref=e326]: Content
+                    - text: with role 'user'.
+                - paragraph [ref=e327]:
+                  - strong [ref=e328]:
+                    - emphasis [ref=e329]: "NOTE:"
+                  - text: This doesn't apply to
+                  - code [ref=e330]: FunctionCall
+                  - text: and
+                  - code [ref=e331]: FunctionResponse
+                  - text: parts, if you are specifying those, you need to explicitly provide the full
+                  - code [ref=e332]: Content[]
+                  - text: structure making it explicit which Parts are 'spoken' by the model, or the user. The SDK will throw an exception if you try this.
+                - generic [ref=e333]:
+                  - heading "Error Handling" [level=2] [ref=e334]
+                  - 'link "Permalink: Error Handling" [ref=e335] [cursor=pointer]':
+                    - /url: "#error-handling"
+                - paragraph [ref=e336]:
+                  - text: To handle errors raised by the API, the SDK provides this
+                  - link "ApiError" [ref=e337] [cursor=pointer]:
+                    - /url: https://github.com/googleapis/js-genai/blob/main/src/errors.ts
+                  - text: class.
+                - generic [ref=e339]: "import {GoogleGenAI} from '@google/genai'; const GEMINI_API_KEY = process.env.GEMINI_API_KEY; const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY}); async function main() { await ai.models.generateContent({ model: 'non-existent-model', contents: 'Write a 100-word poem.', }).catch((e) => { console.error('error name: ', e.name); console.error('error message: ', e.message); console.error('error status: ', e.status); }); } main();"
+                - generic [ref=e340]:
+                  - heading "Interactions" [level=2] [ref=e341]
+                  - 'link "Permalink: Interactions" [ref=e342] [cursor=pointer]':
+                    - /url: "#interactions"
+                - paragraph [ref=e343]: The Interactions API is a unified interface for interacting with Gemini models and agents. It simplifies state management, tool orchestration, and long-running tasks.
+                - paragraph [ref=e344]:
+                  - text: See the
+                  - link "documentation site" [ref=e345] [cursor=pointer]:
+                    - /url: https://ai.google.dev/gemini-api/docs/interactions
+                  - text: for more details.
+                - generic [ref=e346]:
+                  - heading "Basic Interaction" [level=3] [ref=e347]
+                  - 'link "Permalink: Basic Interaction" [ref=e348] [cursor=pointer]':
+                    - /url: "#basic-interaction"
+                - generic [ref=e350]: "const interaction = await ai.interactions.create({ model: 'gemini-2.5-flash', input: 'Hello, how are you?', }); console.debug(interaction);"
+                - generic [ref=e351]:
+                  - heading "Stateful Conversation" [level=3] [ref=e352]
+                  - 'link "Permalink: Stateful Conversation" [ref=e353] [cursor=pointer]':
+                    - /url: "#stateful-conversation"
+                - paragraph [ref=e354]:
+                  - text: The Interactions API supports server-side state management. You can continue a conversation by referencing the
+                  - code [ref=e355]: previous_interaction_id
+                  - text: .
+                - generic [ref=e357]: "// 1. First turn const interaction1 = await ai.interactions.create({ model: 'gemini-2.5-flash', input: 'Hi, my name is Amir.', }); console.debug(interaction1); // 2. Second turn (passing previous_interaction_id) const interaction2 = await ai.interactions.create({ model: 'gemini-2.5-flash', input: 'What is my name?', previous_interaction_id: interaction1.id, }); console.debug(interaction2);"
+                - generic [ref=e358]:
+                  - heading "Agents (Deep Research)" [level=3] [ref=e359]
+                  - 'link "Permalink: Agents (Deep Research)" [ref=e360] [cursor=pointer]':
+                    - /url: "#agents-deep-research"
+                - paragraph [ref=e361]:
+                  - text: You can use specialized agents like
+                  - code [ref=e362]: deep-research-pro-preview-12-2025
+                  - text: for complex tasks.
+                - generic [ref=e364]:
+                  - text: "function sleep(ms: number): Promise<"
+                  - generic [ref=e365]: void
+                  - text: "> { return new Promise(resolve => setTimeout(resolve, ms)); } // 1. Start the Deep Research Agent const initialInteraction = await ai.interactions.create({ input: 'Research the history of the Google TPUs with a focus on 2025 and 2026.', agent: 'deep-research-pro-preview-12-2025', background: true, }); console.log("
+                  - generic [ref=e366]:
+                    - text: "`Research started. Interaction ID:"
+                    - generic [ref=e367]: "${initialInteraction.id}"
+                    - text: "`"
+                  - text: "); // 2. Poll for results while (true) { const interaction = await ai.interactions.get(initialInteraction.id); console.log("
+                  - generic [ref=e368]:
+                    - text: "`Status:"
+                    - generic [ref=e369]: "${interaction.status}"
+                    - text: "`"
+                  - text: "); if (interaction.status === 'completed') { console.debug('\\nFinal Report:\\n', interaction.outputs); break; } else if (['failed', 'cancelled'].includes(interaction.status)) { console.log("
+                  - generic [ref=e370]:
+                    - text: "`Failed with status:"
+                    - generic [ref=e371]: "${interaction.status}"
+                    - text: "`"
+                  - text: "); break; } await sleep(10000); // Sleep for 10 seconds }"
+                - generic [ref=e372]:
+                  - heading "Multimodal Input" [level=3] [ref=e373]
+                  - 'link "Permalink: Multimodal Input" [ref=e374] [cursor=pointer]':
+                    - /url: "#multimodal-input"
+                - paragraph [ref=e375]: You can provide multimodal data (text, images, audio, etc.) in the input list.
+                - generic [ref=e377]:
+                  - text: import base64 // Assuming you have a base64 string // const base64Image = ...; const interaction = await
+                  - text: "ai.interactions.create({ model: 'gemini-2.5-flash', input: [ { type: 'text', text: 'Describe the image.' }, { type: 'image', data: base64Image, mime_type: 'image/png' }, ], }); console.debug(interaction);"
+                - generic [ref=e378]:
+                  - heading "Function Calling" [level=3] [ref=e379]
+                  - 'link "Permalink: Function Calling" [ref=e380] [cursor=pointer]':
+                    - /url: "#function-calling-1"
+                - paragraph [ref=e381]: You can define custom functions for the model to use. The Interactions API handles the tool selection, and you provide the execution result back to the model.
+                - generic [ref=e383]:
+                  - text: "// 1. Define the tool const getWeather = (location: string) => { /* Gets the weather for a given location. */ return"
+                  - generic [ref=e384]:
+                    - text: "`The weather in"
+                    - generic [ref=e385]: "${location}"
+                    - text: "is sunny.`"
+                  - text: "; }; // 2. Send the request with tools let interaction = await ai.interactions.create({ model: 'gemini-2.5-flash', input: 'What is the weather in Mountain View, CA?', tools: [ { type: 'function', name: 'get_weather', description: 'Gets the weather for a given location.', parameters: { type: 'object', properties: { location: { type: 'string', description: 'The city and state, e.g. San Francisco, CA', }, }, required: ['location'], }, }, ], }); // 3. Handle the tool call for (const output of interaction.outputs!) { if (output.type === 'function_call') { console.log("
+                  - generic [ref=e386]:
+                    - text: "`Tool Call:"
+                    - generic [ref=e387]: "${output.name}"
+                    - text: (
+                    - generic [ref=e388]: "${JSON.stringify(output.arguments)}"
+                    - text: ")`"
+                  - text: "); // Execute your actual function here // Note: ensure arguments match your function signature const result = getWeather(JSON.stringify(output.arguments.location)); // Send result back to the model interaction = await ai.interactions.create({ model: 'gemini-2.5-flash', previous_interaction_id: interaction.id, input: [ { type: 'function_result', name: output.name, call_id: output.id, result: result, }, ], }); console.debug("
+                  - generic [ref=e389]:
+                    - text: "`Response:"
+                    - generic [ref=e390]: "${JSON.stringify(interaction)}"
+                    - text: "`"
+                  - text: "); } }"
+                - generic [ref=e391]:
+                  - heading "Built-in Tools" [level=3] [ref=e392]
+                  - 'link "Permalink: Built-in Tools" [ref=e393] [cursor=pointer]':
+                    - /url: "#built-in-tools"
+                - paragraph [ref=e394]:
+                  - text: You can also use Google's built-in tools, such as
+                  - strong [ref=e395]: Google Search
+                  - text: or
+                  - strong [ref=e396]: Code Execution
+                  - text: .
+                - generic [ref=e397]:
+                  - heading "Grounding with Google Search" [level=4] [ref=e398]
+                  - 'link "Permalink: Grounding with Google Search" [ref=e399] [cursor=pointer]':
+                    - /url: "#grounding-with-google-search"
+                - generic [ref=e401]: "const interaction = await ai.interactions.create({ model: 'gemini-2.5-flash', input: 'Who won the last Super Bowl', tools: [{ type: 'google_search' }], }); console.debug(interaction);"
+                - generic [ref=e402]:
+                  - heading "Code Execution" [level=4] [ref=e403]
+                  - 'link "Permalink: Code Execution" [ref=e404] [cursor=pointer]':
+                    - /url: "#code-execution"
+                - generic [ref=e406]: "const interaction = await ai.interactions.create({ model: 'gemini-2.5-flash', input: 'Calculate the 50th Fibonacci number.', tools: [{ type: 'code_execution' }], }); console.debug(interaction);"
+                - generic [ref=e407]:
+                  - heading "Multimodal Output" [level=3] [ref=e408]
+                  - 'link "Permalink: Multimodal Output" [ref=e409] [cursor=pointer]':
+                    - /url: "#multimodal-output"
+                - paragraph [ref=e410]:
+                  - text: The Interactions API can generate multimodal outputs, such as images. You must specify the
+                  - code [ref=e411]: response_modalities
+                  - text: .
+                - generic [ref=e413]:
+                  - text: "import * as fs from 'fs'; const interaction = await ai.interactions.create({ model: 'gemini-3-pro-image-preview', input: 'Generate an image of a futuristic city.', response_modalities: ['image'], }); for (const output of interaction.outputs!) { if (output.type === 'image') { console.log("
+                  - generic [ref=e414]:
+                    - text: "`Generated image with mime_type:"
+                    - generic [ref=e415]: "${output.mime_type}"
+                    - text: "`"
+                  - text: "); // Save the image fs.writeFileSync( 'generated_city.png', Buffer.from(output.data!, 'base64')); } }"
+                - generic [ref=e416]:
+                  - heading "How is this different from the other Google AI SDKs" [level=2] [ref=e417]
+                  - 'link "Permalink: How is this different from the other Google AI SDKs" [ref=e418] [cursor=pointer]':
+                    - /url: "#how-is-this-different-from-the-other-google-ai-sdks"
+                - paragraph [ref=e419]:
+                  - text: This SDK (
+                  - code [ref=e420]: "@google/genai"
+                  - text: ) is Google Deepmind’s "vanilla" SDK for its generative AI offerings, and is where Google Deepmind adds new AI features.
+                - paragraph [ref=e421]:
+                  - text: Models hosted either on the
+                  - link "Gemini Enterprise Agent Platform" [ref=e422] [cursor=pointer]:
+                    - /url: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/overview
+                  - text: or the
+                  - link "Gemini Developer platform" [ref=e423] [cursor=pointer]:
+                    - /url: https://ai.google.dev/gemini-api/docs
+                  - text: are accessible through this SDK.
+                - paragraph [ref=e424]: Other SDKs may be offering additional AI frameworks on top of this SDK, or may be targeting specific project environments (like Firebase).
+                - paragraph [ref=e425]:
+                  - text: The
+                  - code [ref=e426]: "@google/generative_language"
+                  - text: and
+                  - code [ref=e427]: "@google-cloud/vertexai"
+                  - text: SDKs are previous iterations of this SDK and are no longer receiving new Gemini 2.0+ features.
+            - generic [ref=e428]:
+              - heading "Readme" [level=2] [ref=e429]
+              - heading "Keywords" [level=3] [ref=e430]
+              - text: none
+          - tabpanel
+          - tabpanel
+          - tabpanel "4 Dependencies"
+          - tabpanel "1719 Dependents"
+          - tabpanel "75 Versions"
+        - complementary "Package sidebar" [ref=e431]:
+          - heading "Package Sidebar" [level=2] [ref=e432]
+          - heading "Install" [level=3] [ref=e433]
+          - generic [ref=e434]:
+            - img
+            - paragraph [ref=e435]:
+              - generic [ref=e436]:
+                - code [ref=e437]: npm i @google/genai
+                - button "Copy install command line" [ref=e438] [cursor=pointer]:
+                  - img
+          - generic [ref=e439]:
+            - heading "Repository" [level=3] [ref=e440]
+            - paragraph [ref=e441]:
+              - link "Repository github.com/googleapis/js-genai" [ref=e442] [cursor=pointer]:
+                - /url: https://github.com/googleapis/js-genai
+                - img [ref=e444]
+                - text: github.com/googleapis/js-genai
+          - generic [ref=e447]:
+            - heading "Homepage" [level=3] [ref=e448]
+            - paragraph [ref=e449]:
+              - link "Homepage github.com/googleapis/js-genai#readme" [ref=e450] [cursor=pointer]:
+                - /url: https://github.com/googleapis/js-genai#readme
+                - img [ref=e451]
+                - text: github.com/googleapis/js-genai#readme
+          - button "Showing weekly downloads" [ref=e453]:
+            - heading "Weekly Downloads" [level=3] [ref=e454]:
+              - img [ref=e455]
+              - text: Weekly Downloads
+            - generic [ref=e459]:
+              - img [ref=e460]
+              - paragraph [ref=e465]: 10,414,685
+          - generic [ref=e466]:
+            - heading "Version" [level=3] [ref=e467]
+            - paragraph [ref=e469]: 2.0.1
+          - generic [ref=e470]:
+            - heading "License" [level=3] [ref=e471]
+            - paragraph [ref=e472]: Apache-2.0
+          - generic [ref=e473]:
+            - heading "Last publish" [level=3] [ref=e474]
+            - paragraph [ref=e475]:
+              - time [ref=e476]: a day ago
+          - generic [ref=e477]:
+            - heading "Collaborators" [level=3] [ref=e478]
+            - list "Collaborators" [ref=e479]:
+              - listitem [ref=e480]:
+                - link "google-wombot" [ref=e482] [cursor=pointer]:
+                  - /url: /~google-wombot
+                  - img "google-wombot" [ref=e483]
+              - listitem [ref=e484]:
+                - link "ofrobots" [ref=e486] [cursor=pointer]:
+                  - /url: /~ofrobots
+                  - img "ofrobots" [ref=e487]
+              - listitem [ref=e488]:
+                - link "mrdoob" [ref=e490] [cursor=pointer]:
+                  - /url: /~mrdoob
+                  - img "mrdoob" [ref=e491]
+          - generic [ref=e492]:
+            - link "Analyze security with Socket" [ref=e493] [cursor=pointer]:
+              - /url: https://socket.dev/npm/package/%40google%2Fgenai
+              - img [ref=e494]
+              - strong [ref=e496]: Analyze security
+              - text: with Socket
+            - link "Check bundle size" [ref=e497] [cursor=pointer]:
+              - /url: https://bundlephobia.com/package/%40google%2Fgenai
+              - img [ref=e498]
+              - strong [ref=e500]: Check bundle size
+            - link "View package health" [ref=e501] [cursor=pointer]:
+              - /url: https://snyk.io/advisor/npm-package/%40google%2Fgenai
+              - img [ref=e502]
+              - strong [ref=e504]: View package health
+            - link "Explore dependencies" [ref=e505] [cursor=pointer]:
+              - /url: https://npmgraph.js.org/?q=%40google%2Fgenai
+              - img [ref=e506]
+              - strong [ref=e508]: Explore dependencies
+          - link "Report malware" [ref=e510] [cursor=pointer]:
+            - /url: /support?inquire=security&security-inquire=malware&package=%40google%2Fgenai&version=2.0.1
+            - img [ref=e511]
+            - strong [ref=e513]: Report
+            - text: malware
+    - contentinfo [ref=e514]:
+      - heading "Footer" [level=2] [ref=e515]
+      - generic [ref=e516]:
+        - generic [ref=e517]:
+          - link "Visit npm GitHub page" [ref=e519] [cursor=pointer]:
+            - /url: https://github.com/npm
+            - img [ref=e520]
+          - link "GitHub" [ref=e524] [cursor=pointer]:
+            - /url: https://github.com
+            - img [ref=e525]
+        - generic [ref=e527]:
+          - heading "Support" [level=3] [ref=e528]
+          - list "Support" [ref=e529]:
+            - listitem [ref=e530]:
+              - link "Help" [ref=e531] [cursor=pointer]:
+                - /url: https://docs.npmjs.com
+            - listitem [ref=e532]:
+              - link "Advisories" [ref=e533] [cursor=pointer]:
+                - /url: https://github.com/advisories
+            - listitem [ref=e534]:
+              - link "Status" [ref=e535] [cursor=pointer]:
+                - /url: http://status.npmjs.org/
+            - listitem [ref=e536]:
+              - link "Contact npm" [ref=e537] [cursor=pointer]:
+                - /url: /support
+        - generic [ref=e538]:
+          - heading "Company" [level=3] [ref=e539]
+          - list "Company" [ref=e540]:
+            - listitem [ref=e541]:
+              - link "About" [ref=e542] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e543]:
+              - link "Blog" [ref=e544] [cursor=pointer]:
+                - /url: https://github.blog/tag/npm/
+            - listitem [ref=e545]:
+              - link "Press" [ref=e546] [cursor=pointer]:
+                - /url: /press
+        - generic [ref=e547]:
+          - heading "Terms & Policies" [level=3] [ref=e548]
+          - list "Terms & Policies" [ref=e549]:
+            - listitem [ref=e550]:
+              - link "Policies" [ref=e551] [cursor=pointer]:
+                - /url: /policies/
+            - listitem [ref=e552]:
+              - link "Terms of Use" [ref=e553] [cursor=pointer]:
+                - /url: /policies/terms
+            - listitem [ref=e554]:
+              - link "Code of Conduct" [ref=e555] [cursor=pointer]:
+                - /url: /policies/conduct
+            - listitem [ref=e556]:
+              - link "Privacy" [ref=e557] [cursor=pointer]:
+                - /url: /policies/privacy
+  - generic [ref=e559]: Viewing @google/genai version 2.0.1

@@ -1,0 +1,3 @@
+Ok all agents worked but very is the repost view i want nice reprt view not just the shoaing in the dashbaord 75/100 not correct . I want    nice pdf view repost like what extracted like what hr upload the job ,the candidates name, may be githublink,score ,.so i want all the   
+  in nice details . Not just the dashboard .I want nice view of all the details extract there mailid so hr can know whom to select like     
+  that .

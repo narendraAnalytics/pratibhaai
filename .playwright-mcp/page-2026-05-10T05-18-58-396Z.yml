@@ -1,0 +1,61 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - banner:
+      - generic [ref=e6]:
+        - text: menu
+        - link "Google AI for Developers" [ref=e8] [cursor=pointer]:
+          - /url: /
+          - img "Google AI for Developers" [ref=e10]
+        - generic [ref=e11]:
+          - navigation "Upper tabs" [ref=e14]:
+            - button "arrow_drop_down Models" [ref=e16] [cursor=pointer]
+            - generic [ref=e17]:
+              - button "Dropdown menu for Extended Navigation" [ref=e18] [cursor=pointer]: arrow_drop_down More
+              - text: arrow_drop_down arrow_drop_down arrow_drop_down
+          - generic [ref=e19]:
+            - generic:
+              - generic:
+                - generic:
+                  - combobox "Search"
+                  - generic:
+                    - img
+                  - generic: /
+        - generic [ref=e20]:
+          - button "Appearance:" [ref=e21] [cursor=pointer]: light_mode
+          - text: light_mode dark_mode brightness_medium
+        - generic "Select your language preference." [ref=e22]:
+          - button "Language" [ref=e23] [cursor=pointer]:
+            - img
+            - generic [ref=e24]: Language
+            - img
+    - text: filter_list close close arrow_forward arrow_forward arrow_forward arrow_forward chevron_left
+    - generic [ref=e26]:
+      - main [ref=e27]:
+        - article [ref=e29]:
+          - article [ref=e30]:
+            - generic [ref=e32]:
+              - heading "404" [level=3] [ref=e33]
+              - generic [ref=e34]: Sorry, we couldn't find that page.
+              - generic [ref=e38]:
+                - combobox "Search" [ref=e39]
+                - generic [ref=e40]: search
+                - generic [ref=e41]: /
+      - generic:
+        - navigation "Footer links"
+      - navigation "Utility links" [ref=e45]:
+        - list [ref=e46]:
+          - listitem [ref=e47]:
+            - link "Terms" [ref=e48] [cursor=pointer]:
+              - /url: //policies.google.com/terms
+          - listitem [ref=e49]:
+            - text: "|"
+            - link "Privacy" [ref=e50] [cursor=pointer]:
+              - /url: //policies.google.com/privacy
+          - text: "|"
+        - generic "Select your language preference." [ref=e51]:
+          - button "Language" [ref=e52] [cursor=pointer]:
+            - img
+            - generic [ref=e53]: Language
+            - img

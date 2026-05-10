@@ -1,0 +1,816 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - banner:
+      - generic:
+        - generic [ref=e6]:
+          - text: menu
+          - generic [ref=e7]:
+            - link "Gemini API" [ref=e8] [cursor=pointer]:
+              - /url: /
+              - img "Gemini API" [ref=e10]
+            - generic:
+              - list:
+                - listitem
+          - generic [ref=e15]:
+            - combobox "Search" [ref=e16]
+            - img [ref=e18]
+            - generic [ref=e21]: /
+          - generic [ref=e22]:
+            - button "Appearance:" [ref=e23] [cursor=pointer]: light_mode
+            - text: light_mode dark_mode brightness_medium
+          - generic "Select your language preference." [ref=e24]:
+            - button "Language" [ref=e25] [cursor=pointer]:
+              - img
+              - generic [ref=e26]: Language
+              - img
+          - link "Get API key" [ref=e27] [cursor=pointer]:
+            - /url: https://aistudio.google.com/apikey
+          - link "Cookbook" [ref=e28] [cursor=pointer]:
+            - /url: https://github.com/google-gemini/cookbook
+          - link "Community" [ref=e29] [cursor=pointer]:
+            - /url: https://discuss.ai.google.dev/c/gemini-api/
+          - link "Sign in" [ref=e32] [cursor=pointer]:
+            - /url: https://ai.google.dev/_d/signin?continue=https%3A%2F%2Fai.google.dev%2Fgemini-api%2Fdocs%2Fmodels&prompt=select_account
+        - navigation "Lower tabs" [ref=e37]:
+          - link "Docs, selected" [ref=e39] [cursor=pointer]:
+            - /url: https://ai.google.dev/gemini-api/docs
+            - text: Docs
+          - link "API reference" [ref=e41] [cursor=pointer]:
+            - /url: https://ai.google.dev/api
+          - text: arrow_drop_down
+    - generic [ref=e43]:
+      - text: filter_list close
+      - navigation "Side menu" [ref=e44]:
+        - text: arrow_back
+        - list [ref=e47]:
+          - listitem [ref=e48]:
+            - generic [ref=e50]: Get started
+          - listitem [ref=e51]:
+            - link "Overview" [ref=e52] [cursor=pointer]:
+              - /url: /gemini-api/docs
+              - generic [ref=e53]: Overview
+          - listitem [ref=e54]:
+            - link "Quickstart" [ref=e55] [cursor=pointer]:
+              - /url: /gemini-api/docs/quickstart
+              - generic [ref=e56]: Quickstart
+          - listitem [ref=e57]:
+            - link "API keys" [ref=e58] [cursor=pointer]:
+              - /url: /gemini-api/docs/api-key
+              - generic [ref=e59]: API keys
+          - listitem [ref=e60]:
+            - link "Libraries" [ref=e61] [cursor=pointer]:
+              - /url: /gemini-api/docs/libraries
+              - generic [ref=e62]: Libraries
+          - listitem [ref=e63]:
+            - link "Pricing" [ref=e64] [cursor=pointer]:
+              - /url: /gemini-api/docs/pricing
+              - generic [ref=e65]: Pricing
+          - listitem [ref=e66]:
+            - link "Interactions API" [ref=e67] [cursor=pointer]:
+              - /url: /gemini-api/docs/interactions
+              - generic [ref=e68]: Interactions API
+          - listitem [ref=e70]:
+            - link "Coding agent setup" [ref=e71] [cursor=pointer]:
+              - /url: /gemini-api/docs/coding-agents
+              - generic [ref=e72]: Coding agent setup
+          - listitem [ref=e73]:
+            - generic [ref=e75]: Models
+          - listitem [ref=e76]:
+            - link "All models" [ref=e77] [cursor=pointer]:
+              - /url: /gemini-api/docs/models
+              - generic [ref=e78]: All models
+          - listitem [ref=e79]:
+            - link "Gemini 3" [ref=e80] [cursor=pointer]:
+              - /url: /gemini-api/docs/gemini-3
+              - generic [ref=e81]: Gemini 3
+          - listitem [ref=e83]:
+            - link "Nano Banana" [ref=e84] [cursor=pointer]:
+              - /url: /gemini-api/docs/image-generation
+              - generic [ref=e85]: Nano Banana
+          - listitem [ref=e86]:
+            - link "Veo" [ref=e87] [cursor=pointer]:
+              - /url: /gemini-api/docs/video
+              - generic [ref=e88]: Veo
+          - listitem [ref=e89]:
+            - link "Lyria 3" [ref=e90] [cursor=pointer]:
+              - /url: /gemini-api/docs/music-generation
+              - generic [ref=e91]: Lyria 3
+          - listitem [ref=e93]:
+            - link "Lyria RealTime" [ref=e94] [cursor=pointer]:
+              - /url: /gemini-api/docs/realtime-music-generation
+              - generic [ref=e95]:
+                - text: Lyria Real
+                - text: Time
+          - listitem [ref=e96]:
+            - link "Imagen" [ref=e97] [cursor=pointer]:
+              - /url: /gemini-api/docs/imagen
+              - generic [ref=e98]: Imagen
+          - listitem [ref=e99]:
+            - link "Text-to-speech" [ref=e100] [cursor=pointer]:
+              - /url: /gemini-api/docs/speech-generation
+              - generic [ref=e101]: Text-to-speech
+          - listitem [ref=e102]:
+            - link "Embeddings" [ref=e103] [cursor=pointer]:
+              - /url: /gemini-api/docs/embeddings
+              - generic [ref=e104]: Embeddings
+          - listitem [ref=e105]:
+            - link "Robotics" [ref=e106] [cursor=pointer]:
+              - /url: /gemini-api/docs/robotics-overview
+              - generic [ref=e107]: Robotics
+          - listitem [ref=e109]:
+            - generic [ref=e111]: Core capabilities
+          - listitem [ref=e112]:
+            - link "Text" [ref=e113] [cursor=pointer]:
+              - /url: /gemini-api/docs/text-generation
+              - generic [ref=e114]: Text
+          - listitem [ref=e115]:
+            - generic [ref=e116]:
+              - text: arrow_drop_down
+              - button "Image " [ref=e117] [cursor=pointer]:
+                - generic [ref=e118]: Image
+                - text: 
+          - listitem [ref=e119]:
+            - generic [ref=e120]:
+              - text: arrow_drop_down
+              - button "Video " [ref=e121] [cursor=pointer]:
+                - generic [ref=e122]: Video
+                - text: 
+          - listitem [ref=e123]:
+            - link "Documents" [ref=e124] [cursor=pointer]:
+              - /url: /gemini-api/docs/document-processing
+              - generic [ref=e125]: Documents
+          - listitem [ref=e126]:
+            - generic [ref=e127]:
+              - text: arrow_drop_down
+              - button "Speech and audio " [ref=e128] [cursor=pointer]:
+                - generic [ref=e129]: Speech and audio
+                - text: 
+          - listitem [ref=e130]:
+            - generic [ref=e131]:
+              - text: arrow_drop_down
+              - button "Thinking " [ref=e132] [cursor=pointer]:
+                - generic [ref=e133]: Thinking
+                - text: 
+          - listitem [ref=e134]:
+            - link "Structured outputs" [ref=e135] [cursor=pointer]:
+              - /url: /gemini-api/docs/structured-output
+              - generic [ref=e136]: Structured outputs
+          - listitem [ref=e137]:
+            - link "Function calling" [ref=e138] [cursor=pointer]:
+              - /url: /gemini-api/docs/function-calling
+              - generic [ref=e139]: Function calling
+          - listitem [ref=e140]:
+            - link "Long context" [ref=e141] [cursor=pointer]:
+              - /url: /gemini-api/docs/long-context
+              - generic [ref=e142]: Long context
+          - listitem [ref=e143]:
+            - generic [ref=e145]: Agents
+          - listitem [ref=e146]:
+            - link "Overview" [ref=e147] [cursor=pointer]:
+              - /url: /gemini-api/docs/agents
+              - generic [ref=e148]: Overview
+          - listitem [ref=e149]:
+            - link "Deep Research Agent" [ref=e150] [cursor=pointer]:
+              - /url: /gemini-api/docs/deep-research
+              - generic [ref=e151]: Deep Research Agent
+          - listitem [ref=e153]:
+            - generic [ref=e155]: Tools
+          - listitem [ref=e156]:
+            - link "Overview" [ref=e157] [cursor=pointer]:
+              - /url: /gemini-api/docs/tools
+              - generic [ref=e158]: Overview
+          - listitem [ref=e159]:
+            - link "Google Search" [ref=e160] [cursor=pointer]:
+              - /url: /gemini-api/docs/google-search
+              - generic [ref=e161]: Google Search
+          - listitem [ref=e162]:
+            - link "Google Maps" [ref=e163] [cursor=pointer]:
+              - /url: /gemini-api/docs/maps-grounding
+              - generic [ref=e164]: Google Maps
+          - listitem [ref=e165]:
+            - link "Code execution" [ref=e166] [cursor=pointer]:
+              - /url: /gemini-api/docs/code-execution
+              - generic [ref=e167]: Code execution
+          - listitem [ref=e168]:
+            - link "URL context" [ref=e169] [cursor=pointer]:
+              - /url: /gemini-api/docs/url-context
+              - generic [ref=e170]: URL context
+          - listitem [ref=e171]:
+            - link "Computer Use" [ref=e172] [cursor=pointer]:
+              - /url: /gemini-api/docs/computer-use
+              - generic [ref=e173]: Computer Use
+          - listitem [ref=e175]:
+            - link "File Search" [ref=e176] [cursor=pointer]:
+              - /url: /gemini-api/docs/file-search
+              - generic [ref=e177]: File Search
+          - listitem [ref=e178]:
+            - link "Combine Tools and Function calling" [ref=e179] [cursor=pointer]:
+              - /url: /gemini-api/docs/tool-combination
+              - generic [ref=e180]: Combine Tools and Function calling
+          - listitem [ref=e182]:
+            - generic [ref=e184]: Live API
+          - listitem [ref=e185]:
+            - link "Overview" [ref=e186] [cursor=pointer]:
+              - /url: /gemini-api/docs/live-api
+              - generic [ref=e187]: Overview
+          - listitem [ref=e188]:
+            - generic [ref=e189]:
+              - text: arrow_drop_down
+              - button "Get started " [ref=e190] [cursor=pointer]:
+                - generic [ref=e191]: Get started
+                - text: 
+          - listitem [ref=e192]:
+            - link "Capabilities" [ref=e193] [cursor=pointer]:
+              - /url: /gemini-api/docs/live-api/capabilities
+              - generic [ref=e194]: Capabilities
+          - listitem [ref=e195]:
+            - link "Tool use" [ref=e196] [cursor=pointer]:
+              - /url: /gemini-api/docs/live-api/tools
+              - generic [ref=e197]: Tool use
+          - listitem [ref=e198]:
+            - link "Session management" [ref=e199] [cursor=pointer]:
+              - /url: /gemini-api/docs/live-api/session-management
+              - generic [ref=e200]: Session management
+          - listitem [ref=e201]:
+            - link "Ephemeral tokens" [ref=e202] [cursor=pointer]:
+              - /url: /gemini-api/docs/live-api/ephemeral-tokens
+              - generic [ref=e203]: Ephemeral tokens
+          - listitem [ref=e204]:
+            - link "Best practices" [ref=e205] [cursor=pointer]:
+              - /url: /gemini-api/docs/live-api/best-practices
+              - generic [ref=e206]: Best practices
+          - listitem [ref=e207]:
+            - generic [ref=e209]: Optimization
+          - listitem [ref=e210]:
+            - link "Overview" [ref=e211] [cursor=pointer]:
+              - /url: /gemini-api/docs/optimization
+              - generic [ref=e212]: Overview
+          - listitem [ref=e213]:
+            - link "Batch API" [ref=e214] [cursor=pointer]:
+              - /url: /gemini-api/docs/batch-api
+              - generic [ref=e215]: Batch API
+          - listitem [ref=e216]:
+            - link "Webhooks" [ref=e217] [cursor=pointer]:
+              - /url: /gemini-api/docs/webhooks
+              - generic [ref=e218]: Webhooks
+          - listitem [ref=e220]:
+            - link "Flex inference" [ref=e221] [cursor=pointer]:
+              - /url: /gemini-api/docs/flex-inference
+              - generic [ref=e222]: Flex inference
+          - listitem [ref=e224]:
+            - link "Priority inference" [ref=e225] [cursor=pointer]:
+              - /url: /gemini-api/docs/priority-inference
+              - generic [ref=e226]: Priority inference
+          - listitem [ref=e228]:
+            - link "Context caching" [ref=e229] [cursor=pointer]:
+              - /url: /gemini-api/docs/caching
+              - generic [ref=e230]: Context caching
+          - listitem [ref=e231]:
+            - generic [ref=e233]: Guides
+          - listitem [ref=e234]:
+            - generic [ref=e235]:
+              - text: arrow_drop_down
+              - button "File input " [ref=e236] [cursor=pointer]:
+                - generic [ref=e237]: File input
+                - text: 
+          - listitem [ref=e238]:
+            - link "OpenAI compatibility" [ref=e239] [cursor=pointer]:
+              - /url: /gemini-api/docs/openai
+              - generic [ref=e240]: OpenAI compatibility
+          - listitem [ref=e241]:
+            - link "Media resolution" [ref=e242] [cursor=pointer]:
+              - /url: /gemini-api/docs/media-resolution
+              - generic [ref=e243]: Media resolution
+          - listitem [ref=e244]:
+            - link "Token counting" [ref=e245] [cursor=pointer]:
+              - /url: /gemini-api/docs/tokens
+              - generic [ref=e246]: Token counting
+          - listitem [ref=e247]:
+            - link "Prompt engineering" [ref=e248] [cursor=pointer]:
+              - /url: /gemini-api/docs/prompting-strategies
+              - generic [ref=e249]: Prompt engineering
+          - listitem [ref=e250]:
+            - generic [ref=e251]:
+              - text: arrow_drop_down
+              - button "Logs and datasets " [ref=e252] [cursor=pointer]:
+                - generic [ref=e253]: Logs and datasets
+                - text: 
+          - listitem [ref=e254]:
+            - generic [ref=e255]:
+              - text: arrow_drop_down
+              - button "Safety " [ref=e256] [cursor=pointer]:
+                - generic [ref=e257]: Safety
+                - text: 
+          - listitem [ref=e258]:
+            - generic [ref=e259]:
+              - text: arrow_drop_down
+              - button "Frameworks " [ref=e260] [cursor=pointer]:
+                - generic [ref=e261]: Frameworks
+                - text: 
+          - listitem [ref=e262]:
+            - generic [ref=e264]: Resources
+          - listitem [ref=e265]:
+            - link "Release notes" [ref=e266] [cursor=pointer]:
+              - /url: /gemini-api/docs/changelog
+              - generic [ref=e267]: Release notes
+          - listitem [ref=e268]:
+            - link "Deprecations" [ref=e269] [cursor=pointer]:
+              - /url: /gemini-api/docs/deprecations
+              - generic [ref=e270]: Deprecations
+          - listitem [ref=e271]:
+            - generic [ref=e272]:
+              - text: arrow_drop_down
+              - button "Migration " [ref=e273] [cursor=pointer]:
+                - generic [ref=e274]: Migration
+                - text: 
+          - listitem [ref=e275]:
+            - link "Rate limits" [ref=e276] [cursor=pointer]:
+              - /url: /gemini-api/docs/rate-limits
+              - generic [ref=e277]: Rate limits
+          - listitem [ref=e278]:
+            - link "Billing info" [ref=e279] [cursor=pointer]:
+              - /url: /gemini-api/docs/billing
+              - generic [ref=e280]: Billing info
+          - listitem [ref=e281]:
+            - link "API troubleshooting" [ref=e282] [cursor=pointer]:
+              - /url: /gemini-api/docs/troubleshooting
+              - generic [ref=e283]: API troubleshooting
+          - listitem [ref=e284]:
+            - link "Status" [ref=e285] [cursor=pointer]:
+              - /url: https://aistudio.google.com/status
+              - generic [ref=e286]: Status
+              - generic [ref=e287]: open_in_new
+          - listitem [ref=e288]:
+            - link "Partner and library integrations" [ref=e289] [cursor=pointer]:
+              - /url: /gemini-api/docs/partner-integration
+              - generic [ref=e290]: Partner and library integrations
+          - listitem [ref=e291]:
+            - generic [ref=e292]:
+              - text: arrow_drop_down
+              - button "Google AI Studio " [ref=e293] [cursor=pointer]:
+                - generic [ref=e294]: Google AI Studio
+                - text: 
+          - listitem [ref=e295]:
+            - generic [ref=e296]:
+              - text: arrow_drop_down
+              - button "Google Cloud Platform " [ref=e297] [cursor=pointer]:
+                - generic [ref=e298]: Google Cloud Platform
+                - text: 
+          - listitem [ref=e299]:
+            - generic [ref=e301]: Policies
+          - listitem [ref=e302]:
+            - link "Terms of service" [ref=e303] [cursor=pointer]:
+              - /url: /gemini-api/terms
+              - generic [ref=e304]: Terms of service
+          - listitem [ref=e305]:
+            - link "Available regions" [ref=e306] [cursor=pointer]:
+              - /url: /gemini-api/docs/available-regions
+              - generic [ref=e307]: Available regions
+          - listitem [ref=e308]:
+            - link "Abuse monitoring" [ref=e309] [cursor=pointer]:
+              - /url: /gemini-api/docs/usage-policies
+              - generic [ref=e310]: Abuse monitoring
+          - listitem [ref=e311]:
+            - link "Feedback information" [ref=e312] [cursor=pointer]:
+              - /url: /gemini-api/docs/feedback-policies
+              - generic [ref=e313]: Feedback information
+    - button "Hide side navigation" [expanded] [ref=e314] [cursor=pointer]:
+      - generic [ref=e315]: chevron_left
+    - generic [ref=e316]:
+      - main [ref=e317]:
+        - generic [ref=e318]:
+          - article [ref=e319]:
+            - generic [ref=e322]:
+              - link "Gemini Deep Research" [ref=e323] [cursor=pointer]:
+                - /url: /gemini-api/docs/deep-research
+              - text: is now available in preview with collaborative planning, visualization, MCP support, and more.
+            - navigation [ref=e324]:
+              - list "Breadcrumb" [ref=e325]:
+                - listitem [ref=e326]:
+                  - link "Home" [ref=e327] [cursor=pointer]:
+                    - /url: https://ai.google.dev/
+                - listitem [ref=e328]:
+                  - generic [ref=e329]: chevron_right
+                  - link "Gemini API" [ref=e330] [cursor=pointer]:
+                    - /url: https://ai.google.dev/gemini-api
+                - listitem [ref=e331]:
+                  - generic [ref=e332]: chevron_right
+                  - link "Docs" [ref=e333] [cursor=pointer]:
+                    - /url: https://ai.google.dev/gemini-api/docs
+            - heading "Models LLM Tools" [level=1] [ref=e334]:
+              - text: Models
+              - group "LLM Tools" [ref=e337]:
+                - button "Copy page as markdown" [ref=e339] [cursor=pointer]:
+                  - generic [ref=e340]: content_copy
+                - button "More LLM Tools options" [ref=e343] [cursor=pointer]: arrow_drop_down
+            - text: expand_more more_horiz
+            - generic [ref=e344]:
+              - paragraph
+              - paragraph
+              - complementary [ref=e345]:
+                - paragraph [ref=e346]:
+                  - text: We have updated our
+                  - link "Terms of Service" [ref=e347] [cursor=pointer]:
+                    - /url: https://ai.google.dev/gemini-api/terms
+                  - text: .
+              - separator [ref=e348]
+              - 'heading "Gemini 3 Copy link to this section: Gemini 3" [level=2] [ref=e349]':
+                - heading "Gemini 3" [level=2] [ref=e350]
+                - 'button "Copy link to this section: Gemini 3" [ref=e351] [cursor=pointer]': link
+              - generic [ref=e352]:
+                - link "Gemini 3.1 Pro Advanced intelligence, complex problem-solving skills, and powerful agentic and vibe coding capabilities. Preview" [ref=e353] [cursor=pointer]:
+                  - /url: /gemini-api/docs/models/gemini-3.1-pro-preview
+                  - generic [ref=e354]:
+                    - generic [ref=e355]: auto_awesome
+                    - heading "Gemini 3.1 Pro" [level=3] [ref=e356]:
+                      - text: Gemini 3.
+                      - text: 1 Pro
+                  - paragraph [ref=e357]: Advanced intelligence, complex problem-solving skills, and powerful agentic and vibe coding capabilities.
+                  - paragraph [ref=e358]: Preview
+                - link "Gemini 3 Flash Frontier-class performance rivaling larger models at a fraction of the cost. Preview" [ref=e359] [cursor=pointer]:
+                  - /url: /gemini-api/docs/models/gemini-3-flash-preview
+                  - generic [ref=e360]:
+                    - generic [ref=e361]: spark
+                    - heading "Gemini 3 Flash" [level=3] [ref=e362]
+                  - paragraph [ref=e363]: Frontier-class performance rivaling larger models at a fraction of the cost.
+                  - paragraph [ref=e364]: Preview
+                - link "Gemini 3.1 Flash-Lite Frontier-class performance rivaling larger models at a fraction of the cost. Stable" [ref=e365] [cursor=pointer]:
+                  - /url: /gemini-api/docs/models/gemini-3.1-flash-lite
+                  - generic [ref=e366]:
+                    - generic [ref=e367]: bolt
+                    - heading "Gemini 3.1 Flash-Lite" [level=3] [ref=e368]:
+                      - text: Gemini 3.
+                      - text: 1 Flash-Lite
+                  - paragraph [ref=e369]: Frontier-class performance rivaling larger models at a fraction of the cost.
+                  - paragraph [ref=e370]: Stable
+                - link "Gemini 3.1 Flash-Lite Frontier-class performance rivaling larger models at a fraction of the cost. Preview" [ref=e371] [cursor=pointer]:
+                  - /url: /gemini-api/docs/models/gemini-3.1-flash-lite-preview
+                  - generic [ref=e372]:
+                    - generic [ref=e373]: bolt
+                    - heading "Gemini 3.1 Flash-Lite" [level=3] [ref=e374]:
+                      - text: Gemini 3.
+                      - text: 1 Flash-Lite
+                  - paragraph [ref=e375]: Frontier-class performance rivaling larger models at a fraction of the cost.
+                  - paragraph [ref=e376]: Preview
+                - link "Nano Banana 2 Powerful, high-efficiency image generation and editing, optimized for speed and high-volume use cases. Preview" [ref=e377] [cursor=pointer]:
+                  - /url: /gemini-api/docs/models/gemini-3.1-flash-image-preview
+                  - generic [ref=e378]:
+                    - generic [ref=e379]: 🍌🍌
+                    - heading "Nano Banana 2" [level=3] [ref=e380]
+                  - paragraph [ref=e381]: Powerful, high-efficiency image generation and editing, optimized for speed and high-volume use cases.
+                  - paragraph [ref=e382]: Preview
+                - link "Nano Banana Pro State-of-the-art image generation and editing models for highly contextual native image creation. Preview" [ref=e383] [cursor=pointer]:
+                  - /url: /gemini-api/docs/models/gemini-3-pro-image-preview
+                  - generic [ref=e384]:
+                    - generic [ref=e385]: 🍌
+                    - heading "Nano Banana Pro" [level=3] [ref=e386]
+                  - paragraph [ref=e387]: State-of-the-art image generation and editing models for highly contextual native image creation.
+                  - paragraph [ref=e388]: Preview
+                - link "Gemini 3.1 Flash Live High-quality, low-latency Live API model for real-time dialogue and voice-first AI applications. New Preview" [ref=e389] [cursor=pointer]:
+                  - /url: /gemini-api/docs/models/gemini-3.1-flash-live-preview
+                  - generic [ref=e390]:
+                    - generic [ref=e391]: settings_voice
+                    - heading "Gemini 3.1 Flash Live" [level=3] [ref=e392]
+                  - paragraph [ref=e393]: High-quality, low-latency Live API model for real-time dialogue and voice-first AI applications.
+                  - paragraph [ref=e394]:
+                    - generic [ref=e395]: New
+                    - text: Preview
+                - link "Gemini 3.1 Flash TTS Powerful, low-latency speech generation. New Preview" [ref=e396] [cursor=pointer]:
+                  - /url: /gemini-api/docs/models/gemini-3.1-flash-tts-preview
+                  - generic [ref=e397]:
+                    - generic [ref=e398]: graphic_eq
+                    - heading "Gemini 3.1 Flash TTS" [level=3] [ref=e399]
+                  - paragraph [ref=e400]: Powerful, low-latency speech generation.
+                  - paragraph [ref=e401]:
+                    - generic [ref=e402]: New
+                    - text: Preview
+              - complementary [ref=e403]:
+                - text: "warning Warning: Gemini 3 Pro Preview is"
+                - link "deprecated" [ref=e404] [cursor=pointer]:
+                  - /url: /gemini-api/docs/deprecations
+                - text: and has been shut down March 9, 2026. Migrate to
+                - link "Gemini 3.1 Pro Preview" [ref=e405] [cursor=pointer]:
+                  - /url: /gemini-api/docs/models/gemini-3.1-pro-preview
+                - text: to avoid service disruption.
+              - separator [ref=e406]
+              - heading "Gemini 2.5 Flash" [level=2] [ref=e407]
+              - generic [ref=e408]:
+                - generic [ref=e409]:
+                  - generic [ref=e411]: bolt
+                  - generic [ref=e412]:
+                    - heading "Gemini 2.5 Flash" [level=3] [ref=e413]:
+                      - link "Gemini 2.5 Flash" [ref=e414] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.5-flash
+                    - paragraph [ref=e415]: Our best price-performance model for low-latency, high-volume tasks that require reasoning.
+                - generic [ref=e416]:
+                  - generic [ref=e418]: image_search
+                  - generic [ref=e419]:
+                    - heading "Nano Banana" [level=3] [ref=e420]:
+                      - link "Nano Banana" [ref=e421] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.5-flash-image
+                    - paragraph [ref=e422]: State-of-the-art native image generation and editing designed for fast, creative workflows.
+                - generic [ref=e423]:
+                  - generic [ref=e425]: settings_voice
+                  - generic [ref=e426]:
+                    - heading "Gemini 2.5 Flash Live Preview" [level=3] [ref=e427]:
+                      - link "Gemini 2.5 Flash Live Preview" [ref=e428] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.5-flash-native-audio-preview-12-2025
+                    - paragraph [ref=e429]: Optimized for real-time conversational agents with sub-second native audio streaming.
+                - generic [ref=e430]:
+                  - generic [ref=e432]: record_voice_over
+                  - generic [ref=e433]:
+                    - heading "Gemini 2.5 Flash TTS Preview" [level=3] [ref=e434]:
+                      - link "Gemini 2.5 Flash TTS Preview" [ref=e435] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.5-flash-preview-tts
+                    - paragraph [ref=e436]: Controllable text-to-speech audio generation with fine control over style and pacing.
+              - separator [ref=e437]
+              - heading "Gemini 2.5 Flash-Lite" [level=2] [ref=e438]
+              - generic [ref=e440]:
+                - generic [ref=e442]: speed
+                - generic [ref=e443]:
+                  - heading "Gemini 2.5 Flash-Lite" [level=3] [ref=e444]:
+                    - link "Gemini 2.5 Flash-Lite" [ref=e445] [cursor=pointer]:
+                      - /url: /gemini-api/docs/models/gemini-2.5-flash-lite
+                  - paragraph [ref=e446]: The fastest and most budget-friendly multimodal model in the 2.5 family.
+              - separator [ref=e447]
+              - heading "Gemini 2.5 Pro" [level=2] [ref=e448]
+              - generic [ref=e449]:
+                - generic [ref=e450]:
+                  - generic [ref=e452]: psychology
+                  - generic [ref=e453]:
+                    - heading "Gemini 2.5 Pro" [level=3] [ref=e454]:
+                      - link "Gemini 2.5 Pro" [ref=e455] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.5-pro
+                    - paragraph [ref=e456]: Our most advanced model for complex tasks, featuring deep reasoning and coding capabilities.
+                - generic [ref=e457]:
+                  - generic [ref=e459]: record_voice_over
+                  - generic [ref=e460]:
+                    - heading "Gemini 2.5 Pro TTS Preview" [level=3] [ref=e461]:
+                      - link "Gemini 2.5 Pro TTS Preview" [ref=e462] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.5-pro-preview-tts
+                    - paragraph [ref=e463]: High-fidelity speech synthesis optimized for quality in structured workflows like podcasts and audiobooks.
+              - separator [ref=e464]
+              - heading "Audio models" [level=2] [ref=e465]
+              - paragraph [ref=e466]: This section contains all audio models, including ones that may already be listed in other sections
+              - generic [ref=e467]:
+                - generic [ref=e468]:
+                  - generic [ref=e470]: settings_input_antenna
+                  - generic [ref=e471]:
+                    - heading "Gemini 3.1 Flash Live Preview" [level=3] [ref=e472]:
+                      - link "Gemini 3.1 Flash Live Preview" [ref=e473] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-3.1-flash-live-preview
+                    - paragraph [ref=e474]: Our high-quality, low-latency audio-to-audio (A2A) model designed for real-time dialogue and voice-first AI applications.
+                - generic [ref=e475]:
+                  - generic [ref=e477]: graphic_eq
+                  - generic [ref=e478]:
+                    - heading "Gemini 3.1 Flash TTS Preview" [level=3] [ref=e479]:
+                      - link "Gemini 3.1 Flash TTS Preview" [ref=e480] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-3.1-flash-tts-preview
+                    - paragraph [ref=e481]: Powerful, low-latency speech generation, with natural outputs, steerable prompts, and new expressive audio tags for precise narration control.
+                - generic [ref=e482]:
+                  - generic [ref=e484]: settings_voice
+                  - generic [ref=e485]:
+                    - heading "Gemini 2.5 Flash Live Preview" [level=3] [ref=e486]:
+                      - link "Gemini 2.5 Flash Live Preview" [ref=e487] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.5-flash-native-audio-preview-12-2025
+                    - paragraph [ref=e488]: Our flagship Live API model for low-latency, bidirectional voice and video agents with native audio reasoning.
+                - generic [ref=e489]:
+                  - generic [ref=e491]: bolt
+                  - generic [ref=e492]:
+                    - heading "Gemini 2.5 Flash TTS Preview" [level=3] [ref=e493]:
+                      - link "Gemini 2.5 Flash TTS Preview" [ref=e494] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.5-flash-preview-tts
+                    - paragraph [ref=e495]: Fast and controllable text-to-speech for low-latency, cost-efficient applications and real-time assistants.
+                - generic [ref=e496]:
+                  - generic [ref=e498]: record_voice_over
+                  - generic [ref=e499]:
+                    - heading "Gemini 2.5 Pro TTS Preview" [level=3] [ref=e500]:
+                      - link "Gemini 2.5 Pro TTS Preview" [ref=e501] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.5-pro-preview-tts
+                    - paragraph [ref=e502]: High-fidelity speech synthesis optimized for quality in structured workflows like podcasts and audiobooks.
+              - separator [ref=e503]
+              - heading "Generative media models" [level=2] [ref=e504]
+              - paragraph [ref=e505]: This section contains all generative media models, including ones that may already be listed in other sections
+              - generic [ref=e506]:
+                - generic [ref=e507]:
+                  - generic [ref=e509]: blur_on
+                  - generic [ref=e510]:
+                    - heading "Nano Banana 2 Preview" [level=3] [ref=e511]:
+                      - link "Nano Banana 2 Preview" [ref=e512] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-3.1-flash-image-preview
+                    - paragraph [ref=e513]: High-efficiency production-scale visual creation, combining the intelligence of the Gemini 3 series with lightning-fast generation speeds.
+                - generic [ref=e514]:
+                  - generic [ref=e516]: movie_filter
+                  - generic [ref=e517]:
+                    - heading "Veo 3.1 Preview" [level=3] [ref=e518]:
+                      - link "Veo 3.1 Preview" [ref=e519] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/veo-3.1-generate-preview
+                    - paragraph [ref=e520]: State-of-the-art cinematic video generation with advanced creative controls and natively synchronized audio.
+                - generic [ref=e521]:
+                  - generic [ref=e523]: image_edit
+                  - generic [ref=e524]:
+                    - heading "Nano Banana Pro Preview" [level=3] [ref=e525]:
+                      - link "Nano Banana Pro Preview" [ref=e526] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-3-pro-image-preview
+                    - paragraph [ref=e527]: A professional design engine with a reasoning core for studio-quality 4K visuals, complex layouts, and precise text rendering.
+                - generic [ref=e528]:
+                  - generic [ref=e530]: movie_edit
+                  - generic [ref=e531]:
+                    - heading "Veo 3.1 Lite Preview" [level=3] [ref=e532]:
+                      - link "Veo 3.1 Lite Preview" [ref=e533] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/veo-3.1-lite-generate-preview
+                    - paragraph [ref=e534]: High-efficiency, low-cost, developer-first video generation, editing, and cinematic control from the Veo 3.1 family.
+                - generic [ref=e535]:
+                  - generic [ref=e537]: image_search
+                  - generic [ref=e538]:
+                    - heading "Nano Banana" [level=3] [ref=e539]:
+                      - link "Nano Banana" [ref=e540] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.5-flash-image
+                    - paragraph [ref=e541]: State-of-the-art native image generation and editing designed for fast, creative workflows.
+                - generic [ref=e542]:
+                  - generic [ref=e544]: palette
+                  - generic [ref=e545]:
+                    - heading "Imagen 4" [level=3] [ref=e546]:
+                      - link "Imagen 4" [ref=e547] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/imagen
+                    - paragraph [ref=e548]: Text-to-image model yet, featuring fast and ultra-fast generation and exceptional clarity up to 2K resolution.
+              - separator [ref=e549]
+              - heading "Music generation models" [level=2] [ref=e550]
+              - paragraph [ref=e551]: This section contains all music generation models, including ones that may already be listed in other sections
+              - generic [ref=e552]:
+                - generic [ref=e553]:
+                  - generic [ref=e555]: music_note
+                  - generic [ref=e556]:
+                    - heading "Lyria 3 Pro Preview" [level=3] [ref=e557]:
+                      - link "Lyria 3 Pro Preview" [ref=e558] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/lyria-3-pro-preview
+                    - paragraph [ref=e559]: Our flagship music generation model, optimized for full-length songs with complex structural coherence.
+                - generic [ref=e560]:
+                  - generic [ref=e562]: music_note_2
+                  - generic [ref=e563]:
+                    - heading "Lyria 3 Clip Preview" [level=3] [ref=e564]:
+                      - link "Lyria 3 Clip Preview" [ref=e565] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/lyria-3-clip-preview
+                    - paragraph [ref=e566]: Optimized for generating short musical clips, loops, and previews up to 30 seconds.
+                - generic [ref=e567]:
+                  - generic [ref=e569]: music_history
+                  - generic [ref=e570]:
+                    - heading "Lyria RealTime Experimental" [level=3] [ref=e571]:
+                      - link "Lyria RealTime Experimental" [ref=e572] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/lyria-realtime-exp
+                    - paragraph [ref=e573]: High-fidelity music generation model providing granular creative control and real-time streaming capabilities.
+              - separator [ref=e574]
+              - heading "Tool and agent models" [level=2] [ref=e575]
+              - generic [ref=e576]:
+                - generic [ref=e577]:
+                  - generic [ref=e579]: desktop_windows
+                  - generic [ref=e580]:
+                    - heading "Computer Use Preview" [level=3] [ref=e581]:
+                      - link "Computer Use Preview" [ref=e582] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.5-computer-use-preview-10-2025
+                    - paragraph [ref=e583]: A specialized model that can "see" a digital screen and perform UI actions like clicking, typing, and navigating to automate complex browser tasks.
+                - generic [ref=e584]:
+                  - generic [ref=e586]: travel_explore
+                  - generic [ref=e587]:
+                    - heading "Gemini Deep Research Preview" [level=3] [ref=e588]:
+                      - link "Gemini Deep Research Preview" [ref=e589] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/deep-research-preview-04-2026
+                    - paragraph [ref=e590]: An agentic model that autonomously plans and executes multi-step research across hundreds of sources to produce cited, interactive reports.
+                - generic [ref=e591]:
+                  - generic [ref=e593]: travel_explore
+                  - generic [ref=e594]:
+                    - heading "Gemini Deep Research Max Preview" [level=3] [ref=e595]:
+                      - link "Gemini Deep Research Max Preview" [ref=e596] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/deep-research-max-preview-04-2026
+                    - paragraph [ref=e597]: Maximum comprehensiveness for automated context gathering and synthesis across hundreds of sources.
+              - separator [ref=e598]
+              - heading "Specialized task models" [level=2] [ref=e599]
+              - generic [ref=e600]:
+                - generic [ref=e601]:
+                  - generic [ref=e603]: hub
+                  - generic [ref=e604]:
+                    - heading "Gemini Embedding 2" [level=3] [ref=e605]:
+                      - link "Gemini Embedding 2" [ref=e606] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-embedding-2
+                    - paragraph [ref=e607]: Our first multimodal embedding model, mapping text, images, video, audio, and PDFs into a unified embedding space for advanced semantic search and RAG systems.
+                - generic [ref=e608]:
+                  - generic [ref=e610]: hub
+                  - generic [ref=e611]:
+                    - heading "Gemini Embedding" [level=3] [ref=e612]:
+                      - link "Gemini Embedding" [ref=e613] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-embedding-001
+                    - paragraph [ref=e614]: High-dimensional vector representations for advanced semantic search, text classification, and RAG systems.
+                - generic [ref=e615]:
+                  - generic [ref=e617]: precision_manufacturing
+                  - generic [ref=e618]:
+                    - heading "Gemini Robotics-ER 1.6Preview" [level=3] [ref=e619]:
+                      - link "Gemini Robotics-ER 1.6Preview" [ref=e620] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-robotics-er-1.6-preview
+                    - paragraph [ref=e621]: Advanced embodied reasoning model that understands physical spaces and plans multi-step tasks for robotic agents with new capabilities like instrument reading, improved spatial and physical reasoning.
+              - separator [ref=e622]
+              - heading "Previous models" [level=2] [ref=e623]
+              - complementary [ref=e624]:
+                - text: not_interested These models are
+                - link "deprecated" [ref=e625] [cursor=pointer]:
+                  - /url: /gemini-api/docs/deprecations
+                - text: and will be shut down soon; migrate to newer models to prevent service interruptions.
+              - generic [ref=e626]:
+                - generic [ref=e627]:
+                  - generic [ref=e629]: history
+                  - generic [ref=e630]:
+                    - heading "Gemini 2.0 Flash Deprecated" [level=3] [ref=e631]:
+                      - link "Gemini 2.0 Flash Deprecated" [ref=e632] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.0-flash
+                    - paragraph [ref=e633]: Our second generation workhorse model, with next-gen features and improved capabilities, including superior speed, native tool use, and a 1M token context window.
+                - generic [ref=e634]:
+                  - generic [ref=e636]: restore
+                  - generic [ref=e637]:
+                    - heading "Gemini 2.0 Flash-Lite Deprecated" [level=3] [ref=e638]:
+                      - link "Gemini 2.0 Flash-Lite Deprecated" [ref=e639] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-2.0-flash-lite
+                    - paragraph [ref=e640]: Our fastest second generation model, optimized for cost efficiency and low latency.
+                - generic [ref=e641]:
+                  - generic [ref=e643]: restore
+                  - generic [ref=e644]:
+                    - heading "Gemini 3 Pro Preview Shut down" [level=3] [ref=e645]:
+                      - link "Gemini 3 Pro Preview Shut down" [ref=e646] [cursor=pointer]:
+                        - /url: /gemini-api/docs/models/gemini-3-pro-preview
+                    - paragraph [ref=e647]: Our state-of-the-art reasoning model, with advanced multimodal understanding.
+              - separator [ref=e648]
+              - heading "Model version name patterns" [level=2] [ref=e649]
+              - paragraph [ref=e650]:
+                - text: Gemini models are available in either
+                - emphasis [ref=e651]: stable
+                - text: ","
+                - emphasis [ref=e652]: preview
+                - text: ","
+                - emphasis [ref=e653]: latest
+                - text: ", or"
+                - emphasis [ref=e654]: experimental
+                - text: versions.
+              - complementary [ref=e655]:
+                - strong [ref=e656]: "Note:"
+                - text: The following list refers to the model string naming convention as of September, 2025. Models released prior to that may have different naming conventions. Refer to the exact model string if you are using an older model.
+              - heading "Stable" [level=3] [ref=e657]
+              - paragraph [ref=e658]: Points to a specific stable model. Stable models usually don't change. Most production apps should use a specific stable model.
+              - paragraph [ref=e659]:
+                - text: "For example:"
+                - code [ref=e660]: gemini-2.5-flash
+                - text: .
+              - heading "Preview" [level=3] [ref=e661]
+              - paragraph [ref=e662]: Points to a preview model which may be used for production. Preview models will typically have billing enabled, might come with more restrictive rate limits and will be deprecated with at least 2 weeks notice.
+              - paragraph [ref=e663]:
+                - text: "For example:"
+                - code [ref=e664]: gemini-2.5-flash-preview-09-2025
+                - text: .
+              - heading "Latest" [level=3] [ref=e665]
+              - paragraph [ref=e666]:
+                - text: Points to the latest release for a specific model variation. This can be a stable, preview or experimental release. This alias will get hot-swapped with every new release of a specific model variation. A
+                - strong [ref=e667]: 2-week notice
+                - text: will be provided through email before the version behind latest is changed.
+              - paragraph [ref=e668]:
+                - text: "For example:"
+                - code [ref=e669]: gemini-flash-latest
+                - text: .
+              - heading "Experimental" [level=3] [ref=e670]
+              - paragraph [ref=e671]: Points to an experimental model which will typically be not be suitable for production use and come with more restrictive rate limits. We release experimental models to gather feedback and get our latest updates into the hands of developers quickly.
+              - paragraph [ref=e672]: Experimental models are not stable and availability of model endpoints is subject to change.
+              - heading "Model deprecations" [level=2] [ref=e673]
+              - paragraph [ref=e674]:
+                - text: For information about model deprecations, visit the
+                - link "Gemini deprecations" [ref=e675] [cursor=pointer]:
+                  - /url: /gemini-api/docs/deprecations
+                - text: page.
+            - button "Send feedback" [ref=e677] [cursor=pointer]
+          - generic [ref=e678]:
+            - paragraph [ref=e679]:
+              - text: Except as otherwise noted, the content of this page is licensed under the
+              - link "Creative Commons Attribution 4.0 License" [ref=e680] [cursor=pointer]:
+                - /url: https://creativecommons.org/licenses/by/4.0/
+              - text: ", and code samples are licensed under the"
+              - link "Apache 2.0 License" [ref=e681] [cursor=pointer]:
+                - /url: https://www.apache.org/licenses/LICENSE-2.0
+              - text: . For details, see the
+              - link "Google Developers Site Policies" [ref=e682] [cursor=pointer]:
+                - /url: https://developers.google.com/site-policies
+              - text: . Java is a registered trademark of Oracle and/or its affiliates.
+            - paragraph [ref=e683]: Last updated 2026-05-07 UTC.
+      - generic:
+        - navigation "Footer links"
+      - navigation "Utility links" [ref=e687]:
+        - list [ref=e688]:
+          - listitem [ref=e689]:
+            - link "Terms" [ref=e690] [cursor=pointer]:
+              - /url: //policies.google.com/terms
+          - listitem [ref=e691]:
+            - text: "|"
+            - link "Privacy" [ref=e692] [cursor=pointer]:
+              - /url: //policies.google.com/privacy
+          - text: "|"
+        - generic "Select your language preference." [ref=e693]:
+          - button "Language" [ref=e694] [cursor=pointer]:
+            - img
+            - generic [ref=e695]: Language
+            - img

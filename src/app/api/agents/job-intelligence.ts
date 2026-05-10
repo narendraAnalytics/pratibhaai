@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
+import type { AgentMeta, AgentExecutionState, WithMeta } from './utils/types'
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY!, apiVersion: 'v1alpha' })
 
 export interface HiringBlueprint {
   // Core extraction (existing fields — used by all downstream agents)
@@ -44,6 +45,19 @@ export interface HiringBlueprint {
   riskSensitivity: 'low' | 'medium' | 'high'
 }
 
+const JOB_INTEL_FALLBACK: HiringBlueprint = {
+  requiredSkills: [], preferredSkills: [], mustHaveKeywords: [], dealBreakers: [],
+  senioritySignals: [], technicalDepth: 'medium', cultureKeywords: [],
+  roleArchetype: 'builder', minimumExperienceYears: 0, preferredExperienceYears: 2,
+  leadershipRequired: false, clientFacingRole: false,
+  githubImportance: 'medium', portfolioImportance: 'medium',
+  communicationImportance: 'medium', educationImportance: 'low',
+  priorityWeights: { skills: 40, technical: 35, culture: 25 },
+  evaluationGuidance: { prioritizeGithub: false, prioritizeLeadership: false, prioritizeStability: false, prioritizeEducation: false },
+  ambiguityFlags: ['parsing failed'], missingCriticalInfo: ['job description could not be parsed'],
+  jobDescriptionQuality: 'low', planningConfidence: 50, riskSensitivity: 'medium',
+}
+
 export async function runJobIntelligence(job: {
   title: string
   department?: string | null
@@ -52,7 +66,7 @@ export async function runJobIntelligence(job: {
   locationType?: string | null
   jobType?: string | null
   experienceLevel?: string | null
-}): Promise<HiringBlueprint> {
+}): Promise<WithMeta<HiringBlueprint>> {
   const prompt = `You are the Job Intelligence Agent for Pratibha AI, an autonomous enterprise-grade recruitment platform.
 
 You are responsible for transforming raw job descriptions into structured hiring intelligence that downstream agents will use to evaluate candidates.
@@ -171,7 +185,7 @@ Return ONLY valid JSON. No markdown, no explanations, no code blocks.
 The JSON must be deterministic, machine-readable, and schema-safe.`
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-pro',
+    model: 'gemini-3-pro-preview',
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: {
       responseMimeType: 'application/json',
@@ -221,5 +235,16 @@ The JSON must be deterministic, machine-readable, and schema-safe.`
     },
   })
 
-  return JSON.parse(response.text ?? '{}') as HiringBlueprint
+  let rawResult: HiringBlueprint
+  try { rawResult = JSON.parse(response.text ?? '{}') as HiringBlueprint }
+  catch { rawResult = { ...JOB_INTEL_FALLBACK } }
+  const meta: AgentMeta = {
+    confidenceScore: rawResult.planningConfidence ?? 50,
+    evidenceQuality: rawResult.jobDescriptionQuality as 'high' | 'medium' | 'low',
+    reasoningSummary: `Role archetype: ${rawResult.roleArchetype}. Technical depth: ${rawResult.technicalDepth}.`,
+    missingEvidence: rawResult.missingCriticalInfo ?? [],
+    warnings: rawResult.ambiguityFlags ?? [],
+  }
+  const exec: AgentExecutionState = { status: 'success', fallbackUsed: false, retryCount: 0, executionTimeMs: 0 }
+  return { ...rawResult, meta, exec }
 }

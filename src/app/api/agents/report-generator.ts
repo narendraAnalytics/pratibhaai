@@ -5,8 +5,9 @@ import type { AggregatedScore } from './evaluation-aggregator'
 import type { DecisionResult } from './decision-agent'
 import type { RiskReport } from './verification-risk'
 import type { TechnicalValidationResult } from './technical-validation'
+import type { AgentMeta, AgentExecutionState, WithMeta } from './utils/types'
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY!, apiVersion: 'v1alpha' })
 
 const SYSTEM_PROMPT = `You are the Report Generator Agent for Pratibha AI, an enterprise-grade autonomous recruitment platform.
 
@@ -312,6 +313,17 @@ export interface ReportData {
   reportWarnings: string[]
 }
 
+const REPORT_FALLBACK: ReportData = {
+  candidateName: '', jobTitle: '', compositeScore: 0, rankLabel: '', recommendation: '',
+  scoreBreakdown: { skills: 0, technical: 0, culture: 0 },
+  keyStrengths: [], topConcerns: [], interviewQuestions: [],
+  riskSummary: '', githubSummary: '', emailSubject: '', emailBody: '', dashboardSummary: '',
+  highlightedStrengthAreas: [], highlightedRiskAreas: [],
+  executiveSummary: '', recruiterActionRecommendation: '',
+  decisionConfidence: 0, reportConfidence: 0,
+  evidenceQuality: 'low', riskSeverity: 'low', manualReviewRecommended: true, reportWarnings: ['report generation failed'],
+}
+
 export async function runReportGenerator(
   profile: CandidateProfile,
   blueprint: HiringBlueprint,
@@ -320,7 +332,7 @@ export async function runReportGenerator(
   risk: RiskReport,
   technical: TechnicalValidationResult,
   jobTitle: string,
-): Promise<ReportData> {
+): Promise<WithMeta<ReportData>> {
   const prompt = `${SYSTEM_PROMPT}
 
 --- CANDIDATE ---
@@ -385,5 +397,16 @@ Technical Confidence: ${technical.technicalConfidence}/100`
     },
   })
 
-  return JSON.parse(response.text ?? '{}') as ReportData
+  let rawResult: ReportData
+  try { rawResult = JSON.parse(response.text ?? '{}') as ReportData }
+  catch { rawResult = { ...REPORT_FALLBACK } }
+  const meta: AgentMeta = {
+    confidenceScore: rawResult.reportConfidence ?? 50,
+    evidenceQuality: rawResult.evidenceQuality,
+    reasoningSummary: `${rawResult.candidateName} for ${rawResult.jobTitle}. Composite: ${rawResult.compositeScore}/100.`,
+    missingEvidence: [],
+    warnings: rawResult.reportWarnings ?? [],
+  }
+  const exec: AgentExecutionState = { status: 'success', fallbackUsed: false, retryCount: 0, executionTimeMs: 0 }
+  return { ...rawResult, meta, exec }
 }

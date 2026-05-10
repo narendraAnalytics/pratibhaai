@@ -1,8 +1,9 @@
 import { GoogleGenAI } from '@google/genai'
 import type { CandidateProfile } from './candidate-extraction'
 import type { HiringBlueprint } from './job-intelligence'
+import type { AgentMeta, AgentExecutionState, WithMeta } from './utils/types'
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY!, apiVersion: 'v1alpha' })
 
 const SYSTEM_PROMPT = `You are the Verification & Risk Agent for Pratibha AI, an enterprise-grade autonomous recruitment platform.
 
@@ -267,11 +268,18 @@ export interface RiskReport {
   verificationConfidence: number
 }
 
+const RISK_FALLBACK: RiskReport = {
+  riskLevel: 'medium', flags: [], inflationSigns: [], timelineIssues: [], overallRisk: 50,
+  riskCategories: { timelineRisk: 50, credibilityRisk: 50, skillInflationRisk: 50, consistencyRisk: 50, employmentStabilityRisk: 50 },
+  suspiciousClaims: [], evidenceSummary: [], missingVerificationData: ['parsing failed'],
+  resumeConsistencyScore: 50, manualReviewRecommended: true, verificationConfidence: 50,
+}
+
 export async function runVerificationRisk(
   profile: CandidateProfile,
   blueprint: HiringBlueprint,
   resumeText: string,
-): Promise<RiskReport> {
+): Promise<WithMeta<RiskReport>> {
   const prompt = `${SYSTEM_PROMPT}
 
 --- CANDIDATE PROFILE (extracted) ---
@@ -299,5 +307,17 @@ ${resumeText.slice(0, 2500)}`
     },
   })
 
-  return JSON.parse(response.text ?? '{}') as RiskReport
+  let rawResult: RiskReport
+  try { rawResult = JSON.parse(response.text ?? '{}') as RiskReport }
+  catch { rawResult = { ...RISK_FALLBACK } }
+  const riskToEq: Record<string, 'high' | 'medium' | 'low'> = { low: 'high', medium: 'medium', high: 'low', critical: 'low' }
+  const meta: AgentMeta = {
+    confidenceScore: rawResult.verificationConfidence ?? 50,
+    evidenceQuality: riskToEq[rawResult.riskLevel] ?? 'medium',
+    reasoningSummary: `Risk level: ${rawResult.riskLevel}. Overall risk score: ${rawResult.overallRisk}/100.`,
+    missingEvidence: rawResult.missingVerificationData ?? [],
+    warnings: rawResult.flags ?? [],
+  }
+  const exec: AgentExecutionState = { status: 'success', fallbackUsed: false, retryCount: 0, executionTimeMs: 0 }
+  return { ...rawResult, meta, exec }
 }

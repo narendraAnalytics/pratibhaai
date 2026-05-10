@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
+import type { AgentMeta, AgentExecutionState, WithMeta } from './utils/types'
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY!, apiVersion: 'v1alpha' })
 
 const SYSTEM_PROMPT = `You are the Candidate Extraction Agent for Pratibha AI, an enterprise-grade autonomous recruitment platform.
 
@@ -332,10 +333,43 @@ export interface CandidateProfile {
   extractionConfidence: number
 }
 
-export async function runCandidateExtraction(resumeText: string): Promise<CandidateProfile> {
+const CANDIDATE_FALLBACK: CandidateProfile = {
+  name: '', email: '', phone: null, location: null, currentRole: '', currentCompany: null,
+  skills: [], technicalSkills: [], softSkills: [], frameworks: [], cloudPlatforms: [], databases: [], tools: [],
+  experienceYears: 0, candidateSeniority: 'junior', companies: [], employmentHistory: [],
+  education: [], educationDetails: [],
+  githubUrl: null, linkedinUrl: null, portfolioUrl: null,
+  certifications: [], projects: [],
+  careerSignals: { leadershipExperience: false, startupExperience: false, enterpriseExperience: false, frequentJobChanges: false },
+  summary: 'Resume could not be parsed.',
+  resumeQuality: { formattingClarity: 'low', completeness: 'low', professionalism: 'low' },
+  missingCriticalFields: ['name', 'email', 'skills', 'experienceYears'],
+  extractionConfidence: 0,
+}
+
+function labelResumeSections(text: string): string {
+  const SECTION_PATTERNS: Array<{ pattern: RegExp; label: string }> = [
+    { pattern: /^(experience|work experience|employment|work history)/im, label: '[EXPERIENCE]' },
+    { pattern: /^(education|academic|qualification)/im, label: '[EDUCATION]' },
+    { pattern: /^(skills|technical skills|core competencies)/im, label: '[SKILLS]' },
+    { pattern: /^(projects|personal projects|key projects)/im, label: '[PROJECTS]' },
+    { pattern: /^(certifications?|certificates?|credentials)/im, label: '[CERTIFICATIONS]' },
+    { pattern: /^(summary|objective|profile|about)/im, label: '[SUMMARY]' },
+  ]
+  return text.split('\n').map(line => {
+    const trimmed = line.trim()
+    if (!trimmed) return line
+    for (const { pattern, label } of SECTION_PATTERNS) {
+      if (pattern.test(trimmed)) return `\n${label}\n${line}`
+    }
+    return line
+  }).join('\n')
+}
+
+export async function runCandidateExtraction(resumeText: string): Promise<WithMeta<CandidateProfile>> {
   const response = await ai.models.generateContent({
     model: 'gemini-3.1-flash-lite',
-    contents: [{ role: 'user', parts: [{ text: `${SYSTEM_PROMPT}\n\nResume to analyze:\n\n${resumeText}` }] }],
+    contents: [{ role: 'user', parts: [{ text: `${SYSTEM_PROMPT}\n\nResume to analyze:\n\n${labelResumeSections(resumeText)}` }] }],
     config: {
       responseMimeType: 'application/json',
       responseSchema: CANDIDATE_SCHEMA as unknown,
@@ -343,5 +377,17 @@ export async function runCandidateExtraction(resumeText: string): Promise<Candid
   })
 
   const text = response.text ?? '{}'
-  return JSON.parse(text) as CandidateProfile
+  let rawResult: CandidateProfile
+  try { rawResult = JSON.parse(text) as CandidateProfile }
+  catch { rawResult = { ...CANDIDATE_FALLBACK } }
+  const eq = rawResult.resumeQuality?.completeness as 'high' | 'medium' | 'low' ?? 'low'
+  const meta: AgentMeta = {
+    confidenceScore: rawResult.extractionConfidence ?? 50,
+    evidenceQuality: eq,
+    reasoningSummary: `Extracted ${rawResult.skills?.length ?? 0} skills over ${rawResult.experienceYears ?? 0} years experience.`,
+    missingEvidence: rawResult.missingCriticalFields ?? [],
+    warnings: rawResult.missingCriticalFields ?? [],
+  }
+  const exec: AgentExecutionState = { status: 'success', fallbackUsed: false, retryCount: 0, executionTimeMs: 0 }
+  return { ...rawResult, meta, exec }
 }

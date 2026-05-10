@@ -24,6 +24,10 @@ const STYLES = `
 @keyframes fileIn{from{transform:translateX(-8px);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes dropPulse{0%,100%{border-color:rgba(186,168,255,0.4)}50%{border-color:rgba(124,92,255,0.9)}}
 .drop-active{animation:dropPulse 0.8s ease-in-out infinite}
+@keyframes agentIn{from{transform:translateX(-12px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes agentPulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.agent-in{animation:agentIn 0.35s cubic-bezier(.2,.8,.2,1) both}
+.agent-pulse{animation:agentPulse 1.2s ease-in-out infinite}
 `
 
 function Aurora() {
@@ -73,7 +77,27 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [launchStep, setLaunchStep] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const LAUNCH_STEPS = [
+    { label: 'Agent 1 — Orchestrator', sub: 'Planning pipeline & execution strategy', color: '#b9a4ff', dot: '#7c5cff' },
+    { label: 'Agent 2 — Job Intelligence', sub: 'Parsing job requirements & hiring blueprint', color: '#67e8f9', dot: '#22d3ee' },
+    { label: 'Agent 3 — Candidate Extraction', sub: 'Reading & structuring resumes', color: '#f9a8d4', dot: '#ff5dc8' },
+    { label: 'Routing to AI Screening →', sub: '9 agents are live — watch them work', color: '#6ee7b7', dot: '#10b981' },
+  ]
+
+  useEffect(() => {
+    if (!success) return
+    let step = 0
+    const iv = setInterval(() => {
+      step++
+      setLaunchStep(step)
+      if (step >= LAUNCH_STEPS.length - 1) clearInterval(iv)
+    }, 550)
+    return () => clearInterval(iv)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [success])
 
   const addFiles = useCallback((incoming: FileList | File[]) => {
     const arr = Array.from(incoming)
@@ -108,7 +132,7 @@ export default function UploadPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobId }),
       }).catch(() => {})
-      setTimeout(() => router.push(`/dashboard/jobs/${jobId}/screening`), 1000)
+      setTimeout(() => router.push(`/dashboard/jobs/${jobId}/screening`), 2500)
     } catch {
       setError('Upload failed. Please try again.')
     } finally {
@@ -196,11 +220,39 @@ export default function UploadPage() {
             }}>
               {success ? 'Resumes Uploaded!' : 'Upload Candidate Resumes'}
             </h1>
-            <p style={{ margin: 0, fontSize: 16, color: 'rgba(230,226,255,0.72)', maxWidth: 520, lineHeight: 1.55 }}>
-              {success
-                ? 'AI screening is starting. Redirecting to dashboard…'
-                : 'Drop PDF or DOCX files below. The AI agents will extract and evaluate each candidate automatically.'}
-            </p>
+            {success ? (
+              <div style={{ marginTop: 4 }}>
+                <div style={{
+                  display: 'flex', flexDirection: 'column', gap: 10,
+                  padding: '16px 20px', borderRadius: 16,
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  maxWidth: 460,
+                }}>
+                  {LAUNCH_STEPS.map((step, i) => {
+                    const visible = i <= launchStep
+                    const active = i === launchStep
+                    return visible ? (
+                      <div key={i} className="agent-in" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <span style={{
+                          width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+                          background: step.dot,
+                          boxShadow: active ? `0 0 8px ${step.dot}` : 'none',
+                        }} className={active ? 'agent-pulse' : ''} />
+                        <div>
+                          <p style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: step.color }}>{step.label}</p>
+                          <p style={{ margin: 0, fontSize: 12, color: 'rgba(230,226,255,0.45)' }}>{step.sub}</p>
+                        </div>
+                      </div>
+                    ) : null
+                  })}
+                </div>
+              </div>
+            ) : (
+              <p style={{ margin: 0, fontSize: 16, color: 'rgba(230,226,255,0.72)', maxWidth: 520, lineHeight: 1.55 }}>
+                Drop PDF or DOCX files below. The AI agents will extract and evaluate each candidate automatically.
+              </p>
+            )}
           </div>
 
           {/* Success */}

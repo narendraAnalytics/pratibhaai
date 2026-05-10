@@ -2,6 +2,8 @@ import { GoogleGenAI } from '@google/genai'
 import axios from 'axios'
 import type { CandidateProfile } from './candidate-extraction'
 import type { HiringBlueprint } from './job-intelligence'
+import type { AgentMeta, AgentExecutionState, WithMeta } from './utils/types'
+import { withRetry } from './utils/retry'
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
 
@@ -291,7 +293,7 @@ export interface TechnicalValidationResult {
   manualReviewRecommended: boolean
 }
 
-async function fetchGitHubSummary(githubUrl: string): Promise<string> {
+async function fetchGitHubSummary(githubUrl: string): Promise<{ summary: string; fallbackUsed: boolean }> {
   try {
     const username = githubUrl.replace(/https?:\/\/github\.com\//, '').split('/')[0]
     const headers: Record<string, string> = {
@@ -301,10 +303,13 @@ async function fetchGitHubSummary(githubUrl: string): Promise<string> {
       headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`
     }
 
-    const [userRes, reposRes] = await Promise.all([
-      axios.get(`https://api.github.com/users/${username}`, { headers, timeout: 8000 }),
-      axios.get(`https://api.github.com/users/${username}/repos?sort=updated&per_page=10`, { headers, timeout: 8000 }),
-    ])
+    const { result: [userRes, reposRes] } = await withRetry(
+      () => Promise.all([
+        axios.get(`https://api.github.com/users/${username}`, { headers, timeout: 8000 }),
+        axios.get(`https://api.github.com/users/${username}/repos?sort=updated&per_page=10`, { headers, timeout: 8000 }),
+      ]),
+      3,
+    )
 
     const user = userRes.data as { public_repos: number; followers: number; created_at: string }
     const repos = reposRes.data as Array<{
@@ -328,7 +333,7 @@ async function fetchGitHubSummary(githubUrl: string): Promise<string> {
       return `  • ${r.name} (${r.language ?? 'unknown'}, ⭐${r.stargazers_count})${topics}${desc}`
     })
 
-    return `GitHub Profile (@${username}):
+    const summary = `GitHub Profile (@${username}):
 - Public repositories: ${user.public_repos} (${ownRepos.length} original, ${forkCount} forks)
 - Followers: ${user.followers}
 - Account created: ${user.created_at?.slice(0, 4) ?? 'unknown'}
@@ -336,18 +341,30 @@ async function fetchGitHubSummary(githubUrl: string): Promise<string> {
 - Languages detected: ${languages.join(', ') || 'none'}
 - Top 5 repos:
 ${topRepos.join('\n')}`
+
+    return { summary, fallbackUsed: false }
   } catch {
-    return 'GitHub profile could not be fetched (may be private or URL invalid)'
+    return { summary: 'GitHub profile could not be fetched (may be private or URL invalid)', fallbackUsed: true }
   }
+}
+
+const TECH_FALLBACK: TechnicalValidationResult = {
+  score: 50, technologyAlignmentScore: 50,
+  githubActivityLevel: 'inactive', projectComplexity: 'low', productionReadiness: 'low',
+  openSourceContributionLevel: 'none',
+  specializationAreas: [], technicalStrengths: [], technicalWeaknesses: ['evaluation failed'],
+  architectureSignals: [], languagesDetected: [],
+  repoCount: 0, githubAnalysis: '', techDepthAssessment: '',
+  technicalConfidence: 40, manualReviewRecommended: true,
 }
 
 export async function runTechnicalValidation(
   profile: CandidateProfile,
   blueprint: HiringBlueprint,
-): Promise<TechnicalValidationResult> {
-  const githubSummary = profile.githubUrl
+): Promise<WithMeta<TechnicalValidationResult>> {
+  const { summary: githubSummary, fallbackUsed: githubFallback } = profile.githubUrl
     ? await fetchGitHubSummary(profile.githubUrl)
-    : 'No GitHub URL provided by the candidate.'
+    : { summary: 'No GitHub URL provided by the candidate.', fallbackUsed: false }
 
   const prompt = `${SYSTEM_PROMPT}
 
@@ -370,7 +387,7 @@ Must-Have Keywords: ${blueprint.mustHaveKeywords.join(', ')}
 GitHub Importance: ${blueprint.githubImportance}`
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-flash',
+    model: 'gemini-3-flash-preview',
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: {
       responseMimeType: 'application/json',
@@ -378,5 +395,17 @@ GitHub Importance: ${blueprint.githubImportance}`
     },
   })
 
-  return JSON.parse(response.text ?? '{}') as TechnicalValidationResult
+  let rawResult: TechnicalValidationResult
+  try { rawResult = JSON.parse(response.text ?? '{}') as TechnicalValidationResult }
+  catch { rawResult = { ...TECH_FALLBACK } }
+  const ghToEq: Record<string, 'high' | 'medium' | 'low'> = { high: 'high', moderate: 'medium', low: 'low', inactive: 'low' }
+  const meta: AgentMeta = {
+    confidenceScore: rawResult.technicalConfidence ?? 50,
+    evidenceQuality: ghToEq[rawResult.githubActivityLevel] ?? 'low',
+    reasoningSummary: `GitHub activity: ${rawResult.githubActivityLevel}. Technical score: ${rawResult.score}/100.`,
+    missingEvidence: [],
+    warnings: rawResult.technicalWeaknesses ?? [],
+  }
+  const exec: AgentExecutionState = { status: 'success', fallbackUsed: githubFallback, retryCount: 0, executionTimeMs: 0 }
+  return { ...rawResult, meta, exec }
 }

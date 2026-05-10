@@ -3,8 +3,9 @@ import type { CandidateProfile } from './candidate-extraction'
 import type { HiringBlueprint } from './job-intelligence'
 import type { AggregatedScore } from './evaluation-aggregator'
 import type { RiskReport } from './verification-risk'
+import type { AgentMeta, AgentExecutionState, WithMeta } from './utils/types'
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY!, apiVersion: 'v1alpha' })
 
 const SYSTEM_PROMPT = `You are the Decision Agent for Pratibha AI, an enterprise-grade autonomous recruitment platform.
 
@@ -293,12 +294,20 @@ export interface DecisionResult {
   manualReviewRecommended: boolean
 }
 
+const DECISION_FALLBACK: DecisionResult = {
+  recommendation: 'consider', whyHire: [], concerns: ['evaluation could not be completed'],
+  interviewQuestions: [], overallSummary: '',
+  decisionConfidence: 40, strengthHighlights: [], gapHighlights: [],
+  riskImpactAssessment: '', decisionRationale: '',
+  evidenceQuality: 'low', manualReviewRecommended: true,
+}
+
 export async function runDecisionAgent(
   profile: CandidateProfile,
   blueprint: HiringBlueprint,
   aggregated: AggregatedScore,
   risk: RiskReport,
-): Promise<DecisionResult> {
+): Promise<WithMeta<DecisionResult>> {
   const prompt = `${SYSTEM_PROMPT}
 
 --- CANDIDATE SUMMARY ---
@@ -353,7 +362,7 @@ Leadership Required: ${blueprint.leadershipRequired}
 Low score confidence or high verification risk → recommend manual review`
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-pro',
+    model: 'gemini-3-pro-preview',
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: {
       responseMimeType: 'application/json',
@@ -361,5 +370,16 @@ Low score confidence or high verification risk → recommend manual review`
     },
   })
 
-  return JSON.parse(response.text ?? '{}') as DecisionResult
+  let rawResult: DecisionResult
+  try { rawResult = JSON.parse(response.text ?? '{}') as DecisionResult }
+  catch { rawResult = { ...DECISION_FALLBACK } }
+  const meta: AgentMeta = {
+    confidenceScore: rawResult.decisionConfidence ?? 50,
+    evidenceQuality: rawResult.evidenceQuality,
+    reasoningSummary: `Recommendation: ${rawResult.recommendation}. Confidence: ${rawResult.decisionConfidence}/100.`,
+    missingEvidence: rawResult.gapHighlights ?? [],
+    warnings: rawResult.concerns ?? [],
+  }
+  const exec: AgentExecutionState = { status: 'success', fallbackUsed: false, retryCount: 0, executionTimeMs: 0 }
+  return { ...rawResult, meta, exec }
 }

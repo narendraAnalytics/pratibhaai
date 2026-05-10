@@ -1,8 +1,9 @@
 import { GoogleGenAI } from '@google/genai'
 import type { CandidateProfile } from './candidate-extraction'
 import type { HiringBlueprint } from './job-intelligence'
+import type { AgentMeta, AgentExecutionState, WithMeta } from './utils/types'
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY!, apiVersion: 'v1alpha' })
 
 const SYSTEM_PROMPT = `You are the Behavioral Alignment Agent for Pratibha AI, an enterprise-grade autonomous recruitment platform.
 
@@ -312,11 +313,19 @@ export interface BehavioralAlignmentResult {
   manualReviewRecommended: boolean
 }
 
+const BEHAVIORAL_FALLBACK: BehavioralAlignmentResult = {
+  score: 50, leadershipSignals: [], collaborationSignals: [], ownershipSignals: [], adaptabilitySignals: [],
+  strengths: [], concerns: ['parsing failed'],
+  careerProgressionAssessment: '', communicationStyle: '', cultureAlignmentSummary: '',
+  workStyleIndicators: { autonomy: 'medium', collaboration: 'medium', leadership: 'low' },
+  workEnvironmentFit: [], behavioralConfidence: 40, manualReviewRecommended: true,
+}
+
 export async function runBehavioralAlignment(
   profile: CandidateProfile,
   blueprint: HiringBlueprint,
   resumeText: string,
-): Promise<BehavioralAlignmentResult> {
+): Promise<WithMeta<BehavioralAlignmentResult>> {
   const prompt = `${SYSTEM_PROMPT}
 
 --- CANDIDATE PROFILE ---
@@ -351,5 +360,17 @@ ${resumeText.slice(0, 3000)}`
     },
   })
 
-  return JSON.parse(response.text ?? '{}') as BehavioralAlignmentResult
+  let rawResult: BehavioralAlignmentResult
+  try { rawResult = JSON.parse(response.text ?? '{}') as BehavioralAlignmentResult }
+  catch { rawResult = { ...BEHAVIORAL_FALLBACK } }
+  const bc = rawResult.behavioralConfidence ?? 50
+  const meta: AgentMeta = {
+    confidenceScore: bc,
+    evidenceQuality: bc >= 70 ? 'high' : bc >= 40 ? 'medium' : 'low',
+    reasoningSummary: `Behavioral score: ${rawResult.score}/100. Communication: ${rawResult.communicationStyle}.`,
+    missingEvidence: [],
+    warnings: rawResult.concerns ?? [],
+  }
+  const exec: AgentExecutionState = { status: 'success', fallbackUsed: false, retryCount: 0, executionTimeMs: 0 }
+  return { ...rawResult, meta, exec }
 }

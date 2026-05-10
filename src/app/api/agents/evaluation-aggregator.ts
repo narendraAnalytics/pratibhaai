@@ -1,8 +1,9 @@
 import { GoogleGenAI } from '@google/genai'
 import type { CandidateProfile } from './candidate-extraction'
 import type { HiringBlueprint } from './job-intelligence'
+import type { AgentMeta, AgentExecutionState, WithMeta } from './utils/types'
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY!, apiVersion: 'v1alpha' })
 
 const SYSTEM_PROMPT = `You are the Evaluation Aggregator Agent for Pratibha AI, an enterprise-grade autonomous recruitment platform.
 
@@ -274,13 +275,21 @@ export interface AggregatedScore {
   manualReviewRecommended: boolean
 }
 
+const AGGREGATOR_FALLBACK: AggregatedScore = {
+  skillsScore: 50, compositeScore: 50, recommendation: 'consider', rankLabel: 'Consider',
+  breakdown: { skills: 50, technical: 50, culture: 50 },
+  requiredSkillCoverage: 50, preferredSkillCoverage: 50, keywordAlignment: 50,
+  confidenceAdjustedScore: 50, strengthAreas: [], gapAreas: [], scoringWarnings: ['parsing failed'],
+  rankingRationale: '', evaluationConsistency: 'low', scoreConfidence: 40, manualReviewRecommended: true,
+}
+
 export async function runEvaluationAggregator(
   profile: CandidateProfile,
   blueprint: HiringBlueprint,
   technicalScore: number,
   cultureScore: number,
   weights?: { skills: number; technical: number; culture: number },
-): Promise<AggregatedScore> {
+): Promise<WithMeta<AggregatedScore>> {
   const w = weights ?? blueprint.priorityWeights ?? { skills: 40, technical: 35, culture: 25 }
 
   const prompt = `${SYSTEM_PROMPT}
@@ -323,5 +332,16 @@ compositeScore = (skillsScore × ${w.skills / 100}) + (${technicalScore} × ${w.
     },
   })
 
-  return JSON.parse(response.text ?? '{}') as AggregatedScore
+  let rawResult: AggregatedScore
+  try { rawResult = JSON.parse(response.text ?? '{}') as AggregatedScore }
+  catch { rawResult = { ...AGGREGATOR_FALLBACK } }
+  const meta: AgentMeta = {
+    confidenceScore: rawResult.scoreConfidence ?? 50,
+    evidenceQuality: rawResult.evaluationConsistency as 'high' | 'medium' | 'low',
+    reasoningSummary: `Composite score: ${rawResult.compositeScore}/100. Recommendation: ${rawResult.rankLabel}.`,
+    missingEvidence: rawResult.gapAreas ?? [],
+    warnings: rawResult.scoringWarnings ?? [],
+  }
+  const exec: AgentExecutionState = { status: 'success', fallbackUsed: false, retryCount: 0, executionTimeMs: 0 }
+  return { ...rawResult, meta, exec }
 }

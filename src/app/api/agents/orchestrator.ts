@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
+import type { AgentMeta, AgentExecutionState, WithMeta } from './utils/types'
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY!, apiVersion: 'v1alpha' })
 
 export interface PipelinePlan {
   sessionId: string
@@ -25,13 +26,40 @@ export interface PipelinePlan {
   }
 }
 
+const ORCHESTRATOR_FALLBACK: PipelinePlan = {
+  sessionId: `pipe_fallback_${Date.now()}`,
+  jobTitle: 'Unknown',
+  totalCandidates: 0,
+  agentsToRun: ['job-intelligence', 'candidate-extraction', 'technical-validation', 'behavioral-alignment', 'evaluation-aggregator', 'decision-agent'],
+  priorityNotes: 'Fallback plan — orchestrator parsing failed',
+  estimatedComplexity: 'medium',
+  riskLevel: 'medium',
+  parallelExecution: false,
+  requiresHumanReview: true,
+  githubAnalysisRequired: true,
+  planningConfidence: 50,
+  executionStrategy: { candidateProcessing: 'sequential', batchSize: 3 },
+  recommendedWeights: { skills: 40, technical: 35, culture: 25 },
+}
+
+function buildOrchestratorMeta(result: PipelinePlan): AgentMeta {
+  const confidence = result.planningConfidence ?? 75
+  return {
+    confidenceScore: confidence,
+    evidenceQuality: confidence >= 80 ? 'high' : confidence >= 60 ? 'medium' : 'low',
+    reasoningSummary: result.priorityNotes ?? 'Pipeline orchestration plan generated',
+    missingEvidence: result.requiresHumanReview ? ['incomplete job context detected'] : [],
+    warnings: result.riskLevel === 'high' ? ['high pipeline risk detected'] : [],
+  }
+}
+
 export async function runOrchestrator(job: {
   id: string
   title: string
   department?: string | null
   experienceLevel?: string | null
   description: string
-}, candidateCount: number): Promise<PipelinePlan> {
+}, candidateCount: number): Promise<WithMeta<PipelinePlan>> {
   const prompt = `You are the Orchestrator Agent for Pratibha AI, an autonomous enterprise-grade multi-agent recruitment platform.
 
 You are the root controller of the entire recruitment pipeline.
@@ -147,8 +175,9 @@ OUTPUT REQUIREMENTS
 Return ONLY valid JSON. No markdown, no explanations, no code blocks.
 sessionId format: pipe_${job.id.slice(0, 8)}_<timestamp_ms>`
 
+  // ── Original Gemini call — unchanged ──────────────────────────────────────
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-pro',
+    model: 'gemini-3-pro-preview',
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: {
       responseMimeType: 'application/json',
@@ -186,5 +215,12 @@ sessionId format: pipe_${job.id.slice(0, 8)}_<timestamp_ms>`
     },
   })
 
-  return JSON.parse(response.text ?? '{}') as PipelinePlan
+  // ── Safe parse + meta (new) ────────────────────────────────────────────────
+  let rawResult: PipelinePlan
+  try { rawResult = JSON.parse(response.text ?? '{}') as PipelinePlan }
+  catch { rawResult = { ...ORCHESTRATOR_FALLBACK } }
+
+  const meta = buildOrchestratorMeta(rawResult)
+  const exec: AgentExecutionState = { status: 'success', fallbackUsed: false, retryCount: 0, executionTimeMs: 0 }
+  return { ...rawResult, meta, exec }
 }
