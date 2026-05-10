@@ -1,701 +1,191 @@
-Yes — the Report Generator Agent is architecturally correct and very well designed for the final presentation layer of your pipeline. 
+# Pratibha AI — Multi-Agent Pipeline Documentation
 
-This is actually a strong enterprise design choice because you separated:
-
-* reasoning
-* scoring
-* reporting
-* communication formatting
-
-into different agents.
-
-Most systems incorrectly combine:
-
-* evaluation
-* reasoning
-* email generation
-* dashboards
-
-inside one giant prompt.
-
-Your separation is much cleaner and more scalable.
+Autonomous AI Recruitment Platform · Next.js 15 · Google GenAI (TypeScript) · Gemini 3.1
 
 ---
 
-# Current Assessment
+## Agent Overview
 
-| Area                          | Status         |
-| ----------------------------- | -------------- |
-| Responsibility separation     | Excellent      |
-| Recruiter-oriented reporting  | Strong         |
-| Dashboard summarization       | Strong         |
-| Email generation              | Good           |
-| Enterprise architecture       | Very strong    |
-| Structured reporting logic    | Good           |
-| Compliance-safe communication | Needs upgrades |
-| Confidence-aware reporting    | Missing        |
-| Multi-format output support   | Missing        |
-| Structured JSON enforcement   | Missing        |
-
-Current quality:
-9.1/10
-
-With upgrades:
-9.9/10
+| # | Agent | Model | Output |
+|---|-------|-------|--------|
+| 1 | Orchestrator | gemini-3.1-pro | Routes all tasks, manages pipeline state |
+| 2 | Job Intelligence | gemini-3.1-pro | Structured Hiring Blueprint JSON from raw JD |
+| 3 | Candidate Extraction | gemini-3.1-flash-lite | Candidate Profile JSON from PDF/DOCX resume |
+| 4 | Verification / Risk | gemini-3.1-flash-lite | Risk report — fraud flags, inflation signs, timeline issues |
+| 5 | Technical Validation | gemini-3.1-flash | Technical Depth Score (0–100) via GitHub API analysis |
+| 6 | Behavioral Alignment | gemini-3.1-flash-lite | Culture Fit Score (0–100) — leadership, collaboration, work-style |
+| 7 | Evaluation Aggregator | gemini-3.1-flash-lite | Composite Score — weighted skills + technical + culture |
+| 8 | Decision Agent | gemini-3.1-pro | Explainable recommendation + interview questions |
+| 9 | Report Generator | gemini-3.1-flash-lite | Recruiter report — executive summary, email, dashboard card |
 
 ---
 
-# Biggest Problem
+## Agent Details
 
-Again:
+### Agent 1 — Orchestrator
+**Model:** `gemini-3.1-pro`
+**File:** `src/app/api/agents/orchestrator.ts`
 
-```ts
-extractJSON()
+- Creates pipeline session state
+- Routes tasks to all downstream agents in order
+- Manages parallel candidate extraction across multiple resumes
+- Collects and passes outputs between agents
+
+---
+
+### Agent 2 — Job Intelligence
+**Model:** `gemini-3.1-pro`
+**File:** `src/app/api/agents/job-intelligence.ts`
+
+- Reads raw job description text
+- Extracts: required skills, preferred skills, must-have keywords, deal breakers
+- Identifies: role archetype, seniority signals, leadership requirements
+- Sets: priority weights (skills/technical/culture), technical depth expectation
+- Output: `HiringBlueprint` JSON — used by all downstream agents
+
+---
+
+### Agent 3 — Candidate Extraction
+**Model:** `gemini-3.1-flash-lite`
+**File:** `src/app/api/agents/candidate-extraction.ts`
+
+- Parses base64-encoded PDF/DOCX resume content
+- Extracts: name, email, phone, current role, experience years, skills, education, companies
+- Detects: GitHub URL, LinkedIn URL, career signals (leadership, startup, enterprise)
+- Infers: candidate seniority level, career summary
+- Output: `CandidateProfile` JSON — foundation for all evaluation agents
+- Runs **in parallel** for multiple candidates
+
+---
+
+### Agent 4 — Verification / Risk
+**Model:** `gemini-3.1-flash-lite`
+**File:** `src/app/api/agents/verification-risk.ts`
+
+- Detects resume inflation signs (exaggerated titles, inflated scope claims)
+- Checks employment timeline consistency (overlapping dates, gaps)
+- Flags suspicious or unverifiable claims
+- Scores: overall risk (0–100), verification confidence (0–100), resume consistency (0–100)
+- Output: `RiskReport` — risk level, flags, inflation signs, risk categories
+
+---
+
+### Agent 5 — Technical Validation
+**Model:** `gemini-3.1-flash`
+**File:** `src/app/api/agents/technical-validation.ts`
+
+- Fetches GitHub profile via GitHub REST API
+- Analyzes: repository count, language distribution, commit frequency, project quality
+- Validates technical claims from resume against actual GitHub evidence
+- Scores: Technical Depth Score (0–100) with confidence rating
+- Output: `TechnicalValidationResult` — github analysis summary, tech depth assessment
+
+---
+
+### Agent 6 — Behavioral Alignment
+**Model:** `gemini-3.1-flash-lite`
+**File:** `src/app/api/agents/behavioral-alignment.ts`
+
+- Evaluates observable professional behavioral signals from resume
+- Analyzes: leadership signals, collaboration evidence, ownership patterns, career progression
+- Assesses: work-style indicators (autonomy, collaboration, leadership levels)
+- Checks: culture keyword alignment, work environment fit
+- Scores: Culture Fit Score (0–100) with behavioral confidence
+- Output: `BehavioralAlignmentResult` — strengths, concerns, work-style indicators
+- **Never** infers personality, emotional traits, or protected characteristics
+
+---
+
+### Agent 7 — Evaluation Aggregator
+**Model:** `gemini-3.1-flash-lite`
+**File:** `src/app/api/agents/evaluation-aggregator.ts`
+
+- Aggregates scores from Agents 4, 5, 6 using weighted formula
+- Formula: `(Skills × 40%) + (Technical × 35%) + (Culture × 25%)`
+- Computes: required skill coverage %, preferred skill coverage %, keyword alignment %
+- Detects: scoring inconsistencies, evaluation conflicts
+- Adjusts: confidence-adjusted composite score when evidence quality is low
+- Output: `AggregatedScore` — composite score, rank label, strength areas, gap areas
+
+**Score Tiers:**
+- 90–100 → `strong_hire` / "Strong Hire"
+- 65–89 → `consider` / "Consider"
+- 0–64 → `not_recommended` / "Not Recommended"
+
+---
+
+### Agent 8 — Decision Agent
+**Model:** `gemini-3.1-pro`
+**File:** `src/app/api/agents/decision-agent.ts`
+
+- Synthesizes all upstream evaluation outputs into an explainable recommendation
+- Generates: why-hire rationale, strength highlights, gap highlights
+- Assesses: risk impact on overall hiring decision
+- Creates: targeted interview questions for unresolved concerns
+- Scores: decision confidence (0–100) based on evidence consistency
+- Flags: manual review when confidence is low or conflicts exist
+- Output: `DecisionResult` — recommendation, decision rationale, interview questions
+- **Final hiring authority always belongs to the human reviewer**
+
+---
+
+### Agent 9 — Report Generator
+**Model:** `gemini-3.1-flash-lite`
+**File:** `src/app/api/agents/report-generator.ts`
+
+- Transforms all upstream evaluation outputs into recruiter-facing reports
+- Generates: executive summary, dashboard card (1 sentence), recruiter email
+- Surfaces: confidence levels, evidence quality, risk severity
+- Recommends: manual review when confidence or evidence is weak
+- Output: `ReportData` — 24 fields covering scores, summaries, email content, warnings
+
+**Does NOT:** evaluate candidates, modify scores, or generate new hiring reasoning.
+
+---
+
+## Scoring Formula
+
+```
+Composite Score = (Skills Match × 40%) + (Technical Depth × 35%) + (Culture Fit × 25%)
+
+90–100  →  Strong Hire
+65–89   →  Consider
+0–64    →  Not Recommended
 ```
 
-Manual parsing should be removed.
-
-Especially here because:
-
-* this is recruiter-facing output
-* email systems depend on structured formatting
-* dashboards require consistent schemas
-
-You should move to:
-
-* `responseMimeType: "application/json"`
-* `responseSchema`
-
-This is exactly the intended production usage for Gemini structured outputs in multi-agent systems. ([Google AI for Developers][1])
-
 ---
 
-# Biggest Architectural Strength
+## Structured Output (All Agents)
 
-Your Report Generator correctly behaves as:
+All agents use Gemini native structured output:
 
-* presentation layer
-* communication formatter
-* recruiter UX layer
-
-NOT:
-
-* decision maker
-* scorer
-* evaluator
-
-That separation is excellent.
-
----
-
-# Biggest Missing Feature
-
-Confidence-aware reporting.
-
-Currently:
-the report presents outputs as highly certain.
-
-But enterprise systems should surface:
-
-* evidence quality
-* uncertainty
-* confidence
-* review recommendations
-
-Very important.
-
----
-
-# Recommended Schema Upgrade
-
-Current:
-
-```ts
-candidateName
-compositeScore
-emailBody
-dashboardSummary
-```
-
-Good for MVP.
-
-But enterprise reporting systems need richer reporting metadata.
-
-Recommended additions:
-
-```ts
-reportConfidence: number
-
-manualReviewRecommended: boolean
-
-evidenceQuality: 'low' | 'medium' | 'high'
-
-decisionConfidence: number
-
-riskSeverity: 'low' | 'medium' | 'high' | 'critical'
-
-executiveSummary: string
-
-recruiterActionRecommendation: string
-
-reportWarnings: string[]
-
-highlightedStrengthAreas: string[]
-
-highlightedRiskAreas: string[]
-```
-
-This dramatically improves recruiter trust.
-
----
-
-# Biggest Prompt Upgrade Needed
-
-Current prompt:
-“generate concise report”
-
-Good.
-
-But enterprise report generators need:
-
-* compliance-safe language
-* neutral wording
-* anti-overconfidence constraints
-* recruiter readability optimization
-* confidence signaling
-
----
-
-# Critical Compliance Improvement
-
-You MUST restrict:
-
-* accusatory language
-* overconfident hiring claims
-* speculative statements
-
-Add:
-
-```txt
-Never present assumptions as facts.
-Never describe candidates using emotional or personality labels.
-Use professional neutral language only.
-```
-
-Very important.
-
----
-
-# Another Important Improvement
-
-Current:
-
-```txt
-Top concerns
-```
-
-Good.
-
-But you should explicitly instruct:
-
-```txt
-Concerns must be evidence-based and professionally phrased.
-Never exaggerate weaknesses.
-```
-
-Very important recruiter safety improvement.
-
----
-
-# Add Recruiter Action Guidance
-
-Very valuable.
-
-Example:
-
-```ts
-recruiterActionRecommendation:
-  | 'Proceed to technical interview'
-  | 'Proceed with caution'
-  | 'Requires manual verification'
-  | 'Hold for recruiter review'
-```
-
-Extremely useful operationally.
-
----
-
-# Add Confidence Visibility
-
-Very important.
-
-Reports should communicate:
-
-* evidence certainty
-* evaluation reliability
-
-Example:
-
-```ts
-reportConfidence: number
-```
-
-Examples:
-
-* highly consistent evidence → 92
-* weak/ambiguous evidence → 54
-
-Very useful for enterprise workflows.
-
----
-
-# Add Executive Summary Layer
-
-Current:
-
-* dashboard summary
-
-Good.
-
-But enterprise systems often need:
-
-* recruiter summary
-* executive summary
-* ATS summary
-
-Different compression levels.
-
-Add:
-
-```ts
-executiveSummary: string
-```
-
-Shorter, higher-level.
-
----
-
-# Add Tone Control Rules
-
-Very important.
-
-Your reports should sound:
-
-* professional
-* concise
-* recruiter-oriented
-* neutral
-* explainable
-
-NOT:
-
-* overly enthusiastic
-* AI-generated
-* robotic
-* emotional
-
-Add:
-
-```txt
-Use concise executive-style recruiting language.
-Avoid marketing language or exaggerated praise.
-```
-
-Very important.
-
----
-
-# Add Risk Presentation Constraints
-
-Current:
-
-* risk summarized directly
-
-Good.
-
-But enterprise systems need careful risk communication.
-
-Add:
-
-```txt
-Risk summaries must remain neutral and evidence-based.
-High risk does not imply dishonesty.
-```
-
-Critical.
-
----
-
-# Add Email Safety Rules
-
-Very important.
-
-Currently:
-email generation is good.
-
-But you should constrain:
-
-```txt
-Emails must:
-- be concise
-- avoid speculative claims
-- avoid sensitive assumptions
-- remain recruiter-professional
-```
-
-Very important for enterprise trust.
-
----
-
-# Add Multi-Format Reporting Later
-
-Future versions should support:
-
-* ATS summary
-* executive summary
-* recruiter email
-* PDF report
-* dashboard card
-* Slack summary
-* interview panel briefing
-
-Your architecture is already close to enabling this.
-
----
-
-# Add Tooling Later
-
-Future tools:
-
-| Tool                  | Purpose                    |
-| --------------------- | -------------------------- |
-| PDF report generator  | downloadable reports       |
-| ATS formatter         | ATS integrations           |
-| Email template engine | recruiter communications   |
-| Dashboard summarizer  | compressed recruiter cards |
-| Audit log formatter   | compliance reporting       |
-
-Not necessary now.
-But valuable later.
-
----
-
-# Most Important Architecture Advice
-
-Your Report Generator should behave like:
-an “enterprise reporting layer.”
-
-NOT:
-an AI storyteller.
-
-Meaning:
-
-* concise
-* evidence-driven
-* recruiter-focused
-* confidence-aware
-* professionally neutral
-
-That architecture makes the system:
-
-* trustworthy
-* scalable
-* recruiter-friendly
-* enterprise-ready
-* audit-friendly
-
-which is exactly the correct direction for Pratibha AI.
-
-Also, your move toward schema-safe structured outputs aligns with Google’s current guidance for reliable multi-agent Gemini workflows and agent-to-agent communication. ([Google AI for Developers][1])
-
-[1]: https://ai.google.dev/gemini-api/docs/structured-output?utm_source=chatgpt.com "Structured outputs | Gemini API - Google AI for Developers"
-
---------------------------------------------------------------- -----------------------------------------------
-
-System Prompt — Report Generator Agent
-
-You are the Report Generator Agent for Pratibha AI, an enterprise-grade autonomous recruitment platform.
-
-You are responsible for transforming structured evaluation outputs into recruiter-facing reports and communication summaries.
-
-All upstream agents have already:
-- extracted candidate data
-- validated technical evidence
-- assessed behavioral alignment
-- evaluated verification risks
-- generated recommendations
-- calculated composite scores
-
-You do NOT independently evaluate candidates.
-You do NOT modify scoring.
-You do NOT generate new hiring reasoning.
-
-Your responsibility is ONLY to:
-- format recruiter-ready summaries
-- present evaluation results clearly
-- generate concise executive reports
-- generate recruiter communication content
-- preserve explainability and auditability
-- communicate strengths, concerns, and next steps professionally
-
-━━━━━━━━━━━━━━━━━━━━
-CORE REPORTING PRINCIPLES
-━━━━━━━━━━━━━━━━━━━━
-
-You must follow these principles strictly:
-
-- Be concise
-- Be professional
-- Be evidence-based
-- Be recruiter-friendly
-- Be neutral
-- Preserve clarity
-- Preserve explainability
-- Avoid exaggeration
-- Avoid speculation
-
-Reports must:
-- summarize upstream evidence accurately
-- remain readable in under 30 seconds
-- prioritize actionable information
-- avoid unnecessary verbosity
-
-━━━━━━━━━━━━━━━━━━━━
-STRICT PROHIBITIONS
-━━━━━━━━━━━━━━━━━━━━
-
-You must NEVER:
-- hallucinate strengths or concerns
-- modify upstream scores
-- invent hiring reasoning
-- exaggerate candidate capability
-- speculate about personality
-- infer protected characteristics
-- use emotional or manipulative language
-
-You must NEVER infer or reference:
-- race
-- ethnicity
-- religion
-- gender
-- age
-- disability
-- political beliefs
-- mental health
-- personality disorders
-
-You are NOT a psychological profiling system.
-
-━━━━━━━━━━━━━━━━━━━━
-PRIMARY RESPONSIBILITIES
-━━━━━━━━━━━━━━━━━━━━
-
-You must:
-
-1. Generate concise candidate summaries
-2. Present composite evaluation scores clearly
-3. Highlight strengths and concerns
-4. Summarize technical validation findings
-5. Summarize risk assessment findings
-6. Present recruiter action recommendations
-7. Generate recruiter-ready email communication
-8. Generate dashboard-friendly summaries
-9. Preserve confidence and uncertainty visibility
-
-━━━━━━━━━━━━━━━━━━━━
-REPORTING STYLE RULES
-━━━━━━━━━━━━━━━━━━━━
-
-Use:
-- executive-style language
-- concise recruiter-friendly wording
-- factual summaries
-- action-oriented communication
-
-Avoid:
-- hype
-- marketing language
-- excessive praise
-- emotional tone
-- robotic repetition
-
-Reports should sound:
-- professional
-- trustworthy
-- concise
-- recruiter-oriented
-- enterprise-ready
-
-━━━━━━━━━━━━━━━━━━━━
-STRENGTH & CONCERN RULES
-━━━━━━━━━━━━━━━━━━━━
-
-Strengths and concerns must:
-- be evidence-based
-- reference upstream findings
-- remain concise
-- avoid exaggeration
-
-Good examples:
-- "Strong TypeScript production experience"
-- "Demonstrated cross-functional leadership"
-
-Avoid vague statements such as:
-- "Amazing engineer"
-- "Exceptional personality"
-- "Highly intelligent"
-
-━━━━━━━━━━━━━━━━━━━━
-RISK COMMUNICATION RULES
-━━━━━━━━━━━━━━━━━━━━
-
-Risk summaries must:
-- remain neutral
-- avoid accusations
-- communicate uncertainty carefully
-- preserve professional tone
-
-Use wording such as:
-- "minor inconsistency detected"
-- "limited supporting evidence"
-- "requires clarification"
-- "manual verification recommended"
-
-Do NOT imply dishonesty.
-
-━━━━━━━━━━━━━━━━━━━━
-EMAIL GENERATION RULES
-━━━━━━━━━━━━━━━━━━━━
-
-Emails must:
-- be concise
-- recruiter-professional
-- easy to scan
-- focused on actionable information
-
-Email summaries should include:
-- candidate name
-- role
-- composite score
-- recommendation
-- strongest signal
-- most important concern
-- dashboard follow-up instruction
-
-Avoid lengthy paragraphs.
-
-━━━━━━━━━━━━━━━━━━━━
-DASHBOARD SUMMARY RULES
-━━━━━━━━━━━━━━━━━━━━
-
-Dashboard summaries must:
-- fit within a compact recruiter card
-- highlight the single most important signal
-- mention the primary concern if relevant
-- remain highly scannable
-
-Maximum:
-1 concise sentence.
-
-━━━━━━━━━━━━━━━━━━━━
-CONFIDENCE & UNCERTAINTY RULES
-━━━━━━━━━━━━━━━━━━━━
-
-If evidence quality or decision confidence is low:
-- surface uncertainty clearly
-- recommend manual review
-- avoid overly confident language
-
-High-confidence reports require:
-- strong evidence consistency
-- high technical validation confidence
-- low verification risk
-- strong role alignment
-
-━━━━━━━━━━━━━━━━━━━━
-MANUAL REVIEW RULES
-━━━━━━━━━━━━━━━━━━━━
-
-Recommend manual review when:
-- evidence is incomplete
-- confidence is low
-- risk concerns remain unresolved
-- evaluation inconsistencies exist
-
-Manual review is a safety mechanism, not a rejection signal.
-
-━━━━━━━━━━━━━━━━━━━━
-OUTPUT REQUIREMENTS
-━━━━━━━━━━━━━━━━━━━━
-
-Return ONLY valid JSON.
-
-Do NOT:
-- use markdown
-- add explanations
-- add commentary
-- wrap output in code blocks
-
-The JSON must be:
-- deterministic
-- machine-readable
-- schema-safe
-- stable across runs
-
-━━━━━━━━━━━━━━━━━━━━
-REQUIRED OUTPUT STRUCTURE
-━━━━━━━━━━━━━━━━━━━━
-
-{
-  "candidateName": "",
-
-  "jobTitle": "",
-
-  "compositeScore": 0,
-
-  "rankLabel": "",
-
-  "recommendation": "",
-
-  "scoreBreakdown": {
-    "skills": 0,
-    "technical": 0,
-    "culture": 0
-  },
-
-  "keyStrengths": [],
-
-  "topConcerns": [],
-
-  "highlightedStrengthAreas": [],
-
-  "highlightedRiskAreas": [],
-
-  "riskSummary": "",
-
-  "githubSummary": "",
-
-  "executiveSummary": "",
-
-  "dashboardSummary": "",
-
-  "recruiterActionRecommendation": "",
-
-  "decisionConfidence": 0,
-
-  "reportConfidence": 0,
-
-  "evidenceQuality": "low | medium | high",
-
-  "riskSeverity": "low | medium | high | critical",
-
-  "manualReviewRecommended": false,
-
-  "interviewQuestions": [],
-
-  "emailSubject": "",
-
-  "emailBody": "",
-
-  "reportWarnings": []
+```typescript
+config: {
+  responseMimeType: 'application/json',
+  responseSchema: SCHEMA as unknown,
 }
+```
+
+No manual JSON parsing. No `extractJSON()`. Schema-safe, deterministic output across all agents.
+
+---
+
+## Data Flow
+
+```
+Resume PDF/DOCX (base64)
+  → [3] Candidate Extraction     → CandidateProfile
+  → [4] Verification / Risk      → RiskReport
+  → [5] Technical Validation     → TechnicalValidationResult
+  → [6] Behavioral Alignment     → BehavioralAlignmentResult
+  → [7] Evaluation Aggregator    → AggregatedScore
+  → [8] Decision Agent           → DecisionResult
+  → [9] Report Generator         → ReportData
+
+[2] Job Intelligence runs once per job → HiringBlueprint
+[1] Orchestrator manages the full pipeline
+```
+
+---
+
+*Pratibha AI · Narendra Kumar · 2026*
