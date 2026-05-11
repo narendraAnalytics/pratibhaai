@@ -1,5 +1,26 @@
 import { GoogleGenAI } from '@google/genai'
 import type { AgentMeta, AgentExecutionState, WithMeta } from './utils/types'
+async function extractPdfAnnotationLinks(buf: Buffer): Promise<string[]> {
+  try {
+    // Dynamic import of legacy build — defers evaluation so DOMMatrix (browser-only) is never
+    // accessed at module load time. The legacy build polyfills browser APIs for Node.js.
+    const { getDocument, GlobalWorkerOptions } = await import('pdfjs-dist/legacy/build/pdf.mjs')
+    GlobalWorkerOptions.workerSrc = ''
+    const data = new Uint8Array(buf)
+    const pdf = await (getDocument({ data }) as { promise: Promise<{ numPages: number; getPage: (n: number) => Promise<{ getAnnotations: () => Promise<Array<{ subtype: string; url?: string }>> }> }> }).promise
+    const urls: string[] = []
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i)
+      const annotations = await page.getAnnotations()
+      for (const annot of annotations) {
+        if (annot.subtype === 'Link' && annot.url) urls.push(annot.url)
+      }
+    }
+    return [...new Set(urls)]
+  } catch {
+    return []
+  }
+}
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY!, apiVersion: 'v1alpha' })
 
@@ -366,10 +387,15 @@ function labelResumeSections(text: string): string {
   }).join('\n')
 }
 
-export async function runCandidateExtraction(resumeText: string): Promise<WithMeta<CandidateProfile>> {
+export async function runCandidateExtraction(resumeText: string, pdfBuffer?: Buffer): Promise<WithMeta<CandidateProfile>> {
+  const annotationLinks = pdfBuffer ? await extractPdfAnnotationLinks(pdfBuffer) : []
+  const hyperlinksSection = annotationLinks.length
+    ? `\n\n--- EMBEDDED HYPERLINKS DETECTED IN PDF (treat these as ground-truth URLs) ---\n${annotationLinks.join('\n')}`
+    : ''
+
   const response = await ai.models.generateContent({
     model: 'gemini-3.1-flash-lite',
-    contents: [{ role: 'user', parts: [{ text: `${SYSTEM_PROMPT}\n\nResume to analyze:\n\n${labelResumeSections(resumeText)}` }] }],
+    contents: [{ role: 'user', parts: [{ text: `${SYSTEM_PROMPT}\n\nResume to analyze:\n\n${labelResumeSections(resumeText)}${hyperlinksSection}` }] }],
     config: {
       responseMimeType: 'application/json',
       responseSchema: CANDIDATE_SCHEMA as unknown,

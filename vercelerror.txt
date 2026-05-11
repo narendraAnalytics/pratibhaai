@@ -1,3 +1,172 @@
-pdf uplode then AI screening is starting. Redirecting to dashboard…
-Resumes Uploaded!
-AI screening is starting. Redirecting to dashboard…
+I got everythink correct extracted the resume details nice . 
+But the linkedIn profile not extracted this linkedin extreactde : linkedin.com/in/yunlong-jiao/ .  
+But this linkedin in resume not extracted linedinicon and narendra analytics[link] this not extracted . 
+Only info no code for now. same for the gihubalso to extract
+
+
+
+Yes — this is a very common real-world resume parsing issue, especially with PDFs.
+
+Your extraction pipeline is likely extracting only **visible plain text URLs** like:
+
+* `linkedin.com/in/yunlong-jiao/`
+
+But not extracting:
+
+* LinkedIn icons with embedded hyperlinks
+* Text labels like `Narendra Analytics`
+* Hidden clickable hyperlinks behind icons/text
+* Hyperlinked SVG/image elements in PDFs
+
+This is normal behavior if your parser currently uses only:
+
+* `pdf-parse`
+* raw text extraction
+* OCR/text layer extraction
+
+Because those tools mainly read the PDF text layer, not hyperlink annotations.
+
+In resumes, many candidates use formats like:
+
+* LinkedIn icon → clickable URL
+* `LinkedIn` word → hidden hyperlink
+* `Narendra Analytics` → hyperlink attached
+* icons from Canva/Figma/Word resumes
+* tables/columns with embedded links
+
+Those links exist inside PDF annotations, not normal text content.
+
+Example:
+Visible text:
+
+```text
+Narendra Analytics
+```
+
+Actual embedded hyperlink:
+
+```text
+https://linkedin.com/in/narendra-analytics
+```
+
+Your current extraction probably sees only:
+
+```text
+Narendra Analytics
+```
+
+and misses the actual URL.
+
+This especially happens with:
+
+* Canva-generated resumes
+* MS Word exported PDFs
+* Figma resumes
+* modern ATS-friendly templates
+* icon-based contact sections
+
+Even many ATS systems lose hyperlinks sometimes. ([Reddit][1])
+
+For Pratibha AI, this is important because:
+
+* Technical Validation Agent depends on GitHub/LinkedIn extraction
+* Missing URLs lowers evaluation quality
+* Candidates with icon-only links may appear to have no LinkedIn/GitHub
+
+So your Candidate Extraction Agent should eventually support:
+
+* PDF hyperlink annotation extraction
+* DOCX relationship parsing
+* clickable anchor detection
+* fallback regex detection
+* icon-associated link extraction
+
+Your workflow architecture already supports this enhancement well via the Candidate Extraction Agent.  
+
+So overall:
+
+* Your current extraction is NOT wrong
+* This is an advanced parsing edge case
+* Very common in real recruitment systems
+* Needs hyperlink/annotation-level extraction, not just text extraction
+
+And actually, handling this properly will make Pratibha AI much more production-grade than many ATS systems.
+
+[1]: https://www.reddit.com/r/resumes/comments/k630xe/does_having_clickable_urls_in_resume_pdf_file/?utm_source=chatgpt.com "Does having clickable URLs in resume PDF file affect ..."
+
+------------------------------------------------------ ---------------------------------------------
+
+Yes — you absolutely should add this capability in your codebase.
+
+For Pratibha AI, extracting:
+
+* LinkedIn URLs
+* GitHub URLs
+* Portfolio links
+* clickable icons
+* embedded hyperlinks
+
+is very important for your downstream agents, especially:
+
+* Technical Validation Agent
+* Behavioral Alignment Agent
+* Decision Agent
+
+Your own project docs already expect LinkedIn/GitHub extraction from resumes.  
+
+And modern resume parsers specifically mention:
+
+* embedded links in PDFs
+* social links extraction
+* hyperlink parsing
+  as production-grade features. ([eLitmus][1])
+
+So the correct enterprise approach is:
+
+1. Text extraction layer
+
+* extract visible URLs from raw text
+
+2. Hyperlink extraction layer
+
+* extract embedded PDF annotations/hyperlinks
+
+3. DOCX relationship parsing
+
+* read hyperlink relationships from Word documents
+
+4. Fallback intelligent detection
+
+* detect labels like:
+
+  * “LinkedIn”
+  * “Portfolio”
+  * “Narendra Analytics”
+  * GitHub icons
+
+5. Normalization layer
+
+* convert:
+
+  * `linkedin.com/in/...`
+  * `www.linkedin.com/...`
+  * hidden anchors
+    into standardized URLs
+
+This is exactly the type of enhancement that makes your system:
+
+* ATS-grade
+* enterprise-ready
+* better than keyword-only resume parsers
+
+Because real resumes in 2026 are heavily:
+
+* icon-based
+* Canva-designed
+* hyperlink-driven
+* multi-column
+* visually formatted
+
+Plain text extraction alone is not enough anymore. ([eLitmus][1])
+
+[1]: https://www.elitmus.com/blog/technology/resume-parsing-insights-and-steps-to-create-your-own-parser/?utm_source=chatgpt.com "Resume Parsing: Insights and Steps to Create Your Own ..."

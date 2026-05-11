@@ -111,7 +111,8 @@ export async function POST(req: NextRequest) {
 
         // Agent 3: Candidate Extraction
         t = Date.now()
-        const profile = await runCandidateExtraction(resumeText)
+        const isPdf = candidate.resumeName?.toLowerCase().endsWith('.pdf')
+        const profile = await runCandidateExtraction(resumeText, isPdf ? buf : undefined)
         await db.insert(agentRuns).values({
           candidateId: candidate.id, jobId, agentName: 'candidate-extraction', status: 'completed',
           output: { name: profile.name, skillsCount: profile.skills.length, experienceYears: profile.experienceYears },
