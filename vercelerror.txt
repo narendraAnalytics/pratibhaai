@@ -1,0 +1,90 @@
+2026-05-13 20:25:37.793 [info] [main] Log level: Info
+2026-05-13 20:25:37.793 [info] [main] Validating found git in: "C:\Program Files\Git\cmd\git.exe"
+2026-05-13 20:25:37.793 [info] [main] Using git "2.50.0.windows.2" from "C:\Program Files\Git\cmd\git.exe"
+2026-05-13 20:25:37.793 [info] [Model][doInitialScan] Initial repository scan started
+2026-05-13 20:25:42.360 [info] > git rev-parse --show-toplevel [4610ms]
+2026-05-13 20:25:44.499 [info] > git rev-parse --git-dir --git-common-dir --show-superproject-working-tree [464ms]
+2026-05-13 20:25:45.081 [info] [Model][openRepository] Opened repository (path): c:\Users\ES\Desktop\2025\pratibhai
+2026-05-13 20:25:45.081 [info] [Model][openRepository] Opened repository (real path): c:\Users\ES\Desktop\2025\pratibhai
+2026-05-13 20:25:45.082 [info] [Model][openRepository] Opened repository (kind): repository
+2026-05-13 20:25:45.596 [info] > git config --get commit.template [479ms]
+2026-05-13 20:25:45.695 [info] > git rev-parse --show-toplevel [572ms]
+2026-05-13 20:25:45.696 [info] > git config --get --local core.virtualfilesystem [594ms]
+2026-05-13 20:25:45.696 [warning] [Git][config] git config failed: Failed to execute git
+2026-05-13 20:25:46.007 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [760ms]
+2026-05-13 20:25:46.185 [info] > git check-ignore -v -z --stdin [704ms]
+2026-05-13 20:25:46.187 [info] > git rev-parse --show-toplevel [475ms]
+2026-05-13 20:25:46.189 [info] > git check-ignore -v -z --stdin [497ms]
+2026-05-13 20:25:46.401 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [349ms]
+2026-05-13 20:25:46.458 [info] > git status -z -uall [418ms]
+2026-05-13 20:25:46.512 [info] > git rev-parse --show-toplevel [314ms]
+2026-05-13 20:25:46.900 [info] > git rev-parse --show-toplevel [349ms]
+2026-05-13 20:25:46.901 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [341ms]
+2026-05-13 20:25:46.909 [info] > git config --get commit.template [365ms]
+2026-05-13 20:25:46.979 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [472ms]
+2026-05-13 20:25:47.228 [info] > git check-ignore -v -z --stdin [419ms]
+2026-05-13 20:25:47.279 [info] > git status -z -uall [364ms]
+2026-05-13 20:25:47.280 [info] > git rev-parse --show-toplevel [373ms]
+2026-05-13 20:25:47.324 [info] > git config --get --local branch.main.vscode-merge-base [335ms]
+2026-05-13 20:25:47.334 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [412ms]
+2026-05-13 20:25:47.479 [info] > git rev-parse --show-toplevel [191ms]
+2026-05-13 20:25:47.483 [info] [Model][doInitialScan] Initial repository scan completed - repositories (1), closed repositories (0), parent repositories (0), unsafe repositories (0)
+2026-05-13 20:25:47.526 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/origin/main refs/remotes/origin/main [192ms]
+2026-05-13 20:25:47.747 [info] > git merge-base refs/heads/main refs/remotes/origin/main [201ms]
+2026-05-13 20:25:47.757 [info] > git merge-base refs/heads/main refs/remotes/origin/main [219ms]
+2026-05-13 20:25:47.943 [info] > git check-ignore -v -z --stdin [284ms]
+2026-05-13 20:25:47.971 [info] > git diff --raw --numstat --diff-filter=ADMR -z --find-renames=50% 873bbcb26d76c1c808d79aa3ce714b8e3cbd686f...refs/remotes/origin/main -- [206ms]
+2026-05-13 20:25:48.048 [info] > git diff --raw --numstat --diff-filter=ADMR -z --find-renames=50% 873bbcb26d76c1c808d79aa3ce714b8e3cbd686f...refs/remotes/origin/main -- [291ms]
+2026-05-13 20:25:56.479 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [306ms]
+2026-05-13 20:25:56.665 [info] > git config --get --local branch.main.vscode-merge-base [172ms]
+2026-05-13 20:25:56.777 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/origin/main refs/remotes/origin/main [105ms]
+2026-05-13 20:27:20.591 [info] > git fetch [22788ms]
+2026-05-13 20:27:20.591 [info] fatal: unable to access 'https://github.com/narendraAnalytics/pratibhaai.git/': Failed to connect to github.com port 443 after 21232 ms: Could not connect to server
+2026-05-13 20:27:20.924 [info] > git config --get commit.template [325ms]
+2026-05-13 20:27:20.944 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [335ms]
+2026-05-13 20:27:21.499 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [537ms]
+2026-05-13 20:27:21.503 [info] > git status -z -uall [549ms]
+2026-05-13 20:27:22.413 [info] > git check-ignore -v -z --stdin [544ms]
+2026-05-13 20:30:55.509 [info] > git check-ignore -v -z --stdin [249ms]
+2026-05-13 20:31:14.360 [info] > git add -A -- . [175ms]
+2026-05-13 20:31:14.360 [info] warning: in the working copy of 'CLAUDE.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/api/run-pipeline/route.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/dashboard/jobs/[jobId]/candidates/[candidateId]/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/dashboard/jobs/[jobId]/results/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/api/candidates/[candidateId]/override/route.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/lib/email.ts', LF will be replaced by CRLF the next time Git touches it
+2026-05-13 20:31:14.449 [info] > git fetch [21418ms]
+2026-05-13 20:31:14.449 [info] fatal: unable to access 'https://github.com/narendraAnalytics/pratibhaai.git/': Failed to connect to github.com port 443 after 21146 ms: Could not connect to server
+2026-05-13 20:31:14.822 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [352ms]
+2026-05-13 20:31:14.846 [info] > git config --get commit.template [385ms]
+2026-05-13 20:31:14.895 [info] > git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file - [529ms]
+2026-05-13 20:31:15.030 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [170ms]
+2026-05-13 20:31:15.039 [info] > git status -z -uall [185ms]
+2026-05-13 20:31:15.082 [info] > git config --get commit.template [180ms]
+2026-05-13 20:31:15.278 [info] > git merge-base refs/heads/main refs/remotes/origin/main [217ms]
+2026-05-13 20:31:15.323 [info] > git config --get commit.template [229ms]
+2026-05-13 20:31:15.324 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [219ms]
+2026-05-13 20:31:15.616 [info] > git status -z -uall [285ms]
+2026-05-13 20:31:15.617 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [276ms]
+2026-05-13 20:31:15.683 [info] > git diff --raw --numstat --diff-filter=ADMR -z --find-renames=50% 873bbcb26d76c1c808d79aa3ce714b8e3cbd686f...refs/remotes/origin/main -- [396ms]
+2026-05-13 20:31:15.739 [info] > git check-ignore -v -z --stdin [325ms]
+2026-05-13 20:31:15.857 [info] > git merge-base refs/heads/main refs/remotes/origin/main [225ms]
+2026-05-13 20:31:15.999 [info] > git diff --raw --numstat --diff-filter=ADMR -z --find-renames=50% 873bbcb26d76c1c808d79aa3ce714b8e3cbd686f...refs/remotes/origin/main -- [134ms]
+2026-05-13 20:31:37.279 [info] > git push origin main:main [21596ms]
+2026-05-13 20:31:37.279 [info] fatal: unable to access 'https://github.com/narendraAnalytics/pratibhaai.git/': Failed to connect to github.com port 443 after 21039 ms: Could not connect to server
+2026-05-13 20:31:37.407 [info] > git config --get commit.template [118ms]
+2026-05-13 20:31:37.418 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [123ms]
+2026-05-13 20:31:37.547 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [117ms]
+2026-05-13 20:31:37.554 [info] > git status -z -uall [129ms]
+2026-05-13 20:31:37.798 [info] > git config --get commit.template [193ms]
+2026-05-13 20:31:37.813 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [171ms]
+2026-05-13 20:31:37.959 [info] > git status -z -uall [139ms]
+2026-05-13 20:31:37.966 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [137ms]
+2026-05-13 20:32:08.982 [info] > git log --oneline --cherry main...main@{upstream} -- [320ms]
+2026-05-13 20:32:30.776 [info] > git pull --tags origin main [21786ms]
+2026-05-13 20:32:30.776 [info] fatal: unable to access 'https://github.com/narendraAnalytics/pratibhaai.git/': Failed to connect to github.com port 443 after 21149 ms: Could not connect to server
+2026-05-13 20:32:31.017 [info] > git config --get commit.template [232ms]
+2026-05-13 20:32:31.047 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [253ms]
+2026-05-13 20:32:31.313 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [248ms]
+2026-05-13 20:32:31.316 [info] > git status -z -uall [258ms]
+2026-05-13 20:32:43.067 [info] > git check-ignore -v -z --stdin [128ms]
