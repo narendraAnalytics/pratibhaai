@@ -76,7 +76,13 @@ export default function CandidateDetailPage() {
   useEffect(() => {
     fetch(`/api/jobs/${jobId}/candidates/${candidateId}/detail`)
       .then(r => r.json())
-      .then(setDetail)
+      .then((data: CandidateDetail) => {
+        setDetail(data)
+        const s = data.candidate.status
+        if (s === 'interview') setOverrideMsg('Moved to Interview')
+        else if (s === 'approve') setOverrideMsg('Approved')
+        else if (s === 'reject') setOverrideMsg('Rejected')
+      })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [jobId, candidateId])
@@ -187,7 +193,14 @@ export default function CandidateDetailPage() {
           </div>
         )}
 
-        {!loading && !detail?.pipeline && (
+        {!loading && !detail?.candidate && (
+          <div style={{ textAlign: 'center', padding: '80px 32px', color: '#94A3B8' }}>
+            <p style={{ fontWeight: 600, color: '#475569', marginBottom: 8 }}>Candidate not found</p>
+            <p style={{ fontSize: 13 }}>Please go back to Results and refresh the page.</p>
+          </div>
+        )}
+
+        {!loading && detail?.candidate && !detail?.pipeline && (
           <div style={{ textAlign: 'center', padding: '80px 32px', color: '#94A3B8' }}>
             <p style={{ fontWeight: 600, color: '#475569', marginBottom: 8 }}>No pipeline data found</p>
             <p style={{ fontSize: 13 }}>This candidate may still be processing.</p>

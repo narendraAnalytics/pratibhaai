@@ -180,6 +180,19 @@ export async function POST(req: NextRequest) {
         })
         console.log('[Agent 9] report generated for', candidate.id)
 
+        // Full audit log — saved FIRST so Vercel timeout cannot orphan it
+        try {
+          await db.insert(agentRuns).values({
+            candidateId: candidate.id, jobId,
+            agentName: 'full-pipeline', status: 'completed',
+            input: { resumeName: candidate.resumeName },
+            output: { profile, risk, technical, behavioral, aggregated, decision, report },
+            durationMs: Date.now() - start,
+          })
+        } catch (auditErr) {
+          console.error('[pipeline] full-pipeline audit save failed:', auditErr)
+        }
+
         // Save evaluation
         await db.insert(evaluations).values({
           candidateId: candidate.id,
@@ -198,15 +211,6 @@ export async function POST(req: NextRequest) {
 
         // Save report
         await db.insert(reports).values({ candidateId: candidate.id, emailSent: false })
-
-        // Full audit log
-        await db.insert(agentRuns).values({
-          candidateId: candidate.id, jobId,
-          agentName: 'full-pipeline', status: 'completed',
-          input: { resumeName: candidate.resumeName },
-          output: { profile, risk, technical, behavioral, aggregated, decision, report },
-          durationMs: Date.now() - start,
-        })
 
         processed++
       } catch (err) {

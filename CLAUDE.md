@@ -7,10 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 **Pratibha AI** — Autonomous AI Recruitment & Hiring Agent Platform.
-Multi-agent SaaS: screens resumes, validates GitHub, detects fraud, scores candidates, generates explainable hiring reports — all inside a single Next.js 15 monorepo with no separate backend.
+Multi-agent SaaS: screens resumes, validates GitHub, detects fraud, scores candidates, generates explainable hiring reports — all inside a single Next.js 16 monorepo with no separate backend.
 
 **Production URL:** https://pratibhaai.vercel.app  
-**Stack:** Next.js 15 · Clerk · Neon PostgreSQL · Drizzle ORM · Google ADK (TS) · Gemini 3.1 · Resend
+**Stack:** Next.js 16 · Clerk · Neon PostgreSQL · Drizzle ORM · Google ADK (TS) · Gemini 3.1 · Resend
 
 ---
 
@@ -52,6 +52,21 @@ Google ADK agent work:        C:\Users\ES\.claude\skills\google-agents-cli-adk-c
 - **All other PKs** — `uuid().defaultRandom()`
 - **All FK constraints** — `{ onDelete: 'cascade' }`
 
+### Resend v6 — email sending (v6 installed)
+`resend.emails.send()` does **NOT throw** on API errors — it returns `{ data, error }`. Always destructure and check `error`:
+```ts
+const { data, error } = await resend.emails.send({ from, to, subject, html })
+if (error) {
+  console.error('[email] Resend rejected:', JSON.stringify(error))
+  return { success: false, error: (error as { message?: string }).message }
+}
+```
+If you use `try/catch` alone and ignore the return value, API key errors and domain errors are silently swallowed — the call appears to succeed.
+
+Helper: `sendInterviewInvitation()` lives in `src/lib/email.ts`. Interview date is computed server-side as today + 3 days in `Asia/Kolkata` timezone.
+
+Domain `buildflows.shop` must be verified in Resend dashboard before emails reach arbitrary addresses. Free-plan Resend only delivers to the account's own verified email.
+
 ### Clerk auth constraints
 - Use `useUser()` for auth state — `<SignedIn>` / `<SignedOut>` are NOT exported by the installed version
 - Do NOT pass `afterSignOutUrl` prop to `<UserButton />` — set `NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL` in `.env` instead
@@ -70,6 +85,18 @@ const pdfParse = require('pdf-parse')
 await pdfParse(buf)
 ```
 
+### pdfjs-dist (v5 installed — Node.js usage constraint)
+The main build requires browser-only APIs (`DOMMatrix`). Always use the legacy build via **dynamic import** inside the function — never a top-level static import. This avoids the `DOMMatrix is not defined` crash during Next.js build/page-data collection.
+```ts
+// CORRECT — dynamic import, defers evaluation to runtime
+const { getDocument, GlobalWorkerOptions } = await import('pdfjs-dist/legacy/build/pdf.mjs')
+GlobalWorkerOptions.workerSrc = ''
+
+// WRONG — top-level static import crashes at build time
+import { getDocument } from 'pdfjs-dist'
+```
+See `extractPdfAnnotationLinks()` in `candidate-extraction.ts` for the reference implementation.
+
 ---
 
 ## Folder Structure
@@ -85,15 +112,19 @@ src/
 │   │   └── jobs/
 │   │       ├── new/page.tsx      # Step 1: Job creation form
 │   │       └── [jobId]/
-│   │           ├── upload/page.tsx      # Step 2: Resume drag-drop upload
-│   │           └── screening/page.tsx  # Step 3: Animated 9-agent progress + polling
+│   │           ├── upload/page.tsx                    # Step 2: Resume drag-drop upload
+│   │           ├── screening/page.tsx                 # Step 3: Animated 9-agent progress + polling
+│   │           ├── results/page.tsx                   # Step 4: Ranked candidate list
+│   │           └── candidates/[candidateId]/page.tsx  # Candidate detail / full report
 │   ├── api/
-│   │   ├── jobs/route.ts                        # POST — create job
-│   │   ├── jobs/[jobId]/candidates/route.ts     # POST multipart — upload resumes → Neon base64
-│   │   ├── jobs/[jobId]/pipeline-status/route.ts # GET — { total, screened, isComplete }
-│   │   ├── dashboard/stats/route.ts             # GET — dashboard stat counts
-│   │   ├── sync-user/route.ts                   # POST — Clerk → Neon user sync
-│   │   ├── run-pipeline/route.ts                # POST — triggers full 9-agent pipeline (maxDuration=300)
+│   │   ├── jobs/route.ts                                      # POST — create job
+│   │   ├── jobs/[jobId]/candidates/route.ts                   # POST multipart — upload resumes → Neon base64
+│   │   ├── jobs/[jobId]/pipeline-status/route.ts              # GET — { total, screened, isComplete }
+│   │   ├── jobs/[jobId]/results/route.ts                      # GET — ranked candidates with scores
+│   │   ├── jobs/[jobId]/candidates/[candidateId]/detail/route.ts  # GET — full pipeline output for one candidate
+│   │   ├── dashboard/stats/route.ts                           # GET — dashboard stat counts
+│   │   ├── sync-user/route.ts                                 # POST — Clerk → Neon user sync
+│   │   ├── run-pipeline/route.ts                              # POST — triggers full 9-agent pipeline (maxDuration=300)
 │   │   └── agents/                              # All 9 ADK agent files
 │   │       ├── orchestrator.ts         # Gemini Pro
 │   │       ├── job-intelligence.ts     # Gemini Pro
@@ -112,7 +143,8 @@ src/
 │   ├── index.ts                  # Neon HTTP client + Drizzle instance
 │   └── schema.ts                 # All 8 table definitions
 └── lib/
-    └── auth.ts                   # getOrCreateUser()
+    ├── auth.ts                   # getOrCreateUser()
+    └── email.ts                  # sendInterviewInvitation() — Resend raw-HTML helper
 ```
 
 ---
@@ -157,7 +189,7 @@ These interfaces drive all downstream UI and reporting. Source of truth is `src/
 - Skills: `skills[]`, `technicalSkills[]`, `frameworks[]`, `cloudPlatforms[]`, `databases[]`, `tools[]`, `softSkills[]`
 - Experience: `experienceYears`, `candidateSeniority`, `companies[]`, `employmentHistory[]` (`company`, `role`, `duration`, `startDate`, `endDate`)
 - Education: `education[]` (formatted strings), `educationDetails[]` (`degree`, `field`, `institution`, `graduationYear`)
-- Links: `githubUrl`, `linkedinUrl`, `portfolioUrl`
+- Links: `githubUrl`, `linkedinUrl`, `portfolioUrl` — populated from both plain text AND PDF annotation hyperlinks
 - Signals: `certifications[]`, `projects[]`, `careerSignals` (`leadershipExperience`, `startupExperience`, `enterpriseExperience`, `frequentJobChanges`)
 - Meta: `summary`, `extractionConfidence`, `resumeQuality`, `missingCriticalFields`
 
@@ -187,7 +219,7 @@ These interfaces drive all downstream UI and reporting. Source of truth is `src/
 | `evaluations` | `id` UUID, `candidateId`, `skillsScore`, `technicalScore`, `cultureScore`, `compositeScore`, `recommendation` |
 | `agent_runs` | `id` UUID, `candidateId`, `jobId`, `agentName`, `status`, `input` JSONB, `output` JSONB, `durationMs` |
 | `reports` | `id` UUID, `candidateId`, `pdfUrl`, `emailSent`, `emailSentAt` |
-| `overrides` | `id` UUID, `candidateId`, `userId`, `action` (approve/reject/adjust), `reason` |
+| `overrides` | `id` UUID, `candidateId`, `userId`, `action` varchar(20) — accepts `'approve'`, `'reject'`, `'interview'` (no DB enum, no migration needed), `reason` |
 
 To fetch full pipeline output for a candidate:
 ```ts
@@ -199,15 +231,17 @@ await db.select().from(agentRuns)
 
 ---
 
-## User Flow (3 steps)
+## User Flow (4 steps)
 
 ```
-Step 1: /dashboard/jobs/new           Job creation form (dark aurora, z-50 overlay)
-Step 2: /dashboard/jobs/[jobId]/upload   Resume drag-drop (PDF/DOCX, max 10 files)
-                                         → fires POST /api/run-pipeline (fire-and-forget)
-                                         → redirects to screening after 2.5 s
-Step 3: /dashboard/jobs/[jobId]/screening   9-agent animated progress + 3 s polling
-                                         → isComplete → redirect to /dashboard
+Step 1: /dashboard/jobs/new                          Job creation form (dark aurora, z-50 overlay)
+Step 2: /dashboard/jobs/[jobId]/upload               Resume drag-drop (PDF/DOCX, max 10 files)
+                                                     → fires POST /api/run-pipeline (fire-and-forget)
+                                                     → redirects to screening after 2.5 s
+Step 3: /dashboard/jobs/[jobId]/screening            9-agent animated progress + 3 s polling
+                                                     → isComplete → redirect to results
+Step 4: /dashboard/jobs/[jobId]/results              Ranked candidate list (scores, recommendations)
+                                                     → click candidate → /candidates/[candidateId]
 ```
 
 ---
@@ -239,14 +273,15 @@ GITHUB_TOKEN=
 
 # Resend
 RESEND_API_KEY=
-EMAIL_FROM=noreply@pratibha-ai.com
+RESEND_FROM_EMAIL=admin@buildflows.shop   # must be on a Resend-verified domain
+RESEND_FROM_NAME=PRATIBHAAI
 ```
 
 ---
 
 ## UI Design System
 
-All dashboard job-flow pages (new job, upload, screening) share:
+All dashboard job-flow pages (new job, upload, screening, results) share:
 - Full-screen fixed overlay (`position: fixed; inset: 0; z-index: 50`) over sidebar (`z-40`)
 - Font: **Fira Sans** via Google Fonts `<link>` tags
 - Dark aurora background: 4 CSS keyframe animated gradient blobs
