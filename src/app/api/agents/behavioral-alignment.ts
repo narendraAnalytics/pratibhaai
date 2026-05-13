@@ -238,6 +238,69 @@ Recommend manual review when:
 Manual review is a safety mechanism, not a rejection signal.
 
 ━━━━━━━━━━━━━━━━━━━━
+WORK-STYLE INTELLIGENCE LAYER
+━━━━━━━━━━━━━━━━━━━━
+
+LEARNING AGILITY SIGNALS — detect from career history and project descriptions:
+- continuousLearningEvidence: true if certifications, courses, new tech adoption mentioned across career
+- roleEvolutionEvidence: true if each role shows expanded scope, new domains, or different tech stack
+- crossDomainAdaptability: true if candidate moved across different product/industry domains successfully
+- modernTechnologyAdoption: true if evidence of adopting AI tools, LLMs, or 2024+ technologies in work
+
+AI WORK READINESS — detect from skills, projects, role descriptions:
+- aiToolingExposure: true if GitHub Copilot, ChatGPT, AI-assisted coding, LLM tools mentioned in work context
+- automationCollaborationSignals: true if workflow automation, AI pipelines, or agentic tools referenced
+- adaptabilityToAIWorkflows: 'high' if actively building/using AI; 'medium' if aware and experimenting; 'low' if no evidence
+
+LEADERSHIP ASSESSMENT:
+- leadershipDepth: 'high' = managed teams with strategic ownership (OKRs, hiring, roadmap); 'medium' = tech lead/IC leadership with cross-team impact; 'low' = individual contributor only
+- mentoringEvidence: true if junior mentoring, pair programming, knowledge sharing, code review leadership mentioned
+- strategicOwnershipEvidence: true if product strategy, architectural decisions, or business-level ownership described
+- stakeholderManagementEvidence: true if executive stakeholders, cross-org coordination, or client relationships mentioned
+
+CAREER TRAJECTORY:
+- progressionStrength (0–100): 90+ = consistent upward growth with expanded scope each role; 50 = lateral/stable; 20 = declining or unclear
+- responsibilityGrowth: true if each successive role shows measurably more ownership than previous
+- domainExpansion: true if candidate successfully expanded into new technical or business domains across career
+
+TEAM DYNAMICS INDICATORS:
+- crossFunctionalExposure: true if worked across product/design/data/business teams explicitly
+- distributedTeamExperience: true if remote teams, global collaboration, async communication mentioned
+- clientFacingCollaboration: true if client meetings, customer discovery, partner communication, or sales support mentioned
+
+BEHAVIORAL INTERVIEW FOCUS — flag where live interview evidence is needed:
+- leadershipClarificationNeeded: true if leadership claimed but supporting detail is thin or vague
+- collaborationValidationNeeded: true if collaboration signals are present but non-specific
+- adaptabilityValidationNeeded: true if adaptability signals are absent or candidate history shows very narrow focus
+
+ENVIRONMENT FIT CONFIDENCE (0–100 per environment):
+- startupFit: 80+ if startup experience + high autonomy + ownership signals + generalist evidence
+- enterpriseFit: 80+ if large company experience + process adherence + cross-functional coordination
+- remoteFit: 80+ if remote work mentioned, async communication, distributed team experience
+- fastPacedFit: 80+ if short delivery cycles, multiple simultaneous projects, startup/agency background
+
+EVIDENCE CONFIDENCE (0–100 per behavioral domain):
+- leadershipEvidence: 100 = explicit team size, title progression, and strategic decisions; 0 = claimed but no detail
+- collaborationEvidence: 100 = multiple cross-team projects with named collaborators or outcomes; 0 = vague mentions
+- communicationEvidence: 100 = stakeholder reports, presentation evidence, documentation ownership; 0 = absent
+- ownershipEvidence: 100 = end-to-end product/feature ownership with measurable outcomes; 0 = task execution only
+
+EXECUTION SIGNALS:
+- longTermOwnershipEvidence: true if candidate stayed 18+ months in a role with growing responsibilities
+- deliveryConsistencyEvidence: true if shipped projects, launched products, or delivered measurable outcomes mentioned
+- initiativeTakingEvidence: true if "led", "initiated", "proposed", "created from scratch", "drove adoption" type language with real context
+
+SEMANTIC CULTURE PROFILE — assign 1–4 culture archetypes from this list based on evidence:
+- 'execution-driven': focus on delivery, metrics, velocity, shipping
+- 'innovation-heavy': R&D, new products, experimentation, ideation
+- 'research-oriented': depth over breadth, publications, exploration
+- 'process-oriented': documentation, standards, reliability, compliance
+- 'customer-facing': client relations, user empathy, market feedback
+- 'ownership-heavy': autonomous decisions, product thinking, full-stack responsibility
+- 'collaboration-first': team building, consensus, cross-functional coordination
+Only assign archetypes with strong supporting evidence. Leave empty if insufficient evidence.
+
+━━━━━━━━━━━━━━━━━━━━
 OUTPUT REQUIREMENTS
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -280,6 +343,83 @@ const BEHAVIORAL_SCHEMA = {
     workEnvironmentFit: { type: 'array', items: { type: 'string' } },
     behavioralConfidence: { type: 'number' },
     manualReviewRecommended: { type: 'boolean' },
+    learningAgilitySignals: {
+      type: 'object',
+      properties: {
+        continuousLearningEvidence: { type: 'boolean' },
+        roleEvolutionEvidence: { type: 'boolean' },
+        crossDomainAdaptability: { type: 'boolean' },
+        modernTechnologyAdoption: { type: 'boolean' },
+      },
+    },
+    aiWorkReadiness: {
+      type: 'object',
+      properties: {
+        aiToolingExposure: { type: 'boolean' },
+        automationCollaborationSignals: { type: 'boolean' },
+        adaptabilityToAIWorkflows: { type: 'string' },
+      },
+    },
+    leadershipAssessment: {
+      type: 'object',
+      properties: {
+        leadershipDepth: { type: 'string' },
+        mentoringEvidence: { type: 'boolean' },
+        strategicOwnershipEvidence: { type: 'boolean' },
+        stakeholderManagementEvidence: { type: 'boolean' },
+      },
+    },
+    careerTrajectory: {
+      type: 'object',
+      properties: {
+        progressionStrength: { type: 'number' },
+        responsibilityGrowth: { type: 'boolean' },
+        domainExpansion: { type: 'boolean' },
+      },
+    },
+    teamDynamicsIndicators: {
+      type: 'object',
+      properties: {
+        crossFunctionalExposure: { type: 'boolean' },
+        distributedTeamExperience: { type: 'boolean' },
+        clientFacingCollaboration: { type: 'boolean' },
+      },
+    },
+    behavioralInterviewFocus: {
+      type: 'object',
+      properties: {
+        leadershipClarificationNeeded: { type: 'boolean' },
+        collaborationValidationNeeded: { type: 'boolean' },
+        adaptabilityValidationNeeded: { type: 'boolean' },
+      },
+    },
+    environmentFitConfidence: {
+      type: 'object',
+      properties: {
+        startupFit: { type: 'number' },
+        enterpriseFit: { type: 'number' },
+        remoteFit: { type: 'number' },
+        fastPacedFit: { type: 'number' },
+      },
+    },
+    evidenceConfidence: {
+      type: 'object',
+      properties: {
+        leadershipEvidence: { type: 'number' },
+        collaborationEvidence: { type: 'number' },
+        communicationEvidence: { type: 'number' },
+        ownershipEvidence: { type: 'number' },
+      },
+    },
+    executionSignals: {
+      type: 'object',
+      properties: {
+        longTermOwnershipEvidence: { type: 'boolean' },
+        deliveryConsistencyEvidence: { type: 'boolean' },
+        initiativeTakingEvidence: { type: 'boolean' },
+      },
+    },
+    semanticCultureProfile: { type: 'array', items: { type: 'string' } },
   },
   required: [
     'score', 'leadershipSignals', 'collaborationSignals', 'ownershipSignals', 'adaptabilitySignals',
@@ -311,6 +451,58 @@ export interface BehavioralAlignmentResult {
   workEnvironmentFit: string[]
   behavioralConfidence: number
   manualReviewRecommended: boolean
+
+  // ── Work-Style Intelligence Layer ─────────────────────────────────
+  learningAgilitySignals: {
+    continuousLearningEvidence: boolean
+    roleEvolutionEvidence: boolean
+    crossDomainAdaptability: boolean
+    modernTechnologyAdoption: boolean
+  }
+  aiWorkReadiness: {
+    aiToolingExposure: boolean
+    automationCollaborationSignals: boolean
+    adaptabilityToAIWorkflows: 'low' | 'medium' | 'high'
+  }
+  leadershipAssessment: {
+    leadershipDepth: 'low' | 'medium' | 'high'
+    mentoringEvidence: boolean
+    strategicOwnershipEvidence: boolean
+    stakeholderManagementEvidence: boolean
+  }
+  careerTrajectory: {
+    progressionStrength: number
+    responsibilityGrowth: boolean
+    domainExpansion: boolean
+  }
+  teamDynamicsIndicators: {
+    crossFunctionalExposure: boolean
+    distributedTeamExperience: boolean
+    clientFacingCollaboration: boolean
+  }
+  behavioralInterviewFocus: {
+    leadershipClarificationNeeded: boolean
+    collaborationValidationNeeded: boolean
+    adaptabilityValidationNeeded: boolean
+  }
+  environmentFitConfidence: {
+    startupFit: number
+    enterpriseFit: number
+    remoteFit: number
+    fastPacedFit: number
+  }
+  evidenceConfidence: {
+    leadershipEvidence: number
+    collaborationEvidence: number
+    communicationEvidence: number
+    ownershipEvidence: number
+  }
+  executionSignals: {
+    longTermOwnershipEvidence: boolean
+    deliveryConsistencyEvidence: boolean
+    initiativeTakingEvidence: boolean
+  }
+  semanticCultureProfile: string[]
 }
 
 const BEHAVIORAL_FALLBACK: BehavioralAlignmentResult = {
@@ -319,6 +511,16 @@ const BEHAVIORAL_FALLBACK: BehavioralAlignmentResult = {
   careerProgressionAssessment: '', communicationStyle: '', cultureAlignmentSummary: '',
   workStyleIndicators: { autonomy: 'medium', collaboration: 'medium', leadership: 'low' },
   workEnvironmentFit: [], behavioralConfidence: 40, manualReviewRecommended: true,
+  learningAgilitySignals: { continuousLearningEvidence: false, roleEvolutionEvidence: false, crossDomainAdaptability: false, modernTechnologyAdoption: false },
+  aiWorkReadiness: { aiToolingExposure: false, automationCollaborationSignals: false, adaptabilityToAIWorkflows: 'low' },
+  leadershipAssessment: { leadershipDepth: 'low', mentoringEvidence: false, strategicOwnershipEvidence: false, stakeholderManagementEvidence: false },
+  careerTrajectory: { progressionStrength: 50, responsibilityGrowth: false, domainExpansion: false },
+  teamDynamicsIndicators: { crossFunctionalExposure: false, distributedTeamExperience: false, clientFacingCollaboration: false },
+  behavioralInterviewFocus: { leadershipClarificationNeeded: true, collaborationValidationNeeded: true, adaptabilityValidationNeeded: true },
+  environmentFitConfidence: { startupFit: 50, enterpriseFit: 50, remoteFit: 50, fastPacedFit: 50 },
+  evidenceConfidence: { leadershipEvidence: 0, collaborationEvidence: 0, communicationEvidence: 0, ownershipEvidence: 0 },
+  executionSignals: { longTermOwnershipEvidence: false, deliveryConsistencyEvidence: false, initiativeTakingEvidence: false },
+  semanticCultureProfile: [],
 }
 
 export async function runBehavioralAlignment(

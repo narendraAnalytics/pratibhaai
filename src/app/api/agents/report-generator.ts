@@ -220,6 +220,58 @@ Recommend manual review when:
 Manual review is a safety mechanism, not a rejection signal.
 
 ━━━━━━━━━━━━━━━━━━━━
+RECRUITER DECISION INTELLIGENCE LAYER
+━━━━━━━━━━━━━━━━━━━━
+
+EVIDENCE TRACEABILITY — list the upstream data sources behind each dimension:
+- technicalEvidenceSources: e.g. ["GitHub repositories", "Employment history tech stack", "Project descriptions"]
+- behavioralEvidenceSources: e.g. ["Leadership indicators in resume", "Career progression signals", "Collaboration evidence"]
+- riskEvidenceSources: e.g. ["Timeline consistency analysis", "Skill inflation check", "Resume authenticity signals"]
+Only list sources that actually contributed evidence. Leave arrays empty if a dimension lacked evidence.
+
+CONFIDENCE BREAKDOWN — populate from upstream agent outputs in the prompt:
+- technicalConfidence: from Technical Validation Agent's technicalConfidence field
+- behavioralConfidence: from behavioral score confidence
+- verificationConfidence: from Risk Agent's verificationConfidence field
+- extractionConfidence: from candidate extraction quality
+
+AUTHENTICITY SUMMARY — synthesize from Risk Agent findings:
+- proofOfWorkStrength: 'high' if GitHub + portfolio + live projects present; 'medium' if partial; 'low' if absent for claimed senior role
+- resumeAuthenticityConfidence: 0–100 inverse of risk agent's authenticityRisk
+- verificationSummary: 1–2 sentence neutral recruiter-friendly summary of key verification findings
+
+QUICK SIGNALS — ultra-concise for dashboard cards:
+- strongestSignal: single most compelling positive signal, e.g. "Active GitHub with 3 deployed AI projects"
+- biggestConcern: single most important concern, e.g. "No supporting evidence for claimed architecture experience"
+- interviewPriority: 'high' if composite score ≥ 75 or strong hire; 'medium' if consider; 'low' if not recommended
+
+INTERVIEW FOCUS AREAS — categorize interview questions from decision agent:
+- technical: questions about specific technologies, implementations, debugging
+- behavioral: questions about collaboration, conflict, ownership, delivery
+- architecture: questions about system design, scalability, tradeoffs
+- leadership: questions about team management, mentoring, strategic decisions
+Distribute existing interviewQuestions across these buckets. Generate additional ones if buckets are thin.
+
+AGENT TRACE — always set to these static version identifiers:
+- riskAgentVersion: "v2"
+- technicalValidationVersion: "v2"
+- evaluationVersion: "v2"
+
+OVERRIDE GUIDANCE — explain manual review triggers clearly:
+- whyManualReviewNeeded: list specific reasons, e.g. ["Low verification confidence", "Senior role with no GitHub evidence", "Timeline gaps unresolved"]
+- overrideSensitivity: 'high' if compliance-sensitive role or critical risk flags; 'medium' for moderate concerns; 'low' for precautionary review only
+Leave whyManualReviewNeeded empty if manualReviewRecommended is false.
+
+SEMANTIC ALIGNMENT INSIGHTS — go beyond exact keyword matching:
+- adjacentSkillsDetected: candidate skills closely related to required skills, e.g. ["Vue.js" adjacent to "React", "FastAPI" adjacent to "Node.js"]
+- transferableSkillsDetected: skills from other domains applicable to this role, e.g. ["Python data pipelines transferable to backend engineering"]
+
+WORKFLOW RECOMMENDATIONS — actionable next-step guidance:
+- suggestedInterviewPanel: based on roleArchetype, e.g. ["Technical lead", "Engineering manager"] for builder role; ["CTO", "Product lead"] for leadership role
+- suggestedAssessmentType: e.g. ["Live coding challenge", "System design whiteboard"] for senior tech; ["Leadership scenario", "Culture interview"] for management
+- escalationNeeded: true if riskLevel is 'critical' or humanOverrideRequired is true
+
+━━━━━━━━━━━━━━━━━━━━
 OUTPUT REQUIREMENTS
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -287,6 +339,78 @@ const REPORT_SCHEMA = {
       required: ['matched', 'partial', 'missing'],
     },
     humanOverrideRequired: { type: 'boolean' },
+    evidenceTraceability: {
+      type: 'object',
+      properties: {
+        technicalEvidenceSources: { type: 'array', items: { type: 'string' } },
+        behavioralEvidenceSources: { type: 'array', items: { type: 'string' } },
+        riskEvidenceSources: { type: 'array', items: { type: 'string' } },
+      },
+    },
+    confidenceBreakdown: {
+      type: 'object',
+      properties: {
+        technicalConfidence: { type: 'number' },
+        behavioralConfidence: { type: 'number' },
+        verificationConfidence: { type: 'number' },
+        extractionConfidence: { type: 'number' },
+      },
+    },
+    authenticitySummary: {
+      type: 'object',
+      properties: {
+        proofOfWorkStrength: { type: 'string' },
+        resumeAuthenticityConfidence: { type: 'number' },
+        verificationSummary: { type: 'string' },
+      },
+    },
+    quickSignals: {
+      type: 'object',
+      properties: {
+        strongestSignal: { type: 'string' },
+        biggestConcern: { type: 'string' },
+        interviewPriority: { type: 'string' },
+      },
+    },
+    interviewFocusAreas: {
+      type: 'object',
+      properties: {
+        technical: { type: 'array', items: { type: 'string' } },
+        behavioral: { type: 'array', items: { type: 'string' } },
+        architecture: { type: 'array', items: { type: 'string' } },
+        leadership: { type: 'array', items: { type: 'string' } },
+      },
+    },
+    agentTrace: {
+      type: 'object',
+      properties: {
+        riskAgentVersion: { type: 'string' },
+        technicalValidationVersion: { type: 'string' },
+        evaluationVersion: { type: 'string' },
+      },
+    },
+    overrideGuidance: {
+      type: 'object',
+      properties: {
+        whyManualReviewNeeded: { type: 'array', items: { type: 'string' } },
+        overrideSensitivity: { type: 'string' },
+      },
+    },
+    semanticAlignmentInsights: {
+      type: 'object',
+      properties: {
+        adjacentSkillsDetected: { type: 'array', items: { type: 'string' } },
+        transferableSkillsDetected: { type: 'array', items: { type: 'string' } },
+      },
+    },
+    workflowRecommendations: {
+      type: 'object',
+      properties: {
+        suggestedInterviewPanel: { type: 'array', items: { type: 'string' } },
+        suggestedAssessmentType: { type: 'array', items: { type: 'string' } },
+        escalationNeeded: { type: 'boolean' },
+      },
+    },
   },
   required: [
     'candidateName', 'jobTitle', 'compositeScore', 'rankLabel', 'recommendation',
@@ -338,6 +462,53 @@ export interface ReportData {
   nextRecommendedStage: 'reject' | 'manual_review' | 'technical_interview' | 'hr_round' | 'final_round'
   techStackAlignment: { matched: string[]; partial: string[]; missing: string[] }
   humanOverrideRequired: boolean
+
+  // ── Recruiter Decision Intelligence Layer ─────────────────────────
+  evidenceTraceability: {
+    technicalEvidenceSources: string[]
+    behavioralEvidenceSources: string[]
+    riskEvidenceSources: string[]
+  }
+  confidenceBreakdown: {
+    technicalConfidence: number
+    behavioralConfidence: number
+    verificationConfidence: number
+    extractionConfidence: number
+  }
+  authenticitySummary: {
+    proofOfWorkStrength: 'low' | 'medium' | 'high'
+    resumeAuthenticityConfidence: number
+    verificationSummary: string
+  }
+  quickSignals: {
+    strongestSignal: string
+    biggestConcern: string
+    interviewPriority: 'low' | 'medium' | 'high'
+  }
+  interviewFocusAreas: {
+    technical: string[]
+    behavioral: string[]
+    architecture: string[]
+    leadership: string[]
+  }
+  agentTrace: {
+    riskAgentVersion: string
+    technicalValidationVersion: string
+    evaluationVersion: string
+  }
+  overrideGuidance: {
+    whyManualReviewNeeded: string[]
+    overrideSensitivity: 'low' | 'medium' | 'high'
+  }
+  semanticAlignmentInsights: {
+    adjacentSkillsDetected: string[]
+    transferableSkillsDetected: string[]
+  }
+  workflowRecommendations: {
+    suggestedInterviewPanel: string[]
+    suggestedAssessmentType: string[]
+    escalationNeeded: boolean
+  }
 }
 
 const REPORT_FALLBACK: ReportData = {
@@ -354,6 +525,15 @@ const REPORT_FALLBACK: ReportData = {
   resumeSummary: '', nextRecommendedStage: 'manual_review',
   techStackAlignment: { matched: [], partial: [], missing: [] },
   humanOverrideRequired: true,
+  evidenceTraceability: { technicalEvidenceSources: [], behavioralEvidenceSources: [], riskEvidenceSources: [] },
+  confidenceBreakdown: { technicalConfidence: 0, behavioralConfidence: 0, verificationConfidence: 0, extractionConfidence: 0 },
+  authenticitySummary: { proofOfWorkStrength: 'low', resumeAuthenticityConfidence: 50, verificationSummary: 'Report generation failed.' },
+  quickSignals: { strongestSignal: '', biggestConcern: '', interviewPriority: 'medium' },
+  interviewFocusAreas: { technical: [], behavioral: [], architecture: [], leadership: [] },
+  agentTrace: { riskAgentVersion: 'v2', technicalValidationVersion: 'v2', evaluationVersion: 'v2' },
+  overrideGuidance: { whyManualReviewNeeded: ['report generation failed'], overrideSensitivity: 'high' },
+  semanticAlignmentInsights: { adjacentSkillsDetected: [], transferableSkillsDetected: [] },
+  workflowRecommendations: { suggestedInterviewPanel: [], suggestedAssessmentType: [], escalationNeeded: false },
 }
 
 export async function runReportGenerator(

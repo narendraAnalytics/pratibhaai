@@ -187,7 +187,55 @@ resumeQuality assesses:
 - completeness: how many expected sections are present
 - professionalism: tone, consistency, and presentation quality
 
-missingCriticalFields: list field names that are absent but expected (e.g. "email", "experienceYears").`
+missingCriticalFields: list field names that are absent but expected (e.g. "email", "experienceYears").
+
+━━━━━━━━━━━━━━━━━━━━
+INTELLIGENCE LAYER
+━━━━━━━━━━━━━━━━━━━━
+
+TIMELINE ANALYSIS — analyze employment dates carefully:
+- overlappingJobs: true if any two roles have concurrent date ranges
+- unexplainedGaps: true if any gap between roles exceeds 6 months with no explanation
+- totalCareerDurationMonths: sum of all non-overlapping employment months
+- timelineConfidence: 0–100 based on how complete and consistent dates are (100 = all dates present and consistent)
+
+FIELD CONFIDENCE — score each section 0–100 based on data completeness and clarity:
+- skills: 100 if 5+ skills present and clearly listed; lower if sparse or extracted from prose
+- employmentHistory: 100 if all roles have company + role + dates; lower for missing dates or vague entries
+- education: 100 if degree + institution + year present; 50 if only institution; 20 if vague
+- links: 100 if GitHub or LinkedIn URL explicitly present; 0 if absent
+
+CAREER PROGRESSION — analyze role sequence for trajectory:
+- upwardTrajectory: true if titles show clear growth (Junior → Mid → Senior → Lead)
+- stableGrowth: true if each role is at same or higher level with reasonable tenure (1.5+ years)
+- roleProgressionQuality: 'high' = clear upward growth, 'medium' = lateral but consistent, 'low' = declining or chaotic
+
+SKILL CLUSTERING — assign each skill from the skills[] array to one cluster:
+- frontend: React, Vue, Angular, CSS, HTML, Tailwind, Next.js, TypeScript (UI-layer)
+- backend: Node.js, Python, Java, Go, REST, GraphQL, Express, Django, Spring, databases
+- ai_ml: TensorFlow, PyTorch, Scikit-learn, LLM, Gemini, OpenAI, Hugging Face, MLOps, LangChain
+- cloud_devops: AWS, GCP, Azure, Docker, Kubernetes, CI/CD, Terraform, GitHub Actions
+Skills can appear in multiple clusters if applicable.
+
+DOMAIN EXPOSURE — detect industry domains from employers, project descriptions, and context:
+- Examples: 'fintech', 'healthcare', 'e-commerce', 'SaaS', 'edtech', 'cybersecurity', 'AI/ML', 'logistics', 'gaming'
+- Leave empty if no domain signals present. Never hallucinate domains.
+
+PROOF OF WORK SIGNALS — detect evidence of real work output:
+- githubPresent: true if a GitHub URL appears anywhere in the resume text
+- portfolioPresent: true if a portfolio/personal website URL appears
+- liveProjectsMentioned: true if resume mentions deployed apps, live URLs, or production systems
+- openSourceMentioned: true if open source contributions, PRs, or OSS projects mentioned
+- technicalWritingMentioned: true if blog posts, articles, documentation, or talks mentioned
+
+AUTHENTICITY SIGNALS — detect AI-generated or inflated resumes:
+- repetitiveBuzzwords: true if 5+ of these appear: "innovative", "passionate", "dynamic", "leverage", "synergy", "results-driven", "proactive", "self-starter", "thought leader", "visionary"
+- excessiveSkillStacking: true if skills[] contains more than 20 items with no supporting employment evidence
+- suspiciousExperienceDensity: true if claimed experienceYears is inconsistent with employment history (e.g. claims 8 years but history only shows 3)
+
+ATS COMPATIBILITY — assess resume format quality:
+- readable: true if text is cleanly extracted (no OCR noise, no broken encoding, logical section order)
+- parsingRisk: 'low' = clean structured resume, 'medium' = some formatting issues, 'high' = tables/columns/images/OCR artifacts detected`
 
 const CANDIDATE_SCHEMA = {
   type: 'object',
@@ -270,6 +318,68 @@ const CANDIDATE_SCHEMA = {
     },
     missingCriticalFields: { type: 'array', items: { type: 'string' } },
     extractionConfidence: { type: 'number', description: '0–100 confidence in extraction quality' },
+
+    timelineAnalysis: {
+      type: 'object',
+      properties: {
+        overlappingJobs: { type: 'boolean' },
+        unexplainedGaps: { type: 'boolean' },
+        totalCareerDurationMonths: { type: 'number' },
+        timelineConfidence: { type: 'number' },
+      },
+    },
+    fieldConfidence: {
+      type: 'object',
+      properties: {
+        skills: { type: 'number' },
+        employmentHistory: { type: 'number' },
+        education: { type: 'number' },
+        links: { type: 'number' },
+      },
+    },
+    careerProgression: {
+      type: 'object',
+      properties: {
+        upwardTrajectory: { type: 'boolean' },
+        stableGrowth: { type: 'boolean' },
+        roleProgressionQuality: { type: 'string' },
+      },
+    },
+    skillClusters: {
+      type: 'object',
+      properties: {
+        frontend: { type: 'array', items: { type: 'string' } },
+        backend: { type: 'array', items: { type: 'string' } },
+        ai_ml: { type: 'array', items: { type: 'string' } },
+        cloud_devops: { type: 'array', items: { type: 'string' } },
+      },
+    },
+    domainExposure: { type: 'array', items: { type: 'string' } },
+    proofOfWorkSignals: {
+      type: 'object',
+      properties: {
+        githubPresent: { type: 'boolean' },
+        portfolioPresent: { type: 'boolean' },
+        liveProjectsMentioned: { type: 'boolean' },
+        openSourceMentioned: { type: 'boolean' },
+        technicalWritingMentioned: { type: 'boolean' },
+      },
+    },
+    authenticitySignals: {
+      type: 'object',
+      properties: {
+        repetitiveBuzzwords: { type: 'boolean' },
+        excessiveSkillStacking: { type: 'boolean' },
+        suspiciousExperienceDensity: { type: 'boolean' },
+      },
+    },
+    atsCompatibility: {
+      type: 'object',
+      properties: {
+        readable: { type: 'boolean' },
+        parsingRisk: { type: 'string' },
+      },
+    },
   },
   required: [
     'name', 'email', 'currentRole',
@@ -307,6 +417,33 @@ export interface ResumeQuality {
   formattingClarity: 'low' | 'medium' | 'high'
   completeness: 'low' | 'medium' | 'high'
   professionalism: 'low' | 'medium' | 'high'
+}
+
+export interface TimelineAnalysis {
+  overlappingJobs: boolean
+  unexplainedGaps: boolean
+  totalCareerDurationMonths: number
+  timelineConfidence: number
+}
+
+export interface FieldConfidence {
+  skills: number
+  employmentHistory: number
+  education: number
+  links: number
+}
+
+export interface CareerProgression {
+  upwardTrajectory: boolean
+  stableGrowth: boolean
+  roleProgressionQuality: 'low' | 'medium' | 'high'
+}
+
+export interface SkillClusters {
+  frontend: string[]
+  backend: string[]
+  ai_ml: string[]
+  cloud_devops: string[]
 }
 
 export interface CandidateProfile {
@@ -352,6 +489,29 @@ export interface CandidateProfile {
   resumeQuality: ResumeQuality
   missingCriticalFields: string[]
   extractionConfidence: number
+
+  // ── Intelligence Layer ────────────────────────────────────────────
+  timelineAnalysis: TimelineAnalysis
+  fieldConfidence: FieldConfidence
+  careerProgression: CareerProgression
+  skillClusters: SkillClusters
+  domainExposure: string[]
+  proofOfWorkSignals: {
+    githubPresent: boolean
+    portfolioPresent: boolean
+    liveProjectsMentioned: boolean
+    openSourceMentioned: boolean
+    technicalWritingMentioned: boolean
+  }
+  authenticitySignals: {
+    repetitiveBuzzwords: boolean
+    excessiveSkillStacking: boolean
+    suspiciousExperienceDensity: boolean
+  }
+  atsCompatibility: {
+    readable: boolean
+    parsingRisk: 'low' | 'medium' | 'high'
+  }
 }
 
 const CANDIDATE_FALLBACK: CandidateProfile = {
@@ -366,6 +526,14 @@ const CANDIDATE_FALLBACK: CandidateProfile = {
   resumeQuality: { formattingClarity: 'low', completeness: 'low', professionalism: 'low' },
   missingCriticalFields: ['name', 'email', 'skills', 'experienceYears'],
   extractionConfidence: 0,
+  timelineAnalysis: { overlappingJobs: false, unexplainedGaps: false, totalCareerDurationMonths: 0, timelineConfidence: 0 },
+  fieldConfidence: { skills: 0, employmentHistory: 0, education: 0, links: 0 },
+  careerProgression: { upwardTrajectory: false, stableGrowth: false, roleProgressionQuality: 'low' },
+  skillClusters: { frontend: [], backend: [], ai_ml: [], cloud_devops: [] },
+  domainExposure: [],
+  proofOfWorkSignals: { githubPresent: false, portfolioPresent: false, liveProjectsMentioned: false, openSourceMentioned: false, technicalWritingMentioned: false },
+  authenticitySignals: { repetitiveBuzzwords: false, excessiveSkillStacking: false, suspiciousExperienceDensity: false },
+  atsCompatibility: { readable: false, parsingRisk: 'high' },
 }
 
 function labelResumeSections(text: string): string {

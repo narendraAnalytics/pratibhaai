@@ -226,6 +226,68 @@ Recommend manual review when:
 - project complexity is unclear
 
 ━━━━━━━━━━━━━━━━━━━━
+ENGINEERING INTELLIGENCE LAYER
+━━━━━━━━━━━━━━━━━━━━
+
+PROOF-OF-WORK SCORE (0–100) — core enterprise metric, weighted composite:
+- 30 pts: active original repositories (non-forks) with real implementation work
+- 25 pts: deployment / production evidence (live apps, cloud platforms, CI/CD)
+- 25 pts: architecture maturity (system design, scalability, distributed systems)
+- 20 pts: open source contribution consistency and quality
+- Score 80+ only for candidates with clear evidence across multiple dimensions
+
+ENGINEERING MATURITY — detect from repo topics, descriptions, filenames:
+- testingEvidence: true if test directories, Jest/pytest/testing frameworks, TDD patterns mentioned
+- cicdEvidence: true if GitHub Actions, CircleCI, Jenkins, .github/workflows detected
+- containerizationEvidence: true if Docker, Kubernetes, docker-compose mentioned
+- deploymentEvidence: true if Vercel, AWS, GCP, Heroku, Railway, fly.io, or deployment config detected
+- infrastructureEvidence: true if Terraform, Pulumi, Ansible, IaC patterns detected
+
+SYSTEM DESIGN SIGNALS — detect from repo descriptions and project context:
+- distributedSystemsEvidence: true if message queues, event streaming, Kafka, RabbitMQ, microservices pattern
+- microservicesEvidence: true if service mesh, API gateway, multiple service repos, service decomposition
+- scalabilityEvidence: true if caching (Redis), load balancing, CDN, sharding, horizontal scaling mentioned
+- architectureComplexity: 'high' if 3+ of above; 'medium' if 1–2; 'low' if none
+
+AI/ML ENGINEERING SIGNALS — detect from languages, repos, descriptions:
+- mlProjectsDetected: true if TensorFlow, PyTorch, Scikit-learn, XGBoost, Keras, Jupyter notebooks detected
+- llmProjectsDetected: true if LangChain, LlamaIndex, OpenAI SDK, Anthropic SDK, Gemini SDK, RAG, vector DB detected
+- aiDeploymentEvidence: true if model serving (FastAPI + model, BentoML, Triton, HuggingFace Spaces) detected
+- modelOpsEvidence: true if MLflow, Weights & Biases, experiment tracking, model registry detected
+
+TECHNICAL AUTHENTICITY — compare resume claims vs GitHub evidence:
+- claimsSupportedByProjects: true if claimed specializations match actual repository languages and topics
+- unsupportedAdvancedClaims: list specific gaps, e.g. "Claims distributed systems expertise — no relevant repos found"
+
+REPOSITORY QUALITY (each 0–100):
+- averageRepoQuality: score across top 5 repos based on README presence, description, recent commits, non-trivial code
+- bestProjectScore: score of the single strongest repo (complexity + deployment + documentation)
+- documentationQuality: proportion of repos with meaningful README and inline docs
+- codeOrganizationSignals: evidence of clean structure (src/, tests/, config/, proper separation)
+
+PRODUCTION SIGNALS:
+- liveAppsDetected: true if deployed URLs, live demo links, or production system descriptions found
+- deploymentPlatformsDetected: list detected platforms (e.g. ["Vercel", "AWS", "GCP"])
+- apiDevelopmentEvidence: true if REST API, GraphQL, gRPC, FastAPI, Express API repos detected
+- monitoringLoggingEvidence: true if Sentry, Datadog, Prometheus, logging libraries, observability tools detected
+
+EVIDENCE CONFIDENCE (0–100 per domain):
+- githubEvidence: 100 = active profile with 5+ relevant repos; 0 = no GitHub or all forks
+- projectEvidence: 100 = detailed project descriptions with technical specifics; 0 = empty repos
+- architectureEvidence: 100 = clear system design patterns across multiple repos; 0 = only tutorial projects
+- productionEvidence: 100 = deployed apps with real users/traffic signals; 0 = no deployment evidence
+
+ACTIVITY TRENDS:
+- consistencyScore (0–100): regular commits spread across months vs single burst of activity
+- recentActivityStrength (0–100): activity in last 6 months; 100 = highly active, 0 = no recent pushes
+- longTermContributionPattern: 'high' = 2+ years of steady commits; 'medium' = 1–2 years; 'low' = < 1 year or bursty
+
+LEARNING VELOCITY:
+- modernTechAdoption: true if repos from 2024+ use modern frameworks (Next.js 14+, LLMs, edge computing, etc.)
+- technologyEvolutionEvidence: true if progression from older to newer tech stack visible across repo history
+- adaptabilityScore (0–100): breadth of different technology domains explored with genuine implementations
+
+━━━━━━━━━━━━━━━━━━━━
 OUTPUT REQUIREMENTS
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -262,6 +324,85 @@ const TECHNICAL_SCHEMA = {
     techDepthAssessment: { type: 'string' },
     technicalConfidence: { type: 'number' },
     manualReviewRecommended: { type: 'boolean' },
+    proofOfWorkScore: { type: 'number' },
+    engineeringMaturity: {
+      type: 'object',
+      properties: {
+        testingEvidence: { type: 'boolean' },
+        cicdEvidence: { type: 'boolean' },
+        containerizationEvidence: { type: 'boolean' },
+        deploymentEvidence: { type: 'boolean' },
+        infrastructureEvidence: { type: 'boolean' },
+      },
+    },
+    systemDesignSignals: {
+      type: 'object',
+      properties: {
+        distributedSystemsEvidence: { type: 'boolean' },
+        microservicesEvidence: { type: 'boolean' },
+        scalabilityEvidence: { type: 'boolean' },
+        architectureComplexity: { type: 'string' },
+      },
+    },
+    aiEngineeringSignals: {
+      type: 'object',
+      properties: {
+        mlProjectsDetected: { type: 'boolean' },
+        llmProjectsDetected: { type: 'boolean' },
+        aiDeploymentEvidence: { type: 'boolean' },
+        modelOpsEvidence: { type: 'boolean' },
+      },
+    },
+    technicalAuthenticity: {
+      type: 'object',
+      properties: {
+        claimsSupportedByProjects: { type: 'boolean' },
+        unsupportedAdvancedClaims: { type: 'array', items: { type: 'string' } },
+      },
+    },
+    repositoryQuality: {
+      type: 'object',
+      properties: {
+        averageRepoQuality: { type: 'number' },
+        bestProjectScore: { type: 'number' },
+        documentationQuality: { type: 'number' },
+        codeOrganizationSignals: { type: 'number' },
+      },
+    },
+    productionSignals: {
+      type: 'object',
+      properties: {
+        liveAppsDetected: { type: 'boolean' },
+        deploymentPlatformsDetected: { type: 'array', items: { type: 'string' } },
+        apiDevelopmentEvidence: { type: 'boolean' },
+        monitoringLoggingEvidence: { type: 'boolean' },
+      },
+    },
+    evidenceConfidence: {
+      type: 'object',
+      properties: {
+        githubEvidence: { type: 'number' },
+        projectEvidence: { type: 'number' },
+        architectureEvidence: { type: 'number' },
+        productionEvidence: { type: 'number' },
+      },
+    },
+    activityTrends: {
+      type: 'object',
+      properties: {
+        consistencyScore: { type: 'number' },
+        recentActivityStrength: { type: 'number' },
+        longTermContributionPattern: { type: 'string' },
+      },
+    },
+    learningVelocity: {
+      type: 'object',
+      properties: {
+        modernTechAdoption: { type: 'boolean' },
+        technologyEvolutionEvidence: { type: 'boolean' },
+        adaptabilityScore: { type: 'number' },
+      },
+    },
   },
   required: [
     'score', 'technologyAlignmentScore', 'githubActivityLevel', 'projectComplexity',
@@ -291,6 +432,60 @@ export interface TechnicalValidationResult {
   architectureSignals: string[]
   technicalConfidence: number
   manualReviewRecommended: boolean
+
+  // ── Engineering Intelligence Layer ────────────────────────────────
+  proofOfWorkScore: number
+  engineeringMaturity: {
+    testingEvidence: boolean
+    cicdEvidence: boolean
+    containerizationEvidence: boolean
+    deploymentEvidence: boolean
+    infrastructureEvidence: boolean
+  }
+  systemDesignSignals: {
+    distributedSystemsEvidence: boolean
+    microservicesEvidence: boolean
+    scalabilityEvidence: boolean
+    architectureComplexity: 'low' | 'medium' | 'high'
+  }
+  aiEngineeringSignals: {
+    mlProjectsDetected: boolean
+    llmProjectsDetected: boolean
+    aiDeploymentEvidence: boolean
+    modelOpsEvidence: boolean
+  }
+  technicalAuthenticity: {
+    claimsSupportedByProjects: boolean
+    unsupportedAdvancedClaims: string[]
+  }
+  repositoryQuality: {
+    averageRepoQuality: number
+    bestProjectScore: number
+    documentationQuality: number
+    codeOrganizationSignals: number
+  }
+  productionSignals: {
+    liveAppsDetected: boolean
+    deploymentPlatformsDetected: string[]
+    apiDevelopmentEvidence: boolean
+    monitoringLoggingEvidence: boolean
+  }
+  evidenceConfidence: {
+    githubEvidence: number
+    projectEvidence: number
+    architectureEvidence: number
+    productionEvidence: number
+  }
+  activityTrends: {
+    consistencyScore: number
+    recentActivityStrength: number
+    longTermContributionPattern: 'low' | 'medium' | 'high'
+  }
+  learningVelocity: {
+    modernTechAdoption: boolean
+    technologyEvolutionEvidence: boolean
+    adaptabilityScore: number
+  }
 }
 
 async function fetchGitHubSummary(githubUrl: string): Promise<{ summary: string; fallbackUsed: boolean }> {
@@ -356,6 +551,16 @@ const TECH_FALLBACK: TechnicalValidationResult = {
   architectureSignals: [], languagesDetected: [],
   repoCount: 0, githubAnalysis: '', techDepthAssessment: '',
   technicalConfidence: 40, manualReviewRecommended: true,
+  proofOfWorkScore: 30,
+  engineeringMaturity: { testingEvidence: false, cicdEvidence: false, containerizationEvidence: false, deploymentEvidence: false, infrastructureEvidence: false },
+  systemDesignSignals: { distributedSystemsEvidence: false, microservicesEvidence: false, scalabilityEvidence: false, architectureComplexity: 'low' },
+  aiEngineeringSignals: { mlProjectsDetected: false, llmProjectsDetected: false, aiDeploymentEvidence: false, modelOpsEvidence: false },
+  technicalAuthenticity: { claimsSupportedByProjects: false, unsupportedAdvancedClaims: [] },
+  repositoryQuality: { averageRepoQuality: 0, bestProjectScore: 0, documentationQuality: 0, codeOrganizationSignals: 0 },
+  productionSignals: { liveAppsDetected: false, deploymentPlatformsDetected: [], apiDevelopmentEvidence: false, monitoringLoggingEvidence: false },
+  evidenceConfidence: { githubEvidence: 0, projectEvidence: 0, architectureEvidence: 0, productionEvidence: 0 },
+  activityTrends: { consistencyScore: 0, recentActivityStrength: 0, longTermContributionPattern: 'low' },
+  learningVelocity: { modernTechAdoption: false, technologyEvolutionEvidence: false, adaptabilityScore: 0 },
 }
 
 export async function runTechnicalValidation(

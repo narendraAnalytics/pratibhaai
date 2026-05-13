@@ -194,6 +194,56 @@ Recommend manual review when:
 Manual review is a safety mechanism, not a rejection signal.
 
 ━━━━━━━━━━━━━━━━━━━━
+AUTHENTICITY INTELLIGENCE LAYER
+━━━━━━━━━━━━━━━━━━━━
+
+AI-GENERATED RESUME DETECTION — score aiGeneratedLikelihood 0–100:
+- High (70+): generic summary, 8+ buzzwords ("results-driven", "passionate", "synergy", "leverage", "innovative", "dynamic", "proactive", "thought leader"), unnaturally polished with no specific details, every bullet starts with power verb, perfect keyword density
+- Medium (40–69): some generic language but mixed with real specifics
+- Low (0–39): concrete implementation details, specific metrics with context, natural writing variation
+- Set repetitiveLanguagePatterns: true if same sentence structure repeats across 3+ bullets
+- Set excessiveBuzzwordDensity: true if 5+ AI-style buzzwords detected
+- Set genericAchievementLanguage: true if achievements lack specifics ("improved performance by X%", "led initiatives")
+- Set unnaturalConsistency: true if resume is suspiciously perfect with zero typos, gaps, or normal human variation
+
+PROOF-OF-WORK CONSISTENCY:
+- githubSupportsClaims: true only if GitHub URL is present AND claimed technical role is supported by it
+- portfolioSupportsClaims: true only if portfolio URL is present AND claimed work is supported
+- technicalEvidenceStrength: 'high' if both present + work described in detail; 'medium' if one present or partial; 'low' if neither present and senior technical role claimed
+
+LINGUISTIC AUTHENTICITY:
+- inconsistentWritingTone: true if sections switch between formal/casual/technical unexpectedly
+- copyPastedAchievementPatterns: true if 2+ bullets follow identical structure "Achieved X by doing Y resulting in Z%"
+- lowSpecificityLanguage: true if most descriptions use vague verbs (worked on, helped with, contributed to) without technical specifics
+- metricWithoutContext: true if numbers are cited without explanation ("improved by 40%" — 40% of what?)
+
+CAREER PROGRESSION REALISM:
+- progressionRealism: 'high' = realistic pace; 'medium' = fast but plausible; 'low' = implausible speed
+- promotionVelocityRisk 0–100: 80+ if Intern→Senior in <2 years, 60+ if Junior→Lead in <3 years, 40 baseline
+- seniorityMismatch: true if claimed title is 2+ levels above what experience years and responsibilities support
+
+TECHNICAL AUTHENTICITY:
+- claimedVsObservedMismatch: true if candidate claims senior/architect/lead title but employment history shows no architecture, system design, or leadership evidence
+- unsupportedAdvancedClaims: list specific claims lacking evidence, e.g. "Claims AI Architect — no ML projects or frameworks found", "Claims team lead of 20 — no management responsibilities described"
+
+SYNTHETIC RESUME INDICATORS:
+- suspiciousKeywordDensity: true if skills section lists 20+ technologies with no supporting employment evidence for most of them
+- unrealisticTechnologyBreadth: true if resume claims deep expertise across 5+ unrelated technology domains simultaneously
+- templateStyleDetected: true if resume structure exactly matches a common template pattern with generic filler content
+
+EVIDENCE CONFIDENCE (score each 0–100 based on depth and specificity of evidence):
+- timelineEvidence: 100 = all dates present, no gaps, consistent; 0 = dates absent or contradictory
+- technicalEvidence: 100 = specific implementations, tech stack details, architecture decisions described; 0 = only technology names listed
+- leadershipEvidence: 100 = team size, reports, decisions, outcomes described; 0 = "led team" with no details
+- educationEvidence: 100 = degree + institution + year all present; 0 = vague or absent
+
+BIAS PROTECTION — MANDATORY:
+- You must NEVER infer, mention, or score based on: gender, age, ethnicity, religion, nationality, disability, marital status, or any protected attribute
+- piiIgnored: always set to true — confirm you ignored all PII beyond what is directly relevant to job qualification
+- demographicInferenceDisabled: always set to true — confirm no demographic inference was performed
+- If a name or location appears to suggest demographic information, ignore it completely
+
+━━━━━━━━━━━━━━━━━━━━
 OUTPUT REQUIREMENTS
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -236,6 +286,73 @@ const RISK_SCHEMA = {
     overallRisk: { type: 'number' },
     manualReviewRecommended: { type: 'boolean' },
     verificationConfidence: { type: 'number' },
+    authenticityRisk: { type: 'number' },
+    authenticitySignals: {
+      type: 'object',
+      properties: {
+        aiGeneratedLikelihood: { type: 'number' },
+        repetitiveLanguagePatterns: { type: 'boolean' },
+        excessiveBuzzwordDensity: { type: 'boolean' },
+        genericAchievementLanguage: { type: 'boolean' },
+        unnaturalConsistency: { type: 'boolean' },
+      },
+    },
+    proofOfWorkConsistency: {
+      type: 'object',
+      properties: {
+        githubSupportsClaims: { type: 'boolean' },
+        portfolioSupportsClaims: { type: 'boolean' },
+        technicalEvidenceStrength: { type: 'string' },
+      },
+    },
+    linguisticSignals: {
+      type: 'object',
+      properties: {
+        inconsistentWritingTone: { type: 'boolean' },
+        copyPastedAchievementPatterns: { type: 'boolean' },
+        lowSpecificityLanguage: { type: 'boolean' },
+        metricWithoutContext: { type: 'boolean' },
+      },
+    },
+    careerProgressionAnalysis: {
+      type: 'object',
+      properties: {
+        progressionRealism: { type: 'string' },
+        promotionVelocityRisk: { type: 'number' },
+        seniorityMismatch: { type: 'boolean' },
+      },
+    },
+    technicalAuthenticity: {
+      type: 'object',
+      properties: {
+        claimedVsObservedMismatch: { type: 'boolean' },
+        unsupportedAdvancedClaims: { type: 'array', items: { type: 'string' } },
+      },
+    },
+    syntheticResumeIndicators: {
+      type: 'object',
+      properties: {
+        suspiciousKeywordDensity: { type: 'boolean' },
+        unrealisticTechnologyBreadth: { type: 'boolean' },
+        templateStyleDetected: { type: 'boolean' },
+      },
+    },
+    evidenceConfidence: {
+      type: 'object',
+      properties: {
+        timelineEvidence: { type: 'number' },
+        technicalEvidence: { type: 'number' },
+        leadershipEvidence: { type: 'number' },
+        educationEvidence: { type: 'number' },
+      },
+    },
+    biasProtection: {
+      type: 'object',
+      properties: {
+        piiIgnored: { type: 'boolean' },
+        demographicInferenceDisabled: { type: 'boolean' },
+      },
+    },
   },
   required: [
     'riskLevel', 'riskCategories', 'flags', 'inflationSigns', 'timelineIssues',
@@ -266,6 +383,51 @@ export interface RiskReport {
   resumeConsistencyScore: number
   manualReviewRecommended: boolean
   verificationConfidence: number
+
+  // ── Authenticity Intelligence Layer ───────────────────────────────
+  authenticityRisk: number
+  authenticitySignals: {
+    aiGeneratedLikelihood: number
+    repetitiveLanguagePatterns: boolean
+    excessiveBuzzwordDensity: boolean
+    genericAchievementLanguage: boolean
+    unnaturalConsistency: boolean
+  }
+  proofOfWorkConsistency: {
+    githubSupportsClaims: boolean
+    portfolioSupportsClaims: boolean
+    technicalEvidenceStrength: 'low' | 'medium' | 'high'
+  }
+  linguisticSignals: {
+    inconsistentWritingTone: boolean
+    copyPastedAchievementPatterns: boolean
+    lowSpecificityLanguage: boolean
+    metricWithoutContext: boolean
+  }
+  careerProgressionAnalysis: {
+    progressionRealism: 'low' | 'medium' | 'high'
+    promotionVelocityRisk: number
+    seniorityMismatch: boolean
+  }
+  technicalAuthenticity: {
+    claimedVsObservedMismatch: boolean
+    unsupportedAdvancedClaims: string[]
+  }
+  syntheticResumeIndicators: {
+    suspiciousKeywordDensity: boolean
+    unrealisticTechnologyBreadth: boolean
+    templateStyleDetected: boolean
+  }
+  evidenceConfidence: {
+    timelineEvidence: number
+    technicalEvidence: number
+    leadershipEvidence: number
+    educationEvidence: number
+  }
+  biasProtection: {
+    piiIgnored: boolean
+    demographicInferenceDisabled: boolean
+  }
 }
 
 const RISK_FALLBACK: RiskReport = {
@@ -273,6 +435,15 @@ const RISK_FALLBACK: RiskReport = {
   riskCategories: { timelineRisk: 50, credibilityRisk: 50, skillInflationRisk: 50, consistencyRisk: 50, employmentStabilityRisk: 50 },
   suspiciousClaims: [], evidenceSummary: [], missingVerificationData: ['parsing failed'],
   resumeConsistencyScore: 50, manualReviewRecommended: true, verificationConfidence: 50,
+  authenticityRisk: 50,
+  authenticitySignals: { aiGeneratedLikelihood: 50, repetitiveLanguagePatterns: false, excessiveBuzzwordDensity: false, genericAchievementLanguage: false, unnaturalConsistency: false },
+  proofOfWorkConsistency: { githubSupportsClaims: false, portfolioSupportsClaims: false, technicalEvidenceStrength: 'medium' },
+  linguisticSignals: { inconsistentWritingTone: false, copyPastedAchievementPatterns: false, lowSpecificityLanguage: false, metricWithoutContext: false },
+  careerProgressionAnalysis: { progressionRealism: 'medium', promotionVelocityRisk: 50, seniorityMismatch: false },
+  technicalAuthenticity: { claimedVsObservedMismatch: false, unsupportedAdvancedClaims: [] },
+  syntheticResumeIndicators: { suspiciousKeywordDensity: false, unrealisticTechnologyBreadth: false, templateStyleDetected: false },
+  evidenceConfidence: { timelineEvidence: 50, technicalEvidence: 50, leadershipEvidence: 50, educationEvidence: 50 },
+  biasProtection: { piiIgnored: true, demographicInferenceDisabled: true },
 }
 
 export async function runVerificationRisk(

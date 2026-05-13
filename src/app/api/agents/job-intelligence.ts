@@ -43,6 +43,27 @@ export interface HiringBlueprint {
   jobDescriptionQuality: 'low' | 'medium' | 'high'
   planningConfidence: number
   riskSensitivity: 'low' | 'medium' | 'high'
+
+  // Semantic intelligence layer
+  inferredSkills: string[]
+  skillSynonyms: Record<string, string[]>
+  hiringRiskFlags: string[]
+  recommendedAssessments: string[]
+  recruiterRecommendations: string[]
+  proofOfWorkRequirements: {
+    githubRequired: boolean
+    liveProjectsRequired: boolean
+    openSourceValuable: boolean
+    certificationsValuable: boolean
+  }
+  aiLiteracyRequirements: {
+    required: boolean
+    level: 'none' | 'basic' | 'working' | 'advanced'
+  }
+  complianceSensitivity: {
+    fairnessRisk: 'low' | 'medium' | 'high'
+    humanReviewMandatory: boolean
+  }
 }
 
 const JOB_INTEL_FALLBACK: HiringBlueprint = {
@@ -56,6 +77,14 @@ const JOB_INTEL_FALLBACK: HiringBlueprint = {
   evaluationGuidance: { prioritizeGithub: false, prioritizeLeadership: false, prioritizeStability: false, prioritizeEducation: false },
   ambiguityFlags: ['parsing failed'], missingCriticalInfo: ['job description could not be parsed'],
   jobDescriptionQuality: 'low', planningConfidence: 50, riskSensitivity: 'medium',
+  inferredSkills: [],
+  skillSynonyms: {},
+  hiringRiskFlags: ['parsing failed — risk analysis unavailable'],
+  recommendedAssessments: ['general technical interview'],
+  recruiterRecommendations: ['verify job description quality before proceeding'],
+  proofOfWorkRequirements: { githubRequired: false, liveProjectsRequired: false, openSourceValuable: false, certificationsValuable: false },
+  aiLiteracyRequirements: { required: false, level: 'none' },
+  complianceSensitivity: { fairnessRisk: 'medium', humanReviewMandatory: false },
 }
 
 export async function runJobIntelligence(job: {
@@ -165,6 +194,62 @@ Set evaluationGuidance flags based on role evidence:
 riskSensitivity: set to 'high' for fintech, healthcare, government, security-critical roles
 
 ━━━━━━━━━━━━━━━━━━━━
+SEMANTIC INTELLIGENCE LAYER
+━━━━━━━━━━━━━━━━━━━━
+
+INFERRED SKILLS — extract skills strongly implied by context even if not listed:
+- "build scalable APIs" → system design, scalability engineering, backend architecture
+- "optimize distributed systems" → distributed computing, cloud-native engineering
+- "lead cross-functional teams" → stakeholder management, program management
+- "ship ML models to production" → MLOps, model serving, LLMOps
+Only infer when evidence is strong. Do not hallucinate.
+
+SKILL SYNONYMS — map canonical skill names to common equivalents found in resumes:
+- "Node.js" → ["Backend JavaScript", "Express.js", "NestJS"]
+- "React" → ["ReactJS", "React.js", "Frontend JavaScript"]
+- "LLMOps" → ["GenAI Infrastructure", "AI Deployment", "ML Platform"]
+Only include synonyms for skills actually present in requiredSkills or preferredSkills.
+
+HIRING RISK FLAGS — detect problems in the JD:
+- "unrealistic experience expectations" — e.g. 5+ years for a 3-year-old technology
+- "too many required skills" — more than 10 hard requirements
+- "contradictory requirements" — e.g. senior IC + people management simultaneously
+- "under-scoped senior role" — senior title but junior-level responsibilities
+- "vague success metrics" — no measurable outcomes defined
+- "unclear ownership" — no team size, reporting structure, or scope mentioned
+Leave empty array if JD is well-written.
+
+RECOMMENDED ASSESSMENTS — based on technicalDepth and roleArchetype:
+- HIGH technical depth → "system design interview", "architecture discussion"
+- builder/platform-engineering → "live coding challenge", "code review exercise"
+- ML/AI roles → "ML case study", "model evaluation exercise"
+- leadership → "leadership panel", "people management scenario"
+- client-facing → "communication assessment", "stakeholder scenario"
+Always include at least one relevant assessment.
+
+PROOF OF WORK:
+- githubRequired: true when technicalDepth is 'high' OR githubImportance is 'high'
+- liveProjectsRequired: true when portfolioImportance is 'high'
+- openSourceValuable: true when roleArchetype is 'builder' or 'platform-engineering'
+- certificationsValuable: true when educationImportance is 'high' or compliance domain detected
+
+AI LITERACY — set required: true when JD mentions AI tools, LLMs, Copilot, automation, or GenAI workflows.
+Level: 'basic' for general awareness, 'working' for daily AI tool use, 'advanced' for building AI systems.
+
+COMPLIANCE SENSITIVITY:
+- fairnessRisk: 'high' for fintech, healthcare, government, HR tech, lending, insurance
+- fairnessRisk: 'medium' for enterprise B2B, legal, education
+- humanReviewMandatory: true when fairnessRisk is 'high'
+
+RECRUITER RECOMMENDATIONS — actionable guidance derived from JD weaknesses:
+- "JD lists more than 10 required skills — consider reducing to top 5 must-haves"
+- "Experience requirement may be unrealistic for this skill set"
+- "Add measurable success criteria to improve candidate alignment"
+- "Clarify team size and reporting structure"
+- "Consider lowering experience threshold to widen qualified candidate pool"
+Leave empty array if JD is well-written.
+
+━━━━━━━━━━━━━━━━━━━━
 JOB CONTEXT
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -230,6 +315,37 @@ The JSON must be deterministic, machine-readable, and schema-safe.`
           jobDescriptionQuality: { type: 'string' },
           planningConfidence: { type: 'number' },
           riskSensitivity: { type: 'string' },
+          inferredSkills: { type: 'array', items: { type: 'string' } },
+          skillSynonyms: {
+            type: 'object',
+            additionalProperties: { type: 'array', items: { type: 'string' } },
+          },
+          hiringRiskFlags: { type: 'array', items: { type: 'string' } },
+          recommendedAssessments: { type: 'array', items: { type: 'string' } },
+          recruiterRecommendations: { type: 'array', items: { type: 'string' } },
+          proofOfWorkRequirements: {
+            type: 'object',
+            properties: {
+              githubRequired: { type: 'boolean' },
+              liveProjectsRequired: { type: 'boolean' },
+              openSourceValuable: { type: 'boolean' },
+              certificationsValuable: { type: 'boolean' },
+            },
+          },
+          aiLiteracyRequirements: {
+            type: 'object',
+            properties: {
+              required: { type: 'boolean' },
+              level: { type: 'string' },
+            },
+          },
+          complianceSensitivity: {
+            type: 'object',
+            properties: {
+              fairnessRisk: { type: 'string' },
+              humanReviewMandatory: { type: 'boolean' },
+            },
+          },
         },
       },
     },
