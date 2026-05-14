@@ -362,7 +362,7 @@ Leadership Required: ${blueprint.leadershipRequired}
 Low score confidence or high verification risk → recommend manual review`
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
+    model: 'gemini-3.1-pro',
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: {
       responseMimeType: 'application/json',
