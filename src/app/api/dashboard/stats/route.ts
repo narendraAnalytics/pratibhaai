@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import { getOrCreateUser } from '@/lib/auth'
 import { db } from '@/db'
 import { jobs, candidates, reports, evaluations } from '@/db/schema'
-import { eq, count, avg, inArray } from 'drizzle-orm'
+import { eq, count, avg, inArray, gte, and } from 'drizzle-orm'
+import { getPlanLimits } from '@/lib/plans'
 
 export async function GET() {
   try {
@@ -13,7 +14,16 @@ export async function GET() {
       .from(jobs)
       .where(eq(jobs.userId, user.id))
 
-    // Candidates linked through jobs owned by user
+    // Jobs created this calendar month
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const [{ jobsThisMonth }] = await db
+      .select({ jobsThisMonth: count() })
+      .from(jobs)
+      .where(and(eq(jobs.userId, user.id), gte(jobs.createdAt, startOfMonth)))
+
+    const limits = getPlanLimits(user.plan)
+
     const userJobs = await db
       .select({ id: jobs.id })
       .from(jobs)
@@ -62,8 +72,17 @@ export async function GET() {
       candidates: candidateCount,
       reports: reportCount,
       avgScore: avgComposite,
+      plan: user.plan,
+      usage: {
+        jobsThisMonth: Number(jobsThisMonth),
+        jobsLimit: limits.jobsPerMonth,
+      },
     })
   } catch {
-    return NextResponse.json({ jobs: 0, candidates: 0, reports: 0, avgScore: 0 })
+    return NextResponse.json({
+      jobs: 0, candidates: 0, reports: 0, avgScore: 0,
+      plan: 'free',
+      usage: { jobsThisMonth: 0, jobsLimit: 1 },
+    })
   }
 }

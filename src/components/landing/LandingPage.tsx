@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser, UserButton } from '@clerk/nextjs';
 import { EASE } from './shared';
+import { PLAN_BADGE } from '@/lib/plans';
+import type { PlanKey } from '@/lib/plans';
 import HeroSection from './HeroSection';
 import ProblemSection from './ProblemSection';
 import PipelineSection from './PipelineSection';
@@ -26,6 +28,16 @@ const SECTIONS = [
 
 export default function LandingPage() {
   const { isSignedIn, user } = useUser();
+  const [serverPlan, setServerPlan] = useState<PlanKey>('free');
+  const badge = PLAN_BADGE[serverPlan] ?? PLAN_BADGE.free;
+
+  useEffect(() => {
+    if (!isSignedIn) return;
+    fetch('/api/user/me')
+      .then(r => r.json())
+      .then(d => { if (d?.plan) setServerPlan(d.plan as PlanKey); })
+      .catch(() => {});
+  }, [isSignedIn]);
   const [idx, setIdx] = useState(0);
   const [dir, setDir] = useState(1);
   const lockRef = useRef(false);
@@ -163,6 +175,21 @@ export default function LandingPage() {
             >
               Dashboard
             </a>
+            {/* Dynamic plan badge — reads from Clerk publicMetadata.plan */}
+            <motion.span
+              key={serverPlan}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.25 }}
+              className="hidden md:inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold capitalize"
+              style={{
+                background: badge.bg,
+                color: badge.color,
+                border: `1px solid ${badge.border}`,
+              }}
+            >
+              {badge.label}
+            </motion.span>
             <span className="text-[13px] font-semibold hidden md:block" style={{ color: '#1F1035' }}>
               Hi, {user?.username ?? user?.firstName ?? 'there'}!
             </span>

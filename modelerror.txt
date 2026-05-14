@@ -1,0 +1,17 @@
+### Plan System — `src/lib/plans.ts`
+Single source of truth for plan config. Always import from here:
+```ts
+import { getPlanFromHas, PLAN_LIMITS, PLAN_BADGE } from '@/lib/plans'
+import type { PlanSlug } from '@/lib/plans'  // 'free' | 'plus' | 'pro'
+```
+
+- `PLAN_LIMITS[plan]` → `{ sessionSeconds, sessionsPerMonth }`
+- `PLAN_BADGE[plan]` → `{ label, bg, color }` — used in landipagenavbar
+- `getPlanFromHas(has)` — reads plan from Clerk session token; used inside `getOrCreateUser()` to sync plan to DB, and directly in Navbar client components via `useAuth().has`
+
+**Lazy plan sync — `src/lib/auth.ts`:** `getOrCreateUser()` calls `getPlanFromHas(has)` on every request. If `clerkPlan !== user.plan` in DB, it updates `users.plan` immediately in the same call. Clerk is the source of truth. To upgrade a user for testing: set `publicMetadata: { "plan": "plus" }` in Clerk Dashboard → the next request automatically syncs the DB.
+
+**Plan-aware session timer:** The session page (`src/app/(dashboard)/session/[sessionId]/page.tsx`) reads `user.plan` after the lazy sync, looks up `PLAN_LIMITS[plan].sessionSeconds`, and passes it as `totalSeconds` prop to `VoiceLearningSession`. Free = 300 s, Plus = 1200 s, Pro = 2700 s.
+
+The fix is to fetch the plan from the server API (which calls currentUser() — always fresh).
+

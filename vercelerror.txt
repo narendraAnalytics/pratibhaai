@@ -1,0 +1,54 @@
+========================================
+  PRATIBHA AI — SUBSCRIPTION PLANS
+========================================
+
+PLAN      JOBS/MONTH    RESUMES/JOB    PRICE
+------    ----------    -----------    -----
+free           1              3         $0  (always free)
+plus           5             10         $8/mo  ($10/mo monthly)
+pro           15             25        $18/mo  ($22/mo monthly)
+
+========================================
+  HOW PLAN SYNC WORKS (Lazy Sync)
+========================================
+
+1. Set plan in Clerk Dashboard:
+   Users → Select user → Public Metadata
+   { "plan": "free" }   or   "plus"   or   "pro"
+   (all lowercase)
+
+2. On next API request, getOrCreateUser() in src/lib/auth.ts:
+   - Reads publicMetadata.plan from Clerk session
+   - Compares with DB users.plan
+   - If different → updates DB immediately (lazy sync)
+   - Clerk is the source of truth
+
+3. Landing page navbar badge:
+   - Reads user.publicMetadata.plan via Clerk useUser() hook
+   - Shows Free / Plus / Pro badge dynamically
+   - Updates when Clerk session refreshes
+
+========================================
+  PLAN ENFORCEMENT
+========================================
+
+Job creation  → src/app/api/jobs/route.ts (POST)
+  - Counts jobs created this calendar month
+  - Returns 403 if at limit
+
+Resume upload → src/app/api/jobs/[jobId]/candidates/route.ts (POST)
+  - Counts existing candidates for the job
+  - Returns 403 if existingCount + newFiles > limit
+
+Dashboard     → src/app/api/dashboard/stats/route.ts (GET)
+  - Returns plan + usage: { jobsThisMonth, jobsLimit }
+  - Used by dashboard usage widget
+
+========================================
+  CONFIG SOURCE
+========================================
+
+src/lib/plans.ts  — single source of truth
+  PLAN_LIMITS  — jobsPerMonth, resumesPerJob per plan
+  PLAN_BADGE   — label, color, bg, border per plan
+  getPlanLimits(plan: string) — safe fallback to free

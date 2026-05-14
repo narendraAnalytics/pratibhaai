@@ -2,7 +2,9 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, Sparkles, Upload, FileText, X, CheckCircle2, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Sparkles, Upload, FileText, X, CheckCircle2, AlertCircle, Zap, Lock } from 'lucide-react'
+import { PLAN_LIMITS, PLAN_BADGE } from '@/lib/plans'
+import type { PlanKey } from '@/lib/plans'
 
 const STYLES = `
 @keyframes drift0{0%{transform:translate(-50%,-50%) translate(0px,0px) scale(1)}50%{transform:translate(-50%,-50%) translate(120px,-60px) scale(1.18)}100%{transform:translate(-50%,-50%) translate(40px,80px) scale(0.96)}}
@@ -78,7 +80,12 @@ export default function UploadPage() {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
   const [launchStep, setLaunchStep] = useState(0)
+  const [plan, setPlan] = useState<PlanKey>('free')
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const resumeLimit: number = PLAN_LIMITS[plan].resumesPerJob
+  const badge = PLAN_BADGE[plan]
+  const atLimit = files.length >= resumeLimit
 
   const LAUNCH_STEPS = [
     { label: 'Agent 1 — Orchestrator', sub: 'Planning pipeline & execution strategy', color: '#b9a4ff', dot: '#7c5cff' },
@@ -99,6 +106,13 @@ export default function UploadPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [success])
 
+  useEffect(() => {
+    fetch('/api/dashboard/stats')
+      .then(r => r.json())
+      .then(d => { if (d?.plan) setPlan(d.plan as PlanKey) })
+      .catch(() => {})
+  }, [])
+
   const addFiles = useCallback((incoming: FileList | File[]) => {
     const arr = Array.from(incoming)
     const valid = arr.filter(f => ACCEPTED.includes(f.type) || ACCEPTED_EXT.some(ext => f.name.toLowerCase().endsWith(ext)))
@@ -107,10 +121,13 @@ export default function UploadPage() {
     else setError('')
     setFiles(prev => {
       const combined = [...prev, ...valid.map(f => ({ file: f, id: `${f.name}-${Date.now()}-${Math.random()}` }))]
-      if (combined.length > 10) { setError('Max 10 files allowed.'); return combined.slice(0, 10) }
+      if (combined.length > resumeLimit) {
+        setError(`Your ${badge.label} plan allows ${resumeLimit} resume${resumeLimit === 1 ? '' : 's'} per job. Remove files or upgrade to add more.`)
+        return combined.slice(0, resumeLimit)
+      }
       return combined
     })
-  }, [])
+  }, [resumeLimit, badge.label])
 
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault(); setDragging(false)
@@ -279,6 +296,44 @@ export default function UploadPage() {
               animation: 'riseIn 0.8s 0.1s cubic-bezier(.2,.7,.2,1) both',
             }}>
 
+              {/* Plan limit strip */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                marginBottom: 16, padding: '9px 14px', borderRadius: 12,
+                background: atLimit ? 'rgba(220,38,38,0.08)' : `${badge.bg}`,
+                border: `1px solid ${atLimit ? 'rgba(220,38,38,0.25)' : badge.border}`,
+              }}>
+                <div style={{
+                  width: 26, height: 26, borderRadius: 7, flexShrink: 0,
+                  background: atLimit ? 'rgba(220,38,38,0.15)' : badge.bg,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {atLimit
+                    ? <Lock size={12} style={{ color: '#ef4444' }} />
+                    : <Zap size={12} style={{ color: badge.color }} />}
+                </div>
+                <span style={{ fontSize: 12.5, fontWeight: 600, color: atLimit ? '#ef4444' : badge.color, textTransform: 'capitalize' }}>
+                  {badge.label} plan
+                </span>
+                <span style={{ fontSize: 12, color: 'rgba(230,226,255,0.45)' }}>·</span>
+                <span style={{
+                  fontSize: 12.5, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
+                  color: atLimit ? '#ef4444' : 'rgba(230,226,255,0.75)',
+                }}>
+                  {files.length}/{resumeLimit} resumes
+                </span>
+                <div style={{ flex: 1 }} />
+                {plan !== 'pro' && (
+                  <a href="/#pricing" style={{
+                    fontSize: 12, fontWeight: 600, color: badge.color,
+                    textDecoration: 'none', padding: '4px 10px', borderRadius: 8,
+                    background: badge.bg, border: `1px solid ${badge.border}`,
+                  }}>
+                    Upgrade →
+                  </a>
+                )}
+              </div>
+
               {/* Drop zone */}
               <div
                 onDragOver={e => { e.preventDefault(); setDragging(true) }}
@@ -308,7 +363,7 @@ export default function UploadPage() {
                     {dragging ? 'Drop files here' : 'Drag & drop resumes here'}
                   </p>
                   <p style={{ margin: '4px 0 0', fontSize: 13, color: 'rgba(230,226,255,0.50)' }}>
-                    or click to browse · PDF, DOC, DOCX · max 10 files
+                    or click to browse · PDF, DOC, DOCX · max {resumeLimit} files · {badge.label} plan
                   </p>
                 </div>
                 <input
@@ -375,13 +430,18 @@ export default function UploadPage() {
               {/* Error */}
               {error && (
                 <div style={{
-                  display: 'flex', alignItems: 'center', gap: 8,
+                  display: 'flex', alignItems: 'flex-start', gap: 8,
                   marginBottom: 16, padding: '10px 14px', borderRadius: 12,
                   background: 'rgba(255,77,109,0.10)', border: '1px solid rgba(255,150,170,0.25)',
                   color: '#ffb8c4', fontSize: 13.5,
                 }}>
-                  <AlertCircle size={15} style={{ flexShrink: 0 }} />
-                  {error}
+                  <AlertCircle size={15} style={{ flexShrink: 0, marginTop: 2 }} />
+                  <span>
+                    {error}
+                    {error.includes('plan') && (
+                      <> <a href="/#pricing" style={{ color: badge.color, fontWeight: 700, textDecoration: 'underline' }}>Upgrade plan →</a></>
+                    )}
+                  </span>
                 </div>
               )}
 

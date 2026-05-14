@@ -6,33 +6,34 @@ import { Section, Icons, PrimaryBtn, GhostBtn, EASE } from './shared';
 
 const plans = [
   {
-    name: 'Starter', m: 99, y: 79, popular: false,
+    name: 'free', label: 'free', m: 0, y: 0, popular: false, hasToggle: false,
     tone: '#7C3AED',
-    desc: 'For small teams piloting AI hiring.',
-    features: ['Up to 50 candidates / mo', '5 active job pipelines', '6 core agents', 'Email reports', 'Standard support'],
+    desc: 'For individuals getting started.',
+    features: ['1 job per month', '3 resumes per job', '6 core agents', 'Email reports', 'Standard support'],
   },
   {
-    name: 'Growth', m: 199, y: 159, popular: true,
+    name: 'plus', label: 'plus', m: 10, y: 8, popular: true, hasToggle: true,
     tone: '#A855F7',
-    desc: 'For scaling teams that hire weekly.',
-    features: ['Up to 250 candidates / mo', '20 active pipelines', 'All 10 agents', 'Custom rubrics', 'Slack + email', 'Priority support'],
+    desc: 'For growing teams hiring regularly.',
+    features: ['5 jobs per month', '10 resumes per job', 'All 9 agents', 'Custom rubrics', 'Priority support'],
   },
   {
-    name: 'Enterprise', m: 299, y: 239, popular: false,
+    name: 'pro', label: 'pro', m: 22, y: 18, popular: false, hasToggle: true,
     tone: '#F59E0B',
-    desc: 'For high-volume hiring orgs.',
-    features: ['Unlimited candidates', 'Unlimited pipelines', 'All agents + custom', 'SSO + audit logs', 'Dedicated success mgr', 'White-glove onboarding'],
+    desc: 'For high-volume hiring teams.',
+    features: ['15 jobs per month', '25 resumes per job', 'All agents + custom', 'Advanced analytics', 'Dedicated support'],
   },
 ];
 
 export default function PricingSection({ active }: { active: boolean }) {
-  const [yearly, setYearly] = useState(false);
+  // Global toggle — per-card UI but shared state
+  const [yearly, setYearly] = useState(true);
 
   return (
     <Section bg="linear-gradient(135deg,#FAFAFA 0%,#F5F4FF 50%,#FFF7ED 100%)" tone="lavender">
       <div className="relative w-full h-full px-12 lg:px-20 flex flex-col justify-center">
         <div className="max-w-[1200px] mx-auto w-full">
-          <div className="text-center mb-8">
+          <div className="text-center mb-10">
             <motion.h2
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: active ? 0 : 20, opacity: active ? 1 : 0 }}
@@ -49,47 +50,8 @@ export default function PricingSection({ active }: { active: boolean }) {
               className="mt-3"
               style={{ color: '#6B7280' }}
             >
-              Cancel any time. No setup fees. Free 14-day trial on every plan.
+              Start free, upgrade when you need more. No setup fees.
             </motion.p>
-
-            {/* Toggle */}
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: active ? 1 : 0.9, opacity: active ? 1 : 0 }}
-              transition={{ duration: 0.4, ease: EASE, delay: 0.15 }}
-              className="mt-6 inline-flex items-center gap-1 p-1 rounded-full glass"
-            >
-              <button
-                onClick={() => setYearly(false)}
-                className={`relative px-4 py-1.5 rounded-full text-sm font-semibold transition ${!yearly ? 'text-white' : ''}`}
-                style={{ color: yearly ? '#6B7280' : undefined }}
-              >
-                {!yearly && (
-                  <motion.div
-                    layoutId="billPill"
-                    className="absolute inset-0 rounded-full"
-                    style={{ background: 'linear-gradient(135deg,#7C3AED,#A855F7)' }}
-                    transition={{ duration: 0.35, ease: EASE }}
-                  />
-                )}
-                <span className="relative">Monthly</span>
-              </button>
-              <button
-                onClick={() => setYearly(true)}
-                className={`relative px-4 py-1.5 rounded-full text-sm font-semibold transition`}
-                style={{ color: yearly ? 'white' : '#6B7280' }}
-              >
-                {yearly && (
-                  <motion.div
-                    layoutId="billPill"
-                    className="absolute inset-0 rounded-full"
-                    style={{ background: 'linear-gradient(135deg,#7C3AED,#A855F7)' }}
-                    transition={{ duration: 0.35, ease: EASE }}
-                  />
-                )}
-                <span className="relative">Yearly</span>
-              </button>
-            </motion.div>
           </div>
 
           <div className="grid grid-cols-3 gap-5 items-stretch">
@@ -129,29 +91,39 @@ export default function PricingSection({ active }: { active: boolean }) {
                     />
                   </div>
 
-                  {p.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <div
-                        className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold text-white ring-pulse"
-                        style={{ background: 'linear-gradient(135deg,#7C3AED,#A855F7)' }}
-                      >
-                        <span>★</span> Most Popular
-                      </div>
-                    </div>
-                  )}
-
                   <div className="relative">
-                    <div className="font-display font-bold text-xl" style={{ color: '#1F1035' }}>{p.name}</div>
-                    <div className="text-[13px] mt-1 mb-5" style={{ color: '#6B7280' }}>{p.desc}</div>
+                    {/* Plan name + status badge */}
+                    <div className="flex items-center justify-between mb-1">
+                      <div
+                        className="font-display font-bold text-xl"
+                        style={{ color: '#1F1035' }}
+                      >
+                        {p.label}
+                      </div>
+                      {p.name === 'free' && (
+                        <span
+                          className="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white"
+                          style={{ background: '#1F1035' }}
+                        >
+                          Active
+                        </span>
+                      )}
+                    </div>
 
-                    <div className="flex items-baseline gap-1">
-                      <span className="font-display font-extrabold text-5xl tracking-tight"
-                            style={{ color: p.popular ? '#7C3AED' : '#1F1035' }}>
+                    <div className="text-[13px] mb-4" style={{ color: '#6B7280' }}>{p.desc}</div>
+
+                    {/* Price */}
+                    <div className="flex items-baseline gap-1 mb-1">
+                      <span
+                        className="font-display font-extrabold text-5xl tracking-tight"
+                        style={{ color: p.popular ? '#7C3AED' : '#1F1035' }}
+                      >
                         ${price}
                       </span>
-                      <span className="text-sm" style={{ color: '#6B7280' }}>/mo</span>
-                      {yearly && (
+                      <span className="text-sm" style={{ color: '#6B7280' }}>/month</span>
+                      {p.hasToggle && yearly && (
                         <motion.span
+                          key="badge"
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           className="ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold"
@@ -161,11 +133,46 @@ export default function PricingSection({ active }: { active: boolean }) {
                         </motion.span>
                       )}
                     </div>
-                    <div className="text-[11px] mt-1" style={{ color: '#6B7280' }}>
-                      {yearly ? 'billed yearly' : 'billed monthly'}
-                    </div>
 
-                    <ul className="mt-6 space-y-2.5">
+                    {/* Per-card billing toggle (linked to global state) */}
+                    {p.hasToggle ? (
+                      <button
+                        onClick={() => setYearly(v => !v)}
+                        className="flex items-center gap-2 mb-5 group"
+                        type="button"
+                      >
+                        <div
+                          style={{
+                            width: 36, height: 20, borderRadius: 99,
+                            background: yearly ? '#1F1035' : 'rgba(0,0,0,0.18)',
+                            position: 'relative',
+                            transition: 'background 0.2s',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <div
+                            style={{
+                              position: 'absolute', top: 3,
+                              left: yearly ? 19 : 3,
+                              width: 14, height: 14, borderRadius: '50%',
+                              background: 'white',
+                              transition: 'left 0.2s',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
+                            }}
+                          />
+                        </div>
+                        <span className="text-[12px] font-medium" style={{ color: '#6B7280' }}>
+                          Billed annually
+                        </span>
+                      </button>
+                    ) : (
+                      <div className="mb-5">
+                        <span className="text-[12px]" style={{ color: '#6B7280' }}>Always free</span>
+                      </div>
+                    )}
+
+                    {/* Features */}
+                    <ul className="space-y-2.5">
                       {p.features.map((f, j) => (
                         <motion.li
                           key={j}
@@ -175,8 +182,10 @@ export default function PricingSection({ active }: { active: boolean }) {
                           className="flex items-start gap-2.5 text-[14px]"
                           style={{ color: '#1F1035' }}
                         >
-                          <span className="mt-0.5 inline-flex w-5 h-5 rounded-full items-center justify-center flex-shrink-0"
-                                style={{ background: `${p.tone}18`, color: p.tone }}>
+                          <span
+                            className="mt-0.5 inline-flex w-5 h-5 rounded-full items-center justify-center flex-shrink-0"
+                            style={{ background: `${p.tone}18`, color: p.tone }}
+                          >
                             <Icons.Check width={11} height={11} />
                           </span>
                           {f}
@@ -184,11 +193,17 @@ export default function PricingSection({ active }: { active: boolean }) {
                       ))}
                     </ul>
 
+                    {/* CTA */}
                     <div className="mt-6">
-                      {p.popular
-                        ? <PrimaryBtn className="w-full justify-center">Start Free Trial <Icons.Arrow width={16} height={16} /></PrimaryBtn>
-                        : <GhostBtn className="w-full justify-center">Choose {p.name}</GhostBtn>
-                      }
+                      {p.name === 'free' ? (
+                        <GhostBtn className="w-full justify-center">Get Started Free</GhostBtn>
+                      ) : p.popular ? (
+                        <PrimaryBtn className="w-full justify-center">
+                          Subscribe <Icons.Arrow width={16} height={16} />
+                        </PrimaryBtn>
+                      ) : (
+                        <GhostBtn className="w-full justify-center">Subscribe</GhostBtn>
+                      )}
                     </div>
                   </div>
                 </motion.div>

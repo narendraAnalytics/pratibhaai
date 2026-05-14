@@ -192,6 +192,7 @@ These interfaces drive all downstream UI and reporting. Source of truth is `src/
 - Links: `githubUrl`, `linkedinUrl`, `portfolioUrl` — populated from both plain text AND PDF annotation hyperlinks
 - Signals: `certifications[]`, `projects[]`, `careerSignals` (`leadershipExperience`, `startupExperience`, `enterpriseExperience`, `frequentJobChanges`)
 - Meta: `summary`, `extractionConfidence`, `resumeQuality`, `missingCriticalFields`
+- Intelligence layer (added): `timelineAnalysis`, `fieldConfidence`, `careerProgression`, `skillClusters`, `domainExposure`, `proofOfWorkSignals`, `authenticitySignals`, `atsCompatibility`
 
 **`ReportData`** (from `report-generator.ts`):
 - `candidateName`, `jobTitle`, `compositeScore`, `rankLabel`, `recommendation`
@@ -203,8 +204,30 @@ These interfaces drive all downstream UI and reporting. Source of truth is `src/
 - `decisionConfidence`, `reportConfidence`, `evidenceQuality`, `riskSeverity`
 - `manualReviewRecommended`, `reportWarnings[]`
 - `emailSubject`, `emailBody`
+- Intelligence layer (added): `evidenceTraceability`, `confidenceBreakdown`, `authenticitySummary`, `quickSignals`, `interviewFocusAreas`, `agentTrace`, `overrideGuidance`, `semanticAlignmentInsights`, `workflowRecommendations`
 
 **Full pipeline output** saved to `agent_runs` table under `agentName: 'full-pipeline'` as `output.report` — this is the richest data source for candidate report pages.
+
+**Intelligence layer enhancement status:**
+| Agent | Enhanced |
+|-------|----------|
+| `job-intelligence.ts` | ✓ (8 new fields: `inferredSkills`, `skillSynonyms`, `hiringRiskFlags`, `recommendedAssessments`, `recruiterRecommendations`, `proofOfWorkRequirements`, `aiLiteracyRequirements`, `complianceSensitivity`) |
+| `candidate-extraction.ts` | ✓ (8 new fields — see above) |
+| `verification-risk.ts` | ✓ (9 new fields: `authenticityRisk`, `authenticitySignals`, `proofOfWorkConsistency`, `linguisticSignals`, `careerProgressionAnalysis`, `technicalAuthenticity`, `syntheticResumeIndicators`, `evidenceConfidence`, `biasProtection`) |
+| `technical-validation.ts` | ✓ (10 new fields: `proofOfWorkScore`, `engineeringMaturity`, `systemDesignSignals`, `aiEngineeringSignals`, `technicalAuthenticity`, `repositoryQuality`, `productionSignals`, `evidenceConfidence`, `activityTrends`, `learningVelocity`) |
+| `behavioral-alignment.ts` | ✓ (10 new fields: `learningAgilitySignals`, `aiWorkReadiness`, `leadershipAssessment`, `careerTrajectory`, `teamDynamicsIndicators`, `behavioralInterviewFocus`, `environmentFitConfidence`, `evidenceConfidence`, `executionSignals`, `semanticCultureProfile`) |
+| `report-generator.ts` | ✓ (9 new fields — see above) |
+| `orchestrator.ts` | pending |
+| `evaluation-aggregator.ts` | pending |
+| `decision-agent.ts` | pending |
+
+**Agent enhancement pattern (purely additive — never modify existing fields):**
+1. Add new fields to the agent's output interface
+2. Add safe fallback values in `*_FALLBACK` constant
+3. Add a new named section to `SYSTEM_PROMPT`
+4. Add new fields to `responseSchema`
+
+New fields auto-appear in JSONB `agent_runs.output` — no DB migration needed.
 
 ---
 

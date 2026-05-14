@@ -3,14 +3,33 @@ import { db } from '@/db'
 import { users } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 
+const VALID_PLANS = ['free', 'plus', 'pro'] as const
+type ValidPlan = typeof VALID_PLANS[number]
+
 export async function getOrCreateUser() {
-  const { userId } = await auth()
+  const { userId, has } = await auth()
   if (!userId) throw new Error('Unauthorized')
 
-  const [existing] = await db.select().from(users).where(eq(users.id, userId))
-  if (existing) return existing
+  // Clerk Billing plan check — correct for plans created in Clerk Dashboard Billing
+  const clerkPlan: ValidPlan = has({ plan: 'pro' }) ? 'pro'
+                             : has({ plan: 'plus' }) ? 'plus'
+                             : 'free'
 
-  // First login — fetch full Clerk user and create DB row
+  const [existing] = await db.select().from(users).where(eq(users.id, userId))
+
+  if (existing) {
+    if (existing.plan !== clerkPlan) {
+      const [updated] = await db
+        .update(users)
+        .set({ plan: clerkPlan })
+        .where(eq(users.id, userId))
+        .returning()
+      return updated
+    }
+    return existing
+  }
+
+  // First login — create row (currentUser() needed for email/name only)
   const clerkUser = await currentUser()
   if (!clerkUser) throw new Error('Clerk user not found')
 
@@ -19,7 +38,7 @@ export async function getOrCreateUser() {
     email: clerkUser.emailAddresses[0]?.emailAddress ?? '',
     username: clerkUser.username ?? null,
     name: `${clerkUser.firstName ?? ''} ${clerkUser.lastName ?? ''}`.trim() || null,
-    plan: 'free',
+    plan: clerkPlan,
   }).returning()
 
   return newUser
