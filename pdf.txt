@@ -1,254 +1,294 @@
-Yes — now your pipeline is moving into true enterprise-grade territory. The upgrades you added are the correct ones. 
-
-Especially these additions are highly valuable:
-
-* `unpdf`
-* `sharp + OCR preprocessing`
-* section segmentation
-* header/footer cleanup
-* chunk routing
-* `zod` validation
-
-Those are exactly the components most production RAG/document systems use today. Modern PDF extraction systems increasingly rely on multistage pipelines with OCR preprocessing, structure preservation, chunking, and validation instead of raw text extraction alone. ([Nutrient][1])
-
-# Your Current Stack Is Now Strong
-
-Your upgraded architecture now correctly handles:
-
-| Capability             | Status   |
-| ---------------------- | -------- |
-| Native PDF text        | ✅        |
-| DOCX parsing           | ✅        |
-| OCR fallback           | ✅        |
-| OCR preprocessing      | ✅        |
-| Header/footer cleanup  | ✅        |
-| Semantic chunking      | ✅        |
-| LLM validation         | ✅        |
-| Section routing        | ✅        |
-| Structured JSON        | ✅        |
-| Enterprise scalability | Mostly ✅ |
-
-This is already beyond many startup SaaS products.
-
----
-
-# What Is STILL Missing (Important)
-
-You are now missing mainly 4 advanced enterprise features.
-
----
-
-# 1. TABLE EXTRACTION (Most Important Missing Piece)
-
-Right now this is your biggest gap.
-
-Enterprise RFPs contain:
-
-* pricing tables
-* milestone matrices
-* compliance sheets
-* vendor scorecards
-* SLAs
-
-Raw extraction breaks these badly. Modern extraction pipelines emphasize dedicated table reconstruction because PDFs store tables as visual positioning, not semantic tables. ([Nutrient][1])
-
-## Add One Of These
-
-Recommended:
-
-```bash
-npm install pdfreader
-```
-
-OR
-
-```bash
-npm install tabula-js
-```
-
-### My recommendation for you:
-
-Use:
-
-* `pdfreader` initially
-* later upgrade to advanced table parsing if needed
-
-This is the single most important enhancement left.
-
----
-
-# 2. PAGE-LEVEL CITATIONS / TRACEABILITY
-
-Very important for enterprise trust.
-
-Your extracted JSON should contain:
-
-```json
-{
-  "requirement": "...",
-  "page": 12,
-  "section": "Compliance",
-  "confidence": 0.94
-}
-```
-
-Why this matters:
-
-* auditability
-* hallucination reduction
-* requirement verification
-* enterprise confidence
-
-This becomes a HUGE differentiator.
-
----
-
-# 3. LAYOUT COORDINATES
-
-Right now you extract text.
-
-Next evolution:
-extract structure.
-
-Meaning:
-
-```json
-{
-  "text": "...",
-  "x": 100,
-  "y": 220,
-  "fontSize": 16
-}
-```
-
-This enables:
-
-* heading detection
-* table reconstruction
-* reading order correction
-* hierarchy understanding
-
-PDFs are fundamentally layout-based documents, and preserving visual structure significantly improves downstream AI extraction quality. ([Nutrient][1])
-
----
-
-# 4. Hybrid Page Routing (Advanced)
-
-This becomes important later.
-
-Instead of:
-
-* parsing entire PDF equally
-
-Do:
-
-```text
-Page Classification
-   ↓
-Financial pages → financial parser
-Compliance pages → compliance parser
-Timeline pages → milestone parser
-```
-
-This dramatically improves:
-
-* extraction quality
-* token efficiency
-* Gemini accuracy
-
-Research pipelines increasingly use retrieval + page-level routing instead of end-to-end full-document processing because it improves accuracy substantially. ([arXiv][2])
-
----
-
-# Current Enterprise Readiness Score
-
-Honestly:
-
-| Area                          | Score  |
-| ----------------------------- | ------ |
-| MVP                           | 10/10  |
-| Startup SaaS                  | 9.5/10 |
-| Mid-size enterprise           | 8.5/10 |
-| Government tender-grade       | 7.5/10 |
-| Fortune 500 procurement-grade | 7/10   |
-
-After adding:
-
-* table extraction
-* citations
-* layout reconstruction
-
-you move near:
-
-## 9+/10 enterprise-grade.
-
----
-
-# One Important Architecture Suggestion
-
-Your current pipeline likely looks like:
-
-```text
-PDF → Text → Gemini
-```
-
-You should evolve it into:
-
-```text
-PDF
- ↓
-Structure Extraction
- ↓
-Section Segmentation
- ↓
-Table Reconstruction
- ↓
-Metadata + Citations
- ↓
-Validated JSON
- ↓
-Gemini Agents
-```
-
-That is the architecture used by serious document AI systems.
-
----
-
-# My Recommendation
-
-At this stage:
-
-## YES — stop adding random packages now.
-
-You already have enough core infrastructure.
-
-Now focus on:
-
-1. implementing the pipeline properly
-2. building reliable JSON schemas
-3. section segmentation quality
-4. table handling
-5. citation tracing
-6. chunk routing
-
-Implementation quality matters far more now than adding 20 more libraries.
-
----
-
-# Final Verdict
-
-Your upgraded extraction system is now:
-
-* genuinely strong
-* production-capable
-* scalable for Nivedan AI
-* architecturally correct for enterprise RFP parsing
-
-The only major missing capability now is:
-
-## robust table + layout intelligence.
-
-Once that is added, your parsing layer becomes a serious competitive advantage for [Nivedan AI](https://nivedan.ai?utm_source=chatgpt.com).
-
-[1]: https://www.nutrient.io/blog/pdf-data-extraction-developer-guide/?utm_source=chatgpt.com "Extracting data from PDFs: A comprehensive guide to ..."
-[2]: https://arxiv.org/abs/2604.26462?utm_source=chatgpt.com "A Multistage Extraction Pipeline for Long Scanned Financial Documents: An Empirical Study in Industrial KYC Workflows"
+=======================================================================
+  PDF EXTRACTION ON VERCEL — WHAT WORKS, WHAT BREAKS, AND WHY
+  Reference for Next.js 15/16 App Router projects (Pratibha AI learnings)
+=======================================================================
+
+-----------------------------------------------------------------------
+THE PROBLEM
+-----------------------------------------------------------------------
+
+PDF libraries that work perfectly on Windows (local dev) often CRASH on
+Vercel's Linux serverless environment for two reasons:
+
+  1. Native binary incompatibility — some packages ship compiled C/C++
+     binaries (.node files). Windows binaries do not run on Linux.
+     Vercel builds on Linux, so the binary was never compiled correctly.
+
+  2. Module load-time crash — if a package fails at import time (before
+     any code runs), ALL downstream logic fails silently. In a Next.js
+     pipeline this means every function that imports the broken module
+     returns nothing — pages show blank/pending/waiting states.
+
+-----------------------------------------------------------------------
+PACKAGES — WHAT WE TRIED AND THE VERDICT
+-----------------------------------------------------------------------
+
+  pdf-parse v2 (npm install pdf-parse)
+  ─────────────────────────────────────
+  Status  : BROKEN on Vercel (import-level crash)
+  Why     : v2 is a full ESM rewrite. Even though it ships a .cjs file,
+            the module resolution fails inside Next.js App Router
+            serverless functions on Vercel, crashing before any agent
+            or pipeline code executes.
+  Symptom : ALL agents show "Waiting" — 0/9 complete.
+  Verdict : Do NOT use for server-side PDF text extraction on Vercel.
+
+  pdfjs-dist legacy build (npm install pdfjs-dist)
+  ─────────────────────────────────────────────────
+  Status  : PARTIALLY WORKS on Vercel
+  Why     : The legacy Node.js build avoids browser-only APIs (DOMMatrix
+            etc.). Must use dynamic import to prevent build-time crash.
+  Use for : Extracting hyperlink annotations from PDFs (works reliably).
+  Caveat  : getTextContent() can throw in Vercel's serverless env for
+            some PDF files. Wrap in try/catch — never let it kill the
+            outer function.
+  Verdict : Good for annotation/link extraction. Unreliable for full
+            text extraction. Always use with a fallback.
+
+  mammoth (npm install mammoth)
+  ──────────────────────────────
+  Status  : WORKS on Vercel
+  Why     : Pure JavaScript, no native binaries, no browser APIs.
+  Use for : DOCX/DOC text extraction.
+  Verdict : Reliable. Use for all Word document processing.
+
+  Gemini multimodal inline PDF (Google Gemini API)
+  ─────────────────────────────────────────────────
+  Status  : WORKS on Vercel — best quality
+  Why     : No local processing. PDF bytes are sent to Gemini as
+            base64 inline data. Gemini reads the PDF natively.
+  Use for : PDF text extraction when pdfjs-dist fails, OR as primary
+            extraction method for best quality.
+  Quality : Superior to text extraction — preserves layout, columns,
+            tables, and formatting that plain text parsers lose.
+  Verdict : PRIMARY recommended approach for PDFs on Vercel.
+
+-----------------------------------------------------------------------
+CORRECT IMPLEMENTATION PATTERN
+-----------------------------------------------------------------------
+
+Step 1 — pdfjs-dist for annotation/link extraction (candidate-extraction.ts)
+─────────────────────────────────────────────────────────────────────────────
+
+  async function extractPdfAnnotationLinks(buf: Buffer): Promise<string[]> {
+    try {
+      // Dynamic import REQUIRED — prevents DOMMatrix crash at build time
+      const { getDocument, GlobalWorkerOptions } =
+        await import('pdfjs-dist/legacy/build/pdf.mjs')
+      GlobalWorkerOptions.workerSrc = ''
+      const data = new Uint8Array(buf)
+      const pdf = await (getDocument({ data }) as { promise: Promise<...> }).promise
+      const urls: string[] = []
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i)
+        const annotations = await page.getAnnotations()
+        for (const annot of annotations) {
+          if (annot.subtype === 'Link' && annot.url) urls.push(annot.url)
+        }
+      }
+      return [...new Set(urls)]
+    } catch {
+      return []   // <-- always catch, never let pdfjs kill the pipeline
+    }
+  }
+
+Step 2 — Try text extraction with safe fallback (run-pipeline/route.ts)
+─────────────────────────────────────────────────────────────────────────
+
+  const buf = Buffer.from(candidate.resumeContent!, 'base64')
+  let resumeText = ''
+
+  if (candidate.resumeName?.toLowerCase().endsWith('.pdf')) {
+    try {
+      const { getDocument, GlobalWorkerOptions } =
+        await import('pdfjs-dist/legacy/build/pdf.mjs')
+      GlobalWorkerOptions.workerSrc = ''
+      const pdfDoc = await (getDocument({ data: new Uint8Array(buf) }) as {...}).promise
+      const pages: string[] = []
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i)
+        const content = await page.getTextContent()
+        pages.push(content.items.map((item) => item.str).join(' '))
+      }
+      resumeText = pages.join('\n')
+    } catch (pdfErr) {
+      console.error('[pipeline] pdfjs extraction failed — Gemini multimodal fallback:', pdfErr)
+      // resumeText stays '' — Agent 3 will use pdfBuffer inline data
+    }
+  } else {
+    try {
+      const result = await mammoth.extractRawText({ buffer: buf })
+      resumeText = result.value
+    } catch (docxErr) {
+      console.error('[pipeline] mammoth extraction failed:', docxErr)
+    }
+  }
+
+Step 3 — Gemini multimodal inline PDF as primary+fallback (candidate-extraction.ts)
+─────────────────────────────────────────────────────────────────────────────────────
+
+  export async function runCandidateExtraction(
+    resumeText: string,
+    pdfBuffer?: Buffer,
+  ): Promise<CandidateProfile> {
+
+    const parts: Array<{ text?: string; inlineData?: { mimeType: string; data: string } }> = []
+
+    // Include PDF as inline data — Gemini reads it natively
+    if (pdfBuffer) {
+      parts.push({
+        inlineData: { mimeType: 'application/pdf', data: pdfBuffer.toString('base64') }
+      })
+    }
+
+    // Use extracted text if available, otherwise instruct Gemini to read the PDF
+    const promptText = resumeText
+      ? `${SYSTEM_PROMPT}\n\nResume to analyze:\n\n${resumeText}`
+      : `${SYSTEM_PROMPT}\n\nExtract candidate information from the attached PDF resume.`
+    parts.push({ text: promptText })
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.1-flash-lite',
+      contents: [{ role: 'user', parts }],
+      config: { responseMimeType: 'application/json', responseSchema: CANDIDATE_SCHEMA },
+    })
+    // ...
+  }
+
+-----------------------------------------------------------------------
+NEXT.CONFIG.TS — REQUIRED CONFIGURATION
+-----------------------------------------------------------------------
+
+  import type { NextConfig } from "next"
+
+  const nextConfig: NextConfig = {
+    serverExternalPackages: [
+      '@google/adk',       // Google ADK — ESM, do not bundle
+      '@google/genai',     // Google Gemini SDK — ESM, do not bundle
+      'pdf-parse',         // Keep listed even though not actively used
+                           // (prevents webpack from trying to bundle it)
+      '@napi-rs/canvas',   // Native canvas — Linux binary, must be external
+      'mammoth',           // DOCX parser — large, better as external
+    ],
+  }
+
+  export default nextConfig
+
+  WHY serverExternalPackages?
+  ────────────────────────────
+  By default Next.js bundles all imports into a single server bundle.
+  For packages that:
+    - Ship native .node binaries (napi-rs/canvas)
+    - Are ESM-only and break when bundled (google/genai, google/adk)
+    - Are very large (mammoth)
+  ...you must tell Next.js to leave them as-is in node_modules and
+  require() them at runtime. That is what serverExternalPackages does.
+
+  DO NOT add pdfjs-dist to serverExternalPackages.
+  It must be bundled by webpack so the dynamic import() works correctly
+  in the serverless function. Webpack handles the lazy loading.
+
+-----------------------------------------------------------------------
+VERCEL.JSON — FUNCTION TIMEOUT
+-----------------------------------------------------------------------
+
+  Create vercel.json at project root:
+
+  {
+    "functions": {
+      "src/app/api/run-pipeline/route.ts": {
+        "maxDuration": 300
+      }
+    }
+  }
+
+  Also set in the route file itself:
+    export const maxDuration = 300
+
+  NOTE: 300 seconds requires Vercel Pro plan.
+        Vercel Hobby plan caps at 60 seconds.
+        For a multi-agent pipeline (9 agents × N candidates) you NEED
+        Pro plan. Hobby will timeout mid-pipeline.
+
+-----------------------------------------------------------------------
+VERCEL ENVIRONMENT VARIABLES — MUST SET IN DASHBOARD
+-----------------------------------------------------------------------
+
+  The .env file is NOT deployed to Vercel. Every variable must be added
+  manually in Vercel Dashboard → Project → Settings → Environment Variables.
+
+  Required variables for this project:
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+    CLERK_SECRET_KEY
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL=/
+    DATABASE_URL                          (Neon — no -pooler, no channel_binding)
+    GOOGLE_API_KEY                        (Google AI Studio key)
+    GOOGLE_GENAI_USE_VERTEXAI=false       (must be lowercase false)
+    GITHUB_TOKEN                          (Personal Access Token — for Agent 5)
+    RESEND_API_KEY
+    RESEND_FROM_EMAIL
+    RESEND_FROM_NAME
+
+  COMMON MISTAKE: Setting GOOGLE_GENAI_USE_VERTEXAI=FALSE (uppercase).
+  JavaScript reads env vars as strings. A string "FALSE" is truthy.
+  The SDK may switch to Vertex AI mode and fail. Use lowercase: false.
+
+-----------------------------------------------------------------------
+DEPENDENCY INSTALL COMMANDS (for next project)
+-----------------------------------------------------------------------
+
+  # PDF / Document parsing
+  npm install pdfjs-dist mammoth
+
+  # AI
+  npm install @google/genai @google/adk
+
+  # Do NOT install pdf-parse — use pdfjs-dist + Gemini multimodal instead
+
+-----------------------------------------------------------------------
+DIAGNOSIS CHECKLIST — IF PIPELINE FAILS ON VERCEL
+-----------------------------------------------------------------------
+
+  Symptom: All agents "Waiting" (0/9 complete)
+  ─────────────────────────────────────────────
+  Cause  : Pipeline crashed at module load time (import-level error)
+  Check  : A package in serverExternalPackages failed to load
+  Fix    : Check Vercel function logs for "Cannot find module" or
+           "SyntaxError" errors on startup
+
+  Symptom: 2 agents run, rest show "Unknown / Pending"
+  ──────────────────────────────────────────────────────
+  Cause  : PDF extraction threw an exception inside the candidate loop.
+           The catch block wrote a full-pipeline FAILED record for every
+           candidate. pipeline-status saw failedRuns >= total and set
+           isComplete=true, redirecting to results with empty data.
+  Check  : Look for agent_runs rows where agentName='full-pipeline'
+           and status='failed'. The output.error field has the message.
+  Fix    : Wrap ALL PDF/DOCX extraction in try/catch. Use Gemini
+           multimodal as fallback (pass pdfBuffer as inlineData).
+
+  Symptom: Pipeline works for 1 candidate, fails for 3+
+  ──────────────────────────────────────────────────────
+  Cause  : Vercel function timeout (60s Hobby, 300s Pro)
+  Fix    : Upgrade to Pro plan. Set maxDuration=300 in route + vercel.json
+
+-----------------------------------------------------------------------
+SUMMARY — RULES FOR NEXT PROJECT
+-----------------------------------------------------------------------
+
+  1. Never use pdf-parse on a server-side Vercel route.
+  2. Use pdfjs-dist/legacy/build/pdf.mjs via dynamic import — always
+     wrap in try/catch, never a top-level static import.
+  3. For primary PDF content extraction: pass PDF as Gemini inlineData.
+  4. For DOCX: mammoth works fine, wrap in try/catch.
+  5. Add ESM/native packages to serverExternalPackages in next.config.ts.
+  6. Do NOT add pdfjs-dist to serverExternalPackages.
+  7. Set maxDuration=300 in both the route file and vercel.json.
+  8. All .env variables must be manually added to Vercel dashboard.
+  9. Use Vercel Pro plan for any pipeline taking more than 60 seconds.
+ 10. Test on Vercel early — local dev on Windows hides binary/ESM issues.
+
+=======================================================================

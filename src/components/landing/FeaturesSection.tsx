@@ -15,9 +15,9 @@ const feats = [
 export default function FeaturesSection({ active }: { active: boolean }) {
   return (
     <Section bg="linear-gradient(135deg,#FAFAFA 0%,#F0EEFF 60%,#FFF1F2 100%)" tone="violet">
-      <div className="relative w-full h-full px-12 lg:px-20 flex flex-col justify-center">
+      <div className="relative w-full h-full px-12 lg:px-20 flex flex-col justify-start pt-10 pb-6">
         <div className="max-w-[1280px] mx-auto w-full">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <motion.span
               initial={{ y: 14, opacity: 0 }}
               animate={{ y: active ? 0 : 14, opacity: active ? 1 : 0 }}
@@ -31,15 +31,24 @@ export default function FeaturesSection({ active }: { active: boolean }) {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: active ? 0 : 20, opacity: active ? 1 : 0 }}
               transition={{ duration: 0.5, ease: EASE, delay: 0.05 }}
-              className="font-display font-extrabold text-[48px] tracking-tight mt-3"
+              className="font-display font-extrabold text-[40px] tracking-tight mt-3"
               style={{ color: '#1F1035' }}
             >
               Everything a Senior Recruiter Does.<br />
               <span className="text-gradient">In Minutes.</span>
             </motion.h2>
+            <motion.p
+              initial={{ y: 16, opacity: 0 }}
+              animate={{ y: active ? 0 : 16, opacity: active ? 1 : 0 }}
+              transition={{ duration: 0.5, ease: EASE, delay: 0.1 }}
+              className="mt-4 text-[15px] leading-relaxed max-w-[540px] mx-auto"
+              style={{ color: '#6B7280' }}
+            >
+              From fraud detection to culture fit — every step a senior recruiter takes, automated in one pipeline.
+            </motion.p>
           </div>
 
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-3 gap-4">
             {feats.map((f, i) => (
               <motion.div
                 key={i}
@@ -47,7 +56,7 @@ export default function FeaturesSection({ active }: { active: boolean }) {
                 animate={{ y: active ? 0 : 28, opacity: active ? 1 : 0 }}
                 transition={{ duration: 0.5, ease: EASE, delay: 0.15 + i * 0.07 }}
                 whileHover={{ y: -6, boxShadow: '0 24px 60px -20px rgba(124,58,237,0.45)' }}
-                className="group relative glass rounded-3xl p-7 overflow-hidden cursor-pointer"
+                className="group relative glass rounded-3xl p-5 overflow-hidden cursor-pointer"
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                      style={{ background: 'radial-gradient(600px circle at 50% 0%, rgba(168,85,247,0.12), transparent 60%)' }} />
@@ -55,17 +64,13 @@ export default function FeaturesSection({ active }: { active: boolean }) {
                   <motion.div
                     animate={{ y: [0, -4, 0] }}
                     transition={{ duration: 4, repeat: Infinity, delay: i * 0.3 }}
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-5"
+                    className="w-10 h-10 rounded-2xl flex items-center justify-center text-2xl mb-3"
                     style={{ background: 'linear-gradient(135deg,#F5F3FF,#FCE7F3)' }}
                   >
                     {f.icon}
                   </motion.div>
-                  <div className="font-display font-bold text-[18px] leading-snug mb-2" style={{ color: '#1F1035' }}>{f.title}</div>
-                  <div className="text-[14px] leading-relaxed" style={{ color: '#6B7280' }}>{f.desc}</div>
-                  <div className="mt-5 flex items-center gap-2 text-[13px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
-                       style={{ color: '#7C3AED' }}>
-                    Learn more <span>→</span>
-                  </div>
+                  <div className="font-display font-bold text-[16px] leading-snug mb-2" style={{ color: '#7C3AED' }}>{f.title}</div>
+                  <div className="text-[13px] leading-relaxed" style={{ color: '#6B7280' }}>{f.desc}</div>
                 </div>
               </motion.div>
             ))}

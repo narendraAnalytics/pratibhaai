@@ -3,17 +3,8 @@
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
+import Image from 'next/image';
 import { Section, PrimaryBtn, GhostBtn, Icons, CountUp, EASE } from './shared';
-
-const agents = Array.from({ length: 10 }).map((_, i) => {
-  const a = (i / 10) * Math.PI * 2 - Math.PI / 2;
-  const r = 130;
-  return { i: i + 1, x: 180 + Math.cos(a) * r, y: 180 + Math.sin(a) * r };
-});
-
-const links: [number, number][] = [];
-for (let i = 0; i < 10; i++) links.push([i, (i + 1) % 10]);
-links.push([0, 5], [2, 7], [4, 9]);
 
 const stagger = {
   hidden: {},
@@ -97,82 +88,35 @@ export default function HeroSection({ active }: { active: boolean }) {
             </motion.div>
           </motion.div>
 
-          {/* Right — agent network */}
+          {/* Right — agent network image */}
           <div className="col-span-12 lg:col-span-5 hidden lg:flex items-center justify-center">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: active ? 1 : 0, scale: active ? 1 : 0.9 }}
-              transition={{ duration: 0.6, ease: EASE }}
-              className="relative w-[420px] h-[420px]"
+              initial={{ opacity: 0, scale: 0.88 }}
+              animate={{ opacity: active ? 1 : 0, scale: active ? 1 : 0.88 }}
+              transition={{ duration: 0.7, ease: EASE }}
+              className="relative w-[680px] h-[680px]"
             >
-              <div
-                className="absolute inset-0 rounded-full opacity-60"
-                style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.18), transparent 65%)' }}
+              {/* Ambient glow */}
+              <motion.div
+                className="absolute inset-0 rounded-full"
+                style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.22), transparent 68%)' }}
+                animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.7, 0.5] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               />
-
-              <svg viewBox="0 0 360 360" className="absolute inset-0 w-full h-full">
-                <defs>
-                  <linearGradient id="lineG" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#A855F7" stopOpacity="0.7" />
-                    <stop offset="100%" stopColor="#FB7185" stopOpacity="0.7" />
-                  </linearGradient>
-                  <radialGradient id="nodeG" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#FFFFFF" />
-                    <stop offset="100%" stopColor="#EDE9FE" />
-                  </radialGradient>
-                </defs>
-
-                {links.map(([a, b], li) => {
-                  const pa = agents[a], pb = agents[b];
-                  return (
-                    <line
-                      key={li}
-                      x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y}
-                      stroke="url(#lineG)" strokeWidth="1.6"
-                      strokeDasharray="6 6" className="flow-dash"
-                      style={{ opacity: 0.55 }}
-                    />
-                  );
-                })}
-
-                {/* Center node */}
-                <circle cx="180" cy="180" r="34" fill="url(#nodeG)" stroke="#A855F7" strokeWidth="1.5" />
-                <text x="180" y="178" textAnchor="middle" dominantBaseline="middle"
-                      fontFamily="Plus Jakarta Sans" fontWeight="700" fontSize="11" fill="#1F1035">Pratibha</text>
-                <text x="180" y="190" textAnchor="middle" dominantBaseline="middle"
-                      fontFamily="Plus Jakarta Sans" fontWeight="600" fontSize="9" fill="#7C3AED">CORE</text>
-
-                {/* Agent nodes */}
-                {agents.map((p, ni) => (
-                  <motion.g
-                    key={ni}
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: active ? 1 : 0, scale: active ? 1 : 0 }}
-                    transition={{ duration: 0.4, delay: 0.2 + ni * 0.05, ease: EASE }}
-                  >
-                    <motion.circle
-                      cx={p.x} cy={p.y} r={20}
-                      fill="white" stroke="#A855F7" strokeWidth="1.4"
-                      animate={{ r: [20, 22, 20] } as never}
-                      transition={{ duration: 2.2 + (ni % 3) * 0.4, repeat: Infinity, delay: ni * 0.15 }}
-                    />
-                    <text x={p.x} y={p.y + 1} textAnchor="middle" dominantBaseline="middle"
-                          fontFamily="Plus Jakarta Sans" fontWeight="700" fontSize="11" fill="#7C3AED">
-                      {p.i}
-                    </text>
-                  </motion.g>
-                ))}
-
-                {/* Pulse dot */}
-                <motion.circle
-                  r={3} fill="#FB7185"
-                  animate={{
-                    cx: [...agents.map(a => a.x), agents[0].x],
-                    cy: [...agents.map(a => a.y), agents[0].y],
-                  } as never}
-                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+              {/* Floating image */}
+              <motion.div
+                animate={{ y: [0, -12, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <Image
+                  src="https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1778774634/bannerimage_yjw0to.png"
+                  alt="Pratibha AI — 10 Agent Network"
+                  width={680}
+                  height={680}
+                  className="object-contain drop-shadow-2xl"
+                  priority
                 />
-              </svg>
+              </motion.div>
             </motion.div>
           </div>
         </div>
