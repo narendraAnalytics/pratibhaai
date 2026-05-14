@@ -561,9 +561,18 @@ export async function runCandidateExtraction(resumeText: string, pdfBuffer?: Buf
     ? `\n\n--- EMBEDDED HYPERLINKS DETECTED IN PDF (treat these as ground-truth URLs) ---\n${annotationLinks.join('\n')}`
     : ''
 
+  const parts: Array<{ text?: string; inlineData?: { mimeType: string; data: string } }> = []
+  if (pdfBuffer) {
+    parts.push({ inlineData: { mimeType: 'application/pdf', data: pdfBuffer.toString('base64') } })
+  }
+  const promptText = resumeText
+    ? `${SYSTEM_PROMPT}\n\nResume to analyze:\n\n${labelResumeSections(resumeText)}${hyperlinksSection}`
+    : `${SYSTEM_PROMPT}\n\nExtract candidate information from the attached PDF resume.${hyperlinksSection}`
+  parts.push({ text: promptText })
+
   const response = await ai.models.generateContent({
     model: 'gemini-3.1-flash-lite',
-    contents: [{ role: 'user', parts: [{ text: `${SYSTEM_PROMPT}\n\nResume to analyze:\n\n${labelResumeSections(resumeText)}${hyperlinksSection}` }] }],
+    contents: [{ role: 'user', parts }],
     config: {
       responseMimeType: 'application/json',
       responseSchema: CANDIDATE_SCHEMA as unknown,

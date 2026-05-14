@@ -100,21 +100,30 @@ export async function POST(req: NextRequest) {
         const buf = Buffer.from(candidate.resumeContent!, 'base64')
         let resumeText = ''
         if (candidate.resumeName?.toLowerCase().endsWith('.pdf')) {
-          const { getDocument, GlobalWorkerOptions } = await import('pdfjs-dist/legacy/build/pdf.mjs')
-          GlobalWorkerOptions.workerSrc = ''
-          const pdfDoc = await (getDocument({ data: new Uint8Array(buf) }) as {
-            promise: Promise<{ numPages: number; getPage: (n: number) => Promise<{ getTextContent: () => Promise<{ items: Array<{ str: string }> }> }> }>
-          }).promise
-          const pages: string[] = []
-          for (let i = 1; i <= pdfDoc.numPages; i++) {
-            const page = await pdfDoc.getPage(i)
-            const content = await page.getTextContent()
-            pages.push(content.items.map((item) => item.str).join(' '))
+          try {
+            const { getDocument, GlobalWorkerOptions } = await import('pdfjs-dist/legacy/build/pdf.mjs')
+            GlobalWorkerOptions.workerSrc = ''
+            const pdfDoc = await (getDocument({ data: new Uint8Array(buf) }) as {
+              promise: Promise<{ numPages: number; getPage: (n: number) => Promise<{ getTextContent: () => Promise<{ items: Array<{ str: string }> }> }> }>
+            }).promise
+            const pages: string[] = []
+            for (let i = 1; i <= pdfDoc.numPages; i++) {
+              const page = await pdfDoc.getPage(i)
+              const content = await page.getTextContent()
+              pages.push(content.items.map((item) => item.str).join(' '))
+            }
+            resumeText = pages.join('\n')
+          } catch (pdfErr) {
+            console.error('[pipeline] pdfjs extraction failed — Gemini multimodal fallback:', pdfErr)
+            // resumeText stays '' — runCandidateExtraction will use pdfBuffer inline data
           }
-          resumeText = pages.join('\n')
         } else {
-          const result = await mammoth.extractRawText({ buffer: buf })
-          resumeText = result.value
+          try {
+            const result = await mammoth.extractRawText({ buffer: buf })
+            resumeText = result.value
+          } catch (docxErr) {
+            console.error('[pipeline] mammoth extraction failed:', docxErr)
+          }
         }
 
         // Agent 3: Candidate Extraction
