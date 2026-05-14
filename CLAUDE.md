@@ -46,7 +46,7 @@ Google ADK agent work:        C:\Users\ES\.claude\skills\google-agents-cli-adk-c
 ### Critical constraints
 - **No separate backend** — agents live in `src/app/api/agents/`, routes in `src/app/api/`
 - **No Express / Hono / Python** — Next.js API routes + TypeScript only
-- **Single env file** — `.env.local` at project root
+- **Single env file** — `.env` at project root
 - **Drizzle driver** — `drizzle-orm/neon-http` (NOT `pg` or websocket)
 - **`users.id`** — `text` (Clerk `user_xxx` strings, never uuid)
 - **All other PKs** — `uuid().defaultRandom()`
@@ -71,6 +71,8 @@ Domain `buildflows.shop` must be verified in Resend dashboard before emails reac
 - Use `useUser()` for auth state — `<SignedIn>` / `<SignedOut>` are NOT exported by the installed version
 - Do NOT pass `afterSignOutUrl` prop to `<UserButton />` — set `NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL` in `.env` instead
 - `getOrCreateUser()` (`src/lib/auth.ts`) must be called at the top of every protected API route
+- Plan is read via `has({ plan: 'pro' })` / `has({ plan: 'plus' })` from `auth()` — NOT from `user.publicMetadata.plan` (Clerk Billing never sets publicMetadata automatically)
+- Client-side plan badge fetches `/api/user/me` (server-side, always fresh) — never read plan from `useUser()` JWT cache
 
 ### pdf-parse v2 API (v2.4.5 installed — breaking change from v1)
 The installed version is a full ESM rewrite. There is NO callable default function.
@@ -130,7 +132,7 @@ src/
 │   │       ├── job-intelligence.ts     # Gemini Pro
 │   │       ├── candidate-extraction.ts # Gemini Flash-Lite
 │   │       ├── verification-risk.ts    # Gemini Flash-Lite
-│   │       ├── technical-validation.ts # Gemini Flash
+│   │       ├── technical-validation.ts # Gemini Flash-Lite
 │   │       ├── behavioral-alignment.ts # Gemini Flash-Lite
 │   │       ├── evaluation-aggregator.ts # Gemini Flash-Lite
 │   │       ├── decision-agent.ts       # Gemini Pro
@@ -152,15 +154,15 @@ src/
 ## Multi-Agent Pipeline
 
 ```
-[1] Orchestrator Agent           gemini-3.1-pro-preview     Session state, routing
-[2] Job Intelligence Agent       gemini-3.1-pro-preview      JD → HiringBlueprint JSON
-[3] Candidate Extraction Agent   gemini-3.1-flash-lite           PDF/DOCX → CandidateProfile JSON
-[4] Verification / Risk Agent    gemini-3.1-flash-lite       Fraud detection, timeline checks
-[5] Technical Validation Agent   gemini-3-flash-preview             GitHub API → TechnicalValidationResult
-[6] Behavioral Alignment Agent   gemini-3.1-flash-lite       Culture fit → BehavioralResult
-[7] Evaluation Aggregator Agent  gemini-3.1-flash-lite           Weighted scoring → AggregatedScore
-[8] Decision Agent               gemini-3.1-pro-preview                Explainable WHY + interview questions
-[9] Report Generator Agent       gemini-3.1-flash-lite         ReportData → dashboard + email
+[1] Orchestrator Agent           gemini-3.1-pro-preview Session state, routing
+[2] Job Intelligence Agent       gemini-3.1-pro-preview JD → HiringBlueprint JSON
+[3] Candidate Extraction Agent   gemini-3.1-flash-lite  PDF/DOCX → CandidateProfile JSON
+[4] Verification / Risk Agent    gemini-3.1-flash-lite  Fraud detection, timeline checks
+[5] Technical Validation Agent   gemini-3.1-flash-lite  GitHub API → TechnicalValidationResult
+[6] Behavioral Alignment Agent   gemini-3.1-flash-lite  Culture fit → BehavioralResult
+[7] Evaluation Aggregator Agent  gemini-3.1-flash-lite  Weighted scoring → AggregatedScore
+[8] Decision Agent               gemini-3.1-pro-preview Explainable WHY + interview questions
+[9] Report Generator Agent       gemini-3.1-flash-lite  ReportData → dashboard + email
 ```
 
 **Scoring formula:**
@@ -169,14 +171,13 @@ Composite = (Skills × 40%) + (Technical × 35%) + (Culture × 25%)
 90–100 → Strong Hire  |  65–89 → Consider  |  0–64 → Not Recommended
 ```
 
-**Gemini model rules — use EXACTLY these model IDs, do not change them:**
-| Model constant | ID | Used for |
-|---|---|---|
-| `MODEL_PRO` | `gemini-3.1-pro` | Orchestrator, Job Intelligence, Decision Agent |
-| `MODEL_FLASH` | `gemini-3.1-flash` | Technical Validation |
-| `MODEL_FLASH_LITE` | `gemini-3.1-flash-lite` | All other agents |
+**Gemini model rules — use EXACTLY these model IDs hardcoded as strings, do not change them:**
+| ID | Used for |
+|---|---|
+| `gemini-3.1-pro-preview` | Orchestrator, Job Intelligence, Decision Agent |
+| `gemini-3.1-flash-lite` | All other agents (Candidate Extraction, Verification, Technical Validation, Behavioral, Aggregator, Report) |
 
-All `GoogleGenAI` instances use `apiVersion: 'v1alpha'`.
+All `GoogleGenAI` instances use `apiVersion: 'v1alpha'`. Models are hardcoded strings — NOT read from env vars.
 
 ---
 
@@ -269,7 +270,7 @@ Step 4: /dashboard/jobs/[jobId]/results              Ranked candidate list (scor
 
 ---
 
-## Environment Variables (.env.local)
+## Environment Variables (.env)
 
 ```bash
 # Clerk
@@ -287,9 +288,6 @@ DATABASE_URL=          # direct URL, no -pooler, no channel_binding
 # Google ADK + Gemini
 GOOGLE_API_KEY=
 GOOGLE_GENAI_USE_VERTEXAI=false
-MODEL_PRO=gemini-3.1-pro
-MODEL_FLASH=gemini-3.1-flash
-MODEL_FLASH_LITE=gemini-3.1-flash-lite
 
 # GitHub (for Technical Validation Agent)
 GITHUB_TOKEN=

@@ -1,0 +1,22 @@
+ POST /api/jobs/1f9dcb06-ef8f-4b40-9951-64887970b082/candidates 201 in 22.6s (next.js: 12.7s, proxy.ts: 202ms, application-code: 9.7s)
+[run-pipeline] Error [ApiError]: {"error":{"code":404,"message":"models/gemini-3.1-pro is not found for API version v1alpha, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.","status":"NOT_FOUND"}}
+    at async runOrchestrator (src\app\api\agents\orchestrator.ts:179:20)
+    at async POST (src\app\api\run-pipeline\route.ts:39:30)
+  177 |
+  178 |   // ── Original Gemini call — unchanged ──────────────────────────────────────
+> 179 |   const response = await ai.models.generateContent({
+      |                    ^
+  180 |     model: 'gemini-3.1-pro',
+  181 |     contents: [{ role: 'user', parts: [{ text: prompt }] }],
+  182 |     config: { {
+  status: 404
+}
+ POST /api/run-pipeline 500 in 15.0s (next.js: 6.2s, proxy.ts: 165ms, application-code: 8.6s)
+ GET /dashboard/jobs/1f9dcb06-ef8f-4b40-9951-64887970b082/screening 200 in 9.4s (next.js: 8.5s, proxy.ts: 82ms, application-code: 762ms)
+ GET /api/jobs/1f9dcb06-ef8f-4b40-9951-64887970b082/pipeline-status 200 in 7.9s (next.js: 2.2s, proxy.ts: 21ms, application-code: 5.7s)
+ GET /api/jobs/1f9dcb06-ef8f-4b40-9951-64887970b082/pipeline-status 200 in 2.2s (next.js: 48ms, proxy.ts: 27ms, application-code: 2.1s)
+ GET /api/jobs/1f9dcb06-ef8f-4b40-9951-64887970b082/pipeline-status 200 in 2.4s (next.js: 18ms, proxy.ts: 21ms, application-code: 2.4s)
+ GET /api/jobs/1f9dcb06-ef8f-4b40-9951-64887970b082/pipeline-status 200 in 2.5s (next.js: 48ms, proxy.ts: 23ms, application-code: 2.4s)
+ GET /api/jobs/1f9dcb06-ef8f-4b40-9951-64887970b082/pipeline-status 200 in 2.7s (next.js: 106ms, proxy.ts: 34ms, application-code: 2.6s)
+ GET /api/jobs/1f9dcb06-ef8f-4b40-9951-64887970b082/pipeline-status 200 in 2.7s (next.js: 35ms, proxy.ts: 30ms, application-code: 2.6s)
+ GET /api/jobs/1f9dcb06-ef8f-4b40-9951-64887970b082/pipeline-status 200 in 2.4s (next.js: 28ms, proxy.ts: 24ms, application-code: 2.4s)

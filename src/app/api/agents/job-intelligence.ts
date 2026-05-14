@@ -270,7 +270,7 @@ Return ONLY valid JSON. No markdown, no explanations, no code blocks.
 The JSON must be deterministic, machine-readable, and schema-safe.`
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-pro',
+    model: 'gemini-3.1-pro-preview',
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: {
       responseMimeType: 'application/json',

@@ -177,7 +177,7 @@ sessionId format: pipe_${job.id.slice(0, 8)}_<timestamp_ms>`
 
   // ── Original Gemini call — unchanged ──────────────────────────────────────
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-pro',
+    model: 'gemini-3.1-pro-preview',
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: {
       responseMimeType: 'application/json',
