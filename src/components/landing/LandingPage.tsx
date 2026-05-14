@@ -38,6 +38,12 @@ export default function LandingPage() {
       .then(d => { if (d?.plan) setServerPlan(d.plan as PlanKey); })
       .catch(() => {});
   }, [isSignedIn]);
+  const [showIntro, setShowIntro] = useState(true);
+  const [zoom, setZoom] = useState({ s: 1, x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef({ x: 0, y: 0, ox: 0, oy: 0 });
+  const imgContainerRef = useRef<HTMLDivElement>(null);
+  const closeIntro = () => { setShowIntro(false); setZoom({ s: 1, x: 0, y: 0 }); setDragging(false); };
   const [idx, setIdx] = useState(0);
   const [dir, setDir] = useState(1);
   const lockRef = useRef(false);
@@ -103,6 +109,43 @@ export default function LandingPage() {
       window.removeEventListener('touchend', onEnd);
     };
   }, [idx, go]);
+
+  // Non-passive wheel listener for image zoom (prevents section-switch interference)
+  useEffect(() => {
+    const el = imgContainerRef.current;
+    if (!el || !showIntro) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const rect = el.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      setZoom(z => {
+        const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+        const newS = Math.min(4, Math.max(1, z.s * factor));
+        const newX = cx - (cx - z.x) * newS / z.s;
+        const newY = cy - (cy - z.y) * newS / z.s;
+        const W = rect.width, H = rect.height;
+        return { s: newS, x: Math.min(0, Math.max(-W * (newS - 1), newX)), y: Math.min(0, Math.max(-H * (newS - 1), newY)) };
+      });
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [showIntro]);
+
+  const onImgMouseDown = (e: React.MouseEvent) => {
+    if (zoom.s <= 1) return;
+    setDragging(true);
+    dragRef.current = { x: e.clientX, y: e.clientY, ox: zoom.x, oy: zoom.y };
+  };
+  const onImgMouseMove = (e: React.MouseEvent) => {
+    if (!dragging) return;
+    const rect = imgContainerRef.current!.getBoundingClientRect();
+    const newX = dragRef.current.ox + (e.clientX - dragRef.current.x);
+    const newY = dragRef.current.oy + (e.clientY - dragRef.current.y);
+    setZoom(z => ({ ...z, x: Math.min(0, Math.max(-rect.width * (z.s - 1), newX)), y: Math.min(0, Math.max(-rect.height * (z.s - 1), newY)) }));
+  };
+  const onImgMouseUp = () => setDragging(false);
 
   // Sync Clerk user to Neon on login
   useEffect(() => {
@@ -278,6 +321,67 @@ export default function LandingPage() {
           <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
+
+      {/* Welcome intro modal */}
+      <AnimatePresence>
+        {showIntro && (
+          <motion.div
+            key="intro-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center"
+            style={{ background: 'rgba(15,5,40,0.75)', backdropFilter: 'blur(8px)' }}
+            onClick={closeIntro}
+          >
+            <motion.div
+              initial={{ scale: 0.88, opacity: 0, y: 24 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0, y: 12 }}
+              transition={{ duration: 0.4, ease: EASE }}
+              className="relative"
+              onClick={e => e.stopPropagation()}
+            >
+              <div
+                ref={imgContainerRef}
+                onMouseDown={onImgMouseDown}
+                onMouseMove={onImgMouseMove}
+                onMouseUp={onImgMouseUp}
+                onMouseLeave={onImgMouseUp}
+                className="rounded-2xl overflow-hidden shadow-2xl"
+                style={{
+                  maxHeight: '82vh',
+                  maxWidth: '90vw',
+                  cursor: zoom.s > 1 ? (dragging ? 'grabbing' : 'grab') : 'default',
+                  userSelect: 'none',
+                }}
+              >
+                <img
+                  src="https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1778775881/openimage_ezbi0q.png"
+                  alt="Pratibha AI Agents"
+                  draggable={false}
+                  style={{
+                    display: 'block',
+                    maxHeight: '82vh',
+                    maxWidth: '90vw',
+                    transform: `translate(${zoom.x}px, ${zoom.y}px) scale(${zoom.s})`,
+                    transformOrigin: '0 0',
+                    transition: dragging ? 'none' : 'transform 0.12s ease',
+                  }}
+                />
+              </div>
+              <button
+                onClick={closeIntro}
+                className="absolute -top-4 -right-4 z-10 w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer"
+                style={{ background: 'linear-gradient(135deg,#7C3AED,#A855F7)', color: 'white', fontSize: '14px' }}
+              >
+                ✕
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
