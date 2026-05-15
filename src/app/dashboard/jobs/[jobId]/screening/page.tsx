@@ -89,6 +89,26 @@ const STYLES = `
     0%, 100% { opacity: 1; transform: scale(1); }
     50%       { opacity: 0.5; transform: scale(0.85); }
   }
+  @keyframes overlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes circleDraw {
+    from { stroke-dashoffset: 110; }
+    to   { stroke-dashoffset: 0; }
+  }
+  @keyframes checkDraw {
+    from { stroke-dashoffset: 60; }
+    to   { stroke-dashoffset: 0; }
+  }
+  @keyframes countdown {
+    from { width: 0%; }
+    to   { width: 100%; }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
   .agent-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -157,6 +177,76 @@ function Mesh() {
       WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)',
       animation: 'meshPan 20s linear infinite',
     }} />
+  )
+}
+
+function RedirectOverlay({ jobTitle }: { jobTitle: string }) {
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 60,
+      background: 'rgba(242,235,222,0.96)',
+      backdropFilter: 'blur(12px)',
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      animation: 'overlayIn 0.5s ease both',
+    }}>
+      {/* Animated check circle */}
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none" style={{ marginBottom: 28 }}>
+        <circle
+          cx="40" cy="40" r="35"
+          stroke="#2F8A78" strokeWidth="3" fill="rgba(47,138,120,0.08)"
+          strokeDasharray="110" strokeDashoffset="110"
+          style={{ animation: 'circleDraw 0.7s 0.1s cubic-bezier(.4,0,.2,1) forwards' }}
+        />
+        <polyline
+          points="24,40 36,52 56,28"
+          stroke="#2F8A78" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"
+          fill="none"
+          strokeDasharray="60" strokeDashoffset="60"
+          style={{ animation: 'checkDraw 0.45s 0.65s cubic-bezier(.4,0,.2,1) forwards' }}
+        />
+      </svg>
+
+      <h2 style={{
+        fontFamily: "'Instrument Serif', Georgia, serif",
+        fontStyle: 'italic', fontSize: 38, fontWeight: 400,
+        color: '#2B3F39', margin: '0 0 10px', textAlign: 'center',
+        animation: 'fadeUp 0.5s 0.4s ease both',
+      }}>
+        Screening <em>complete.</em>
+      </h2>
+
+      {jobTitle && (
+        <p style={{
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: 14, color: '#5C6E66', margin: '0 0 6px',
+          animation: 'fadeUp 0.5s 0.5s ease both',
+        }}>
+          {jobTitle}
+        </p>
+      )}
+
+      <p style={{
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize: 14, color: '#8A9890', margin: '0 0 36px',
+        animation: 'fadeUp 0.5s 0.55s ease both',
+      }}>
+        Taking you to results…
+      </p>
+
+      {/* Countdown bar — 2.6s duration + 0.2s delay = 2.8s total, matching setTimeout */}
+      <div style={{
+        width: 260, height: 3, borderRadius: 2,
+        background: 'rgba(43,63,57,0.10)', overflow: 'hidden',
+        animation: 'fadeUp 0.5s 0.6s ease both',
+      }}>
+        <div style={{
+          height: '100%', borderRadius: 2,
+          backgroundImage: 'linear-gradient(90deg, #2F8A78, #C9A057)',
+          animation: 'countdown 2.6s 0.2s linear both',
+        }} />
+      </div>
+    </div>
   )
 }
 
@@ -695,6 +785,8 @@ export default function ScreeningPage() {
             </div>
           </div>
         </div>
+
+        {isComplete && <RedirectOverlay jobTitle={jobTitle} />}
       </div>
     </>
   )
