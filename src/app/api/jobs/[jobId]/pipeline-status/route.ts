@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
-import { candidates, agentRuns } from '@/db/schema'
+import { candidates, agentRuns, jobs } from '@/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { getOrCreateUser } from '@/lib/auth'
 
@@ -112,7 +112,10 @@ export async function GET(
       return { name, completed, total: agentTotal, avgDurationMs, summary }
     })
 
-    return NextResponse.json({ total, screened, isComplete, agents })
+    const jobRow = await db.select({ title: jobs.title }).from(jobs).where(eq(jobs.id, jobId)).limit(1)
+    const jobTitle = jobRow[0]?.title ?? ''
+
+    return NextResponse.json({ total, screened, isComplete, agents, jobTitle })
   } catch (err) {
     console.error('[pipeline-status]', err)
     return NextResponse.json({ error: 'Failed' }, { status: 500 })

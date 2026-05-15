@@ -2,5 +2,4 @@ SDK is 2.0.1
 +const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY!, apiVersion: 'v1alpha'
 
 
-Resumes Uploaded!
-AI screening is starting. Redirecting to dashboard…
+Pratibha AI · Screening .

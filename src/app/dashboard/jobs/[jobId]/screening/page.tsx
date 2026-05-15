@@ -48,31 +48,115 @@ const STYLES = `
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.35; }
   }
-  @keyframes drift0 {
-    0%,100% { transform: translate(0,0) scale(1); }
-    50%     { transform: translate(5%,4%) scale(1.10); }
-  }
-  @keyframes drift1 {
-    0%,100% { transform: translate(0,0) scale(1); }
-    50%     { transform: translate(-4%,6%) scale(0.94); }
-  }
-  @keyframes drift2 {
-    0%,100% { transform: translate(0,0) scale(1); }
-    50%     { transform: translate(3%,-5%) scale(1.06); }
-  }
   @keyframes slideIn {
     from { opacity: 0; transform: translateX(-6px); }
     to   { opacity: 1; transform: translateX(0); }
   }
+  @keyframes drift1 {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    33%  { transform: translate(30px, -20px) scale(1.05); }
+    66%  { transform: translate(-15px, 25px) scale(0.97); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+  @keyframes drift2 {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    40%  { transform: translate(-25px, 30px) scale(1.08); }
+    70%  { transform: translate(20px, -15px) scale(0.94); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+  @keyframes drift3 {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    50%  { transform: translate(15px, 20px) scale(1.06); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+  @keyframes meshPan {
+    0%   { background-position: 0px 0px; }
+    100% { background-position: 40px 40px; }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  @keyframes pulseAccent {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.85); }
+  }
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 980px) {
+    .agent-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .agent-grid { grid-template-columns: 1fr; }
+  }
+  .hero-row {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 32px;
+    align-items: start;
+  }
+  @media (max-width: 780px) {
+    .hero-row { grid-template-columns: 1fr; }
+  }
 `
 
-function LightAurora() {
+function BgStage() {
   return (
     <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
-      <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '70%', height: '70%', borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(124,58,237,0.07) 0%, transparent 70%)', filter: 'blur(60px)', animation: 'drift0 20s ease-in-out infinite alternate' }} />
-      <div style={{ position: 'absolute', top: '10%', right: '-15%', width: '60%', height: '60%', borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(168,85,247,0.06) 0%, transparent 70%)', filter: 'blur(70px)', animation: 'drift1 25s ease-in-out infinite alternate' }} />
-      <div style={{ position: 'absolute', bottom: '-10%', left: '20%', width: '50%', height: '50%', borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(6,182,212,0.05) 0%, transparent 70%)', filter: 'blur(80px)', animation: 'drift2 30s ease-in-out infinite alternate' }} />
+      <div style={{
+        position: 'absolute', top: '-15%', left: '-10%',
+        width: '55%', height: '55%', borderRadius: '50%',
+        background: 'radial-gradient(ellipse, rgba(95,180,161,0.55) 0%, transparent 70%)',
+        filter: 'blur(40px)',
+        animation: 'drift1 22s ease-in-out infinite',
+      }} />
+      <div style={{
+        position: 'absolute', top: '5%', right: '-12%',
+        width: '45%', height: '45%', borderRadius: '50%',
+        background: 'radial-gradient(ellipse, rgba(232,148,120,0.55) 0%, transparent 70%)',
+        filter: 'blur(40px)',
+        animation: 'drift2 28s ease-in-out infinite',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '-5%', left: '30%',
+        width: '40%', height: '40%', borderRadius: '50%',
+        background: 'radial-gradient(ellipse, rgba(217,190,130,0.55) 0%, transparent 70%)',
+        filter: 'blur(40px)',
+        animation: 'drift3 18s ease-in-out infinite',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '10%', left: '-8%',
+        width: '35%', height: '35%', borderRadius: '50%',
+        background: 'radial-gradient(ellipse, rgba(127,196,180,0.55) 0%, transparent 70%)',
+        filter: 'blur(40px)',
+        animation: 'drift1 32s ease-in-out infinite reverse',
+      }} />
     </div>
+  )
+}
+
+function Mesh() {
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1,
+      backgroundImage: `linear-gradient(rgba(43,63,57,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(43,63,57,0.04) 1px, transparent 1px)`,
+      backgroundSize: '40px 40px',
+      backgroundPosition: '0px 0px',
+      maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)',
+      WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)',
+      animation: 'meshPan 20s linear infinite',
+    }} />
   )
 }
 
@@ -84,6 +168,7 @@ export default function ScreeningPage() {
   const [agentProgress, setAgentProgress] = useState<AgentProgressItem[]>([])
   const [isComplete, setIsComplete] = useState(false)
   const [stepTick, setStepTick] = useState(0)
+  const [jobTitle, setJobTitle] = useState('')
 
   const isCompleteRef = useRef(false)
 
@@ -99,8 +184,9 @@ export default function ScreeningPage() {
       if (isCompleteRef.current) { clearInterval(poll); return }
       try {
         const res = await fetch(`/api/jobs/${jobId}/pipeline-status`)
-        const data = await res.json() as { isComplete: boolean; agents?: AgentProgressItem[] }
+        const data = await res.json() as { isComplete: boolean; agents?: AgentProgressItem[]; jobTitle?: string }
         if (data.agents) setAgentProgress(data.agents)
+        if (data.jobTitle) setJobTitle(data.jobTitle)
         if (data.isComplete) {
           isCompleteRef.current = true
           setIsComplete(true)
@@ -135,292 +221,480 @@ export default function ScreeningPage() {
 
   const completedCount = statuses.filter(s => s === 'completed').length
 
+  // Candidate count from first non-job-level agent with data
+  const candidateCount = (() => {
+    for (const agent of AGENT_ORDER) {
+      if (!agent.jobLevel && (progressMap[agent.key]?.total ?? 0) > 0) {
+        return progressMap[agent.key].total
+      }
+    }
+    return null
+  })()
+
+  // Ticker text — duplicated for seamless marquee loop
+  const tickerItems = isComplete
+    ? ['✦ All 9 agents completed · Redirecting to results...', '✦ Pipeline finished · Full report ready', '✦ Candidates ranked · AI analysis complete']
+    : AGENT_ORDER.map((a, i) => {
+        const s = statuses[i]
+        if (s === 'completed') return `✓ ${a.name} — done`
+        if (s === 'processing') return `⟳ ${a.name} — running`
+        return `· ${a.name} — queued`
+      })
+  const tickerText = [...tickerItems, ...tickerItems].join('     ')
+
   return (
     <>
       <style>{STYLES}</style>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet"
+      />
 
       <div style={{
         position: 'fixed', inset: 0, zIndex: 50, overflowY: 'auto',
-        fontFamily: "'Fira Sans', ui-sans-serif, system-ui, sans-serif",
-        color: '#1F1035', background: '#F8F7FF', WebkitFontSmoothing: 'antialiased',
+        fontFamily: "'DM Sans', ui-sans-serif, system-ui, sans-serif",
+        color: '#2B3F39', background: '#F2EBDE', WebkitFontSmoothing: 'antialiased',
       }}>
-        <LightAurora />
+        <BgStage />
+        <Mesh />
 
-        {/* Top bar */}
+        {/* Header */}
         <header style={{
           position: 'sticky', top: 0, zIndex: 30,
-          display: 'flex', alignItems: 'center', gap: 14, padding: '14px 28px',
-          background: 'rgba(255,255,255,0.85)',
-          backdropFilter: 'blur(18px) saturate(140%)',
-          borderBottom: '1px solid rgba(124,58,237,0.09)',
+          display: 'flex', alignItems: 'center', gap: 14, padding: '13px 28px',
+          background: 'rgba(242,235,222,0.88)',
+          backdropFilter: 'blur(18px)',
+          borderBottom: '1px solid rgba(43,63,57,0.10)',
         }}>
           <button
             type="button"
             onClick={() => router.push('/dashboard')}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '7px 12px', background: 'transparent',
-              border: '1px solid rgba(124,58,237,0.22)', borderRadius: 999,
-              color: '#7C3AED', fontSize: 12.5, fontWeight: 500,
+              padding: '7px 14px', background: '#F8F2E5',
+              border: '1px solid rgba(43,63,57,0.10)', borderRadius: 999,
+              color: '#5C6E66', fontSize: 12.5, fontWeight: 500,
               cursor: 'pointer', fontFamily: 'inherit',
             }}
           >
-            <ArrowLeft size={15} /> Dashboard
+            <ArrowLeft size={14} /> Dashboard
           </button>
-          <span style={{ width: 1, height: 18, background: 'rgba(124,58,237,0.12)' }} />
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#1F1035', fontWeight: 600, fontSize: 13.5 }}>
-            <Sparkles size={14} style={{ color: '#7C3AED' }} />
-            AI Screening
+          <span style={{ width: 1, height: 18, background: 'rgba(43,63,57,0.10)' }} />
+          {/* Logo-mark */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              width: 24, height: 24, borderRadius: 7, flexShrink: 0,
+              background: 'linear-gradient(135deg, #2F8A78, #3FA38E)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <span style={{ fontSize: 9, fontWeight: 700, color: '#fff', letterSpacing: 0.3 }}>AI</span>
+            </div>
+            <span style={{ fontSize: 13.5, fontWeight: 600, color: '#2B3F39' }}>
+              Pratibha AI <span style={{ color: '#8A9890', fontWeight: 400 }}>· Screening{jobTitle ? ` · ${jobTitle}` : ''}</span>
+            </span>
           </div>
           <div style={{ flex: 1 }} />
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            fontSize: 12, color: '#64748B',
-            padding: '6px 12px', border: '1px solid rgba(124,58,237,0.12)',
-            borderRadius: 999, background: 'rgba(124,58,237,0.03)',
-          }}>
-            <span style={{ color: '#10B981', fontWeight: 600 }}>Step 1 ✓</span>
-            <span style={{ color: 'rgba(100,116,139,0.4)' }}>·</span>
-            <span style={{ color: '#10B981', fontWeight: 600 }}>Step 2 ✓</span>
-            <span style={{ color: 'rgba(100,116,139,0.4)' }}>·</span>
-            <span style={{ color: isComplete ? '#10B981' : '#7C3AED', fontWeight: 600 }}>
-              {isComplete ? 'Step 3 ✓' : 'Step 3: AI Screening'}
-            </span>
+          {/* Step track */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#2F8A78' }} />
+              <span style={{ fontSize: 11.5, color: '#5C6E66', fontWeight: 500 }}>Intake</span>
+            </div>
+            <div style={{ width: 20, height: 1, background: 'rgba(43,63,57,0.15)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#2F8A78' }} />
+              <span style={{ fontSize: 11.5, color: '#5C6E66', fontWeight: 500 }}>Blueprint</span>
+            </div>
+            <div style={{ width: 20, height: 1, background: 'rgba(43,63,57,0.15)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{
+                width: 8, height: 8, borderRadius: '50%',
+                background: isComplete ? '#2F8A78' : '#D86F4E',
+                animation: isComplete ? 'none' : 'pulseAccent 1.4s ease-in-out infinite',
+              }} />
+              <span style={{ fontSize: 11.5, color: '#2B3F39', fontWeight: 600 }}>
+                Screening {isComplete ? 'done' : 'live'}
+              </span>
+            </div>
           </div>
         </header>
 
-        <main style={{ maxWidth: 760, margin: '0 auto', padding: '52px 28px 96px', position: 'relative', zIndex: 2 }}>
+        <main style={{ maxWidth: 1080, margin: '0 auto', padding: '48px 28px 120px', position: 'relative', zIndex: 2 }}>
 
-          {/* Hero */}
-          <div style={{ marginBottom: 36, animation: 'riseIn 0.7s cubic-bezier(.2,.7,.2,1) both' }}>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '5px 12px', borderRadius: 999, marginBottom: 18,
-              background: isComplete ? 'rgba(16,185,129,0.08)' : 'rgba(124,58,237,0.08)',
-              border: isComplete ? '1px solid rgba(16,185,129,0.20)' : '1px solid rgba(124,58,237,0.18)',
-            }}>
-              <span style={{
-                width: 7, height: 7, borderRadius: '50%',
-                background: isComplete ? '#10B981' : '#7C3AED',
-                animation: isComplete ? 'none' : 'pulse 1.4s ease-in-out infinite',
-              }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: isComplete ? '#065F46' : '#7C3AED' }}>
-                {isComplete ? 'Screening Complete' : 'Agents Running'}
-              </span>
-            </div>
-            <h1 style={{ margin: '0 0 12px', fontSize: 30, fontWeight: 700, letterSpacing: '-0.5px', color: isComplete ? '#065F46' : '#7C3AED' }}>
-              {isComplete ? 'Screening Complete' : 'AI Screening in Progress'}
-            </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-              <p style={{ margin: 0, fontSize: 14.5, color: '#64748B', lineHeight: 1.65 }}>
+          {/* Hero row */}
+          <div className="hero-row" style={{ marginBottom: 52, animation: 'riseIn 0.7s cubic-bezier(.2,.7,.2,1) both' }}>
+
+            {/* Left col: text */}
+            <div>
+              {/* Eyebrow */}
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                padding: '5px 13px', borderRadius: 999, marginBottom: 20,
+                background: isComplete ? 'rgba(201,160,87,0.12)' : 'rgba(47,138,120,0.10)',
+                border: isComplete ? '1px solid rgba(201,160,87,0.30)' : '1px solid rgba(47,138,120,0.22)',
+              }}>
+                <span style={{
+                  width: 7, height: 7, borderRadius: '50%',
+                  background: isComplete ? '#C9A057' : '#2F8A78',
+                  animation: isComplete ? 'none' : 'pulse 1.4s ease-in-out infinite',
+                  display: 'inline-block',
+                }} />
+                <span style={{ fontSize: 12, fontWeight: 600, color: isComplete ? '#8A6B30' : '#2F8A78' }}>
+                  {isComplete ? 'All agents finished' : `Step 3 · ${completedCount} of 9 agents complete`}
+                </span>
+              </div>
+
+              {/* H1 — Instrument Serif italic */}
+              <h1 style={{
+                margin: '0 0 16px',
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: 'italic',
+                fontSize: 42, fontWeight: 400, lineHeight: 1.15,
+                letterSpacing: '-0.5px', color: '#2B3F39',
+              }}>
                 {isComplete
-                  ? 'All agents finished. Redirecting to results...'
-                  : '9 specialized agents are autonomously reviewing your candidates.'}
+                  ? <>Screening <em>complete.</em></>
+                  : <>Nine agents are <em>running</em> across your shortlist.</>}
+              </h1>
+
+              {/* Lede */}
+              <p style={{ margin: '0 0 28px', fontSize: 15, color: '#5C6E66', lineHeight: 1.7 }}>
+                {isComplete
+                  ? 'All 9 AI agents have finished. Your candidates are ranked and ready to review.'
+                  : '9 specialized AI agents are autonomously screening, validating, and scoring every candidate.'}
               </p>
-              {!isComplete && (
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0,
-                  padding: '4px 12px', borderRadius: 999,
-                  background: 'rgba(124,58,237,0.06)', border: '1px solid rgba(124,58,237,0.12)',
-                  fontSize: 12, color: '#64748B',
-                }}>
-                  <span style={{ color: '#7C3AED', fontWeight: 700 }}>{completedCount}</span>
-                  <span>/ 9 agents complete</span>
-                </div>
-              )}
+
               {isComplete && (
                 <button
                   type="button"
                   onClick={() => router.push(`/dashboard/jobs/${jobId}/results`)}
                   style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0,
-                    padding: '8px 18px', borderRadius: 999, cursor: 'pointer',
-                    background: 'linear-gradient(90deg, #7C3AED, #A855F7)',
-                    border: 'none', color: '#fff', fontSize: 13, fontWeight: 600,
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
+                    padding: '11px 24px', borderRadius: 999, cursor: 'pointer',
+                    background: 'linear-gradient(90deg, #2F8A78, #3FA38E)',
+                    border: 'none', color: '#fff', fontSize: 14, fontWeight: 600,
                     fontFamily: 'inherit',
-                    boxShadow: '0 4px 14px rgba(124,58,237,0.25)',
+                    boxShadow: '0 4px 18px rgba(47,138,120,0.30)',
                   }}
                 >
-                  View Results →
+                  Open results →
                 </button>
               )}
             </div>
+
+            {/* Right col: summary stat card */}
+            <div style={{
+              background: '#F8F2E5',
+              border: '1px solid rgba(43,63,57,0.10)',
+              borderRadius: 18, padding: '24px 20px',
+              boxShadow: '0 4px 24px rgba(43,63,57,0.06)',
+              animation: 'riseIn 0.8s 0.1s cubic-bezier(.2,.7,.2,1) both',
+            }}>
+              {/* Stat grid 3-col */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 20 }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{
+                    fontFamily: "'Instrument Serif', Georgia, serif",
+                    fontStyle: 'italic', fontSize: 34, fontWeight: 400,
+                    color: '#2B3F39', lineHeight: 1,
+                  }}>
+                    {completedCount}<span style={{ fontSize: 16, opacity: 0.4 }}>/9</span>
+                  </div>
+                  <div style={{ fontSize: 10.5, color: '#8A9890', fontWeight: 500, marginTop: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    Agents done
+                  </div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{
+                    fontFamily: "'Instrument Serif', Georgia, serif",
+                    fontStyle: 'italic', fontSize: 34, fontWeight: 400,
+                    color: '#2B3F39', lineHeight: 1,
+                  }}>
+                    {agentProgress.length > 0 ? agentProgress.reduce((s, a) => s + a.completed, 0) : '—'}
+                  </div>
+                  <div style={{ fontSize: 10.5, color: '#8A9890', fontWeight: 500, marginTop: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    Tasks done
+                  </div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{
+                    fontFamily: "'Instrument Serif', Georgia, serif",
+                    fontStyle: 'italic', fontSize: 34, fontWeight: 400,
+                    color: '#2B3F39', lineHeight: 1,
+                  }}>
+                    {candidateCount ?? '—'}
+                  </div>
+                  <div style={{ fontSize: 10.5, color: '#8A9890', fontWeight: 500, marginTop: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    Candidates
+                  </div>
+                </div>
+              </div>
+
+              {/* Overall progress bar */}
+              <div style={{ fontSize: 11, color: '#8A9890', marginBottom: 8, display: 'flex', justifyContent: 'space-between' }}>
+                <span>Overall progress</span>
+                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.round((completedCount / 9) * 100)}%</span>
+              </div>
+              <div style={{ height: 6, borderRadius: 3, background: 'rgba(43,63,57,0.08)', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%', borderRadius: 3,
+                  width: `${(completedCount / 9) * 100}%`,
+                  transition: 'width 0.7s ease',
+                  backgroundImage: isComplete
+                    ? 'linear-gradient(90deg, #2F8A78, #C9A057)'
+                    : 'linear-gradient(90deg, #2F8A78, #3FA38E)',
+                  backgroundSize: '200% 100%',
+                  animation: isComplete ? 'none' : 'shimmer 2s linear infinite',
+                }} />
+              </div>
+            </div>
           </div>
 
-          {/* Agent timeline */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, animation: 'riseIn 0.8s 0.15s cubic-bezier(.2,.7,.2,1) both' }}>
-            {AGENT_ORDER.map((agent, idx) => {
-              const status = statuses[idx]
-              const progress = progressMap[agent.key]
-              const isDone = status === 'completed'
-              const isActive = status === 'processing'
-              const isPending = status === 'queued'
+          {/* Agent floor section */}
+          <div style={{ animation: 'riseIn 0.85s 0.2s cubic-bezier(.2,.7,.2,1) both' }}>
 
-              const steps = SUB_STEPS[agent.key] ?? []
-              const currentStep = steps[stepTick % steps.length]
+            {/* Section header */}
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+              <div>
+                <h2 style={{
+                  margin: '0 0 4px',
+                  fontFamily: "'Instrument Serif', Georgia, serif",
+                  fontStyle: 'italic', fontSize: 28, fontWeight: 400, color: '#2B3F39',
+                }}>
+                  Agent floor
+                </h2>
+                <p style={{ margin: 0, fontSize: 13, color: '#8A9890' }}>
+                  Each agent runs autonomously — statuses update live
+                </p>
+              </div>
+              {/* Legend */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 11.5, color: '#8A9890' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D0C8B8', display: 'inline-block' }} />
+                  Queued
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#2F8A78', display: 'inline-block' }} />
+                  Running
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#C9A057', display: 'inline-block' }} />
+                  Done
+                </span>
+              </div>
+            </div>
 
-              const durationLabel = isDone && (progress?.avgDurationMs ?? 0) > 0
-                ? `${((progress?.avgDurationMs ?? 0) / 1000).toFixed(1)}s`
-                : null
+            {/* 3-col agent grid */}
+            <div className="agent-grid">
+              {AGENT_ORDER.map((agent, idx) => {
+                const status = statuses[idx]
+                const progress = progressMap[agent.key]
+                const isDone = status === 'completed'
+                const isActive = status === 'processing'
+                const isPending = status === 'queued'
 
-              const progressPct = progress && progress.total > 0
-                ? Math.min(100, (progress.completed / progress.total) * 100)
-                : 0
+                const steps = SUB_STEPS[agent.key] ?? []
+                const currentStep = steps[stepTick % steps.length]
 
-              const showProgressBar = isActive && !agent.jobLevel && progress && progress.total > 1
+                const progressPct = progress && progress.total > 0
+                  ? Math.min(100, (progress.completed / progress.total) * 100)
+                  : 0
 
-              return (
-                <div
-                  key={agent.key}
-                  style={{
-                    padding: '14px 18px', borderRadius: 14,
-                    background: isDone
-                      ? 'rgba(16,185,129,0.04)'
-                      : isActive
-                        ? 'linear-gradient(135deg, rgba(124,58,237,0.06), rgba(168,85,247,0.03))'
-                        : 'white',
-                    border: isDone
-                      ? '1px solid rgba(16,185,129,0.18)'
-                      : isActive
-                        ? '1px solid rgba(124,58,237,0.24)'
-                        : '1px solid rgba(124,58,237,0.07)',
-                    opacity: isPending ? 0.6 : 1,
-                    transition: 'all 0.45s ease',
-                    boxShadow: isActive
-                      ? '0 2px 16px rgba(124,58,237,0.08)'
-                      : isDone
-                        ? '0 1px 6px rgba(16,185,129,0.06)'
-                        : '0 1px 4px rgba(0,0,0,0.03)',
-                  }}
-                >
-                  {/* Main row */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                const showProgressBar = isActive && !agent.jobLevel && progress && progress.total > 1
 
-                    {/* Status icon */}
-                    <div style={{
-                      width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                return (
+                  <div
+                    key={agent.key}
+                    style={{
+                      padding: '18px 16px', borderRadius: 18,
                       background: isDone
-                        ? 'rgba(16,185,129,0.10)'
+                        ? 'linear-gradient(140deg, #F0EFE0, #EAEFE7)'
                         : isActive
-                          ? 'rgba(124,58,237,0.10)'
-                          : 'rgba(124,58,237,0.04)',
+                          ? 'linear-gradient(140deg, #F8F2E5, #EDF5F1)'
+                          : '#F8F2E5',
                       border: isDone
-                        ? '1px solid rgba(16,185,129,0.22)'
+                        ? '1px solid rgba(47,138,120,0.18)'
                         : isActive
-                          ? '1px solid rgba(124,58,237,0.22)'
-                          : '1px solid rgba(124,58,237,0.10)',
-                    }}>
-                      {isDone ? (
-                        <CheckCircle2 size={16} style={{ color: '#10B981' }} />
-                      ) : isActive ? (
-                        <div style={{
-                          width: 16, height: 16,
-                          border: '2px solid rgba(124,58,237,0.15)',
-                          borderTopColor: '#7C3AED', borderRadius: '50%',
-                          animation: 'spin 0.85s linear infinite',
-                        }} />
-                      ) : (
-                        <span style={{ fontSize: 12, fontWeight: 700, color: '#C4B5FD' }}>
-                          {agent.num}
-                        </span>
-                      )}
-                    </div>
+                          ? '1px solid rgba(47,138,120,0.22)'
+                          : '1px solid rgba(43,63,57,0.10)',
+                      opacity: isPending ? 0.7 : 1,
+                      transition: 'all 0.45s ease',
+                      transform: isActive ? 'translateY(-2px)' : 'none',
+                      boxShadow: isActive
+                        ? '0 6px 24px rgba(47,138,120,0.12)'
+                        : isDone
+                          ? '0 2px 8px rgba(47,138,120,0.06)'
+                          : '0 1px 4px rgba(43,63,57,0.04)',
+                    }}
+                  >
+                    {/* Card header row */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
 
-                    {/* Agent name */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                      {/* Badge number */}
                       <div style={{
-                        fontSize: 13.5, fontWeight: 600,
-                        color: isDone ? '#065F46' : isActive ? '#7C3AED' : '#94A3B8',
+                        width: 36, height: 36, borderRadius: 11, flexShrink: 0,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: isDone
+                          ? 'rgba(201,160,87,0.12)'
+                          : isActive
+                            ? 'linear-gradient(135deg, #2F8A78, #3FA38E)'
+                            : 'rgba(43,63,57,0.06)',
+                        border: isDone
+                          ? '1px solid rgba(201,160,87,0.25)'
+                          : isActive
+                            ? 'none'
+                            : '1px solid rgba(43,63,57,0.10)',
+                        boxShadow: isActive ? '0 2px 10px rgba(47,138,120,0.30)' : 'none',
                       }}>
-                        {agent.name}
+                        {isDone ? (
+                          <CheckCircle2 size={16} style={{ color: '#C9A057' }} />
+                        ) : (
+                          <span style={{
+                            fontFamily: "'Instrument Serif', Georgia, serif",
+                            fontStyle: 'italic',
+                            fontSize: 22, fontWeight: 400, lineHeight: 1,
+                            color: isActive ? '#fff' : '#8A9890',
+                          }}>
+                            {agent.num}
+                          </span>
+                        )}
                       </div>
-                    </div>
 
-                    {/* Right side: duration + status badge */}
-                    <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                      {durationLabel && (
-                        <span style={{
-                          fontSize: 10.5, fontWeight: 500,
-                          color: '#10B981',
-                          fontVariantNumeric: 'tabular-nums',
-                        }}>
-                          {durationLabel}
-                        </span>
-                      )}
+                      {/* Status tag */}
                       {isDone ? (
                         <span style={{
-                          fontSize: 11, fontWeight: 600, color: '#065F46',
+                          display: 'inline-flex', alignItems: 'center', gap: 4,
+                          fontSize: 10.5, fontWeight: 600, color: '#7A6535',
                           padding: '3px 9px', borderRadius: 999,
-                          background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.18)',
-                        }}>Done</span>
+                          background: 'rgba(201,160,87,0.12)',
+                          border: '1px solid rgba(201,160,87,0.25)',
+                        }}>
+                          ✓ Done
+                        </span>
                       ) : isActive ? (
                         <span style={{
                           display: 'inline-flex', alignItems: 'center', gap: 5,
-                          fontSize: 11, fontWeight: 600, color: '#7C3AED',
-                          padding: '3px 10px', borderRadius: 999,
-                          background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.16)',
+                          fontSize: 10.5, fontWeight: 600, color: '#2F8A78',
+                          padding: '3px 9px', borderRadius: 999,
+                          background: 'rgba(47,138,120,0.10)',
+                          border: '1px solid rgba(47,138,120,0.22)',
                         }}>
                           <span style={{
-                            width: 5, height: 5, borderRadius: '50%', background: '#7C3AED',
+                            width: 5, height: 5, borderRadius: '50%', background: '#2F8A78',
                             animation: 'pulse 1.1s ease-in-out infinite',
+                            display: 'inline-block',
                           }} />
                           Running
                         </span>
                       ) : (
-                        <span style={{ fontSize: 11, color: '#CBD5E1' }}>Waiting</span>
+                        <span style={{
+                          fontSize: 10.5, color: '#8A9890',
+                          padding: '3px 9px', borderRadius: 999,
+                          background: 'rgba(43,63,57,0.05)',
+                          border: '1px solid rgba(43,63,57,0.08)',
+                        }}>
+                          Queued
+                        </span>
                       )}
                     </div>
-                  </div>
 
-                  {/* Active: sub-step message + progress bar */}
-                  {isActive && (
-                    <div style={{ marginTop: 10, paddingLeft: 48 }}>
-                      <div style={{
-                        fontSize: 12, color: '#7C3AED',
-                        animation: 'slideIn 0.3s ease both',
-                        marginBottom: showProgressBar ? 8 : 0,
-                        opacity: 0.75,
-                      }}>
-                        {currentStep}
-                        {!agent.jobLevel && progress && progress.total > 1 && (
-                          <span style={{ marginLeft: 10, color: '#94A3B8', fontSize: 11 }}>
-                            {progress.completed} / {progress.total} candidates
-                          </span>
-                        )}
+                    {/* Agent name + kind */}
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ fontSize: 14.5, fontWeight: 600, color: '#2B3F39', marginBottom: 2 }}>
+                        {agent.name}
                       </div>
-                      {showProgressBar && (
-                        <div style={{ height: 3, borderRadius: 2, background: 'rgba(124,58,237,0.08)' }}>
-                          <div style={{
-                            height: '100%', borderRadius: 2,
-                            background: 'linear-gradient(90deg, #7C3AED, #A855F7)',
-                            width: `${progressPct}%`,
-                            transition: 'width 0.7s ease',
+                      <div style={{ fontSize: 11, fontWeight: 500, color: '#8A9890', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        {agent.jobLevel ? 'Job-level' : 'Candidate-level'}
+                      </div>
+                    </div>
+
+                    {/* Substep area — JetBrains Mono */}
+                    <div style={{
+                      fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                      fontSize: 11.5, lineHeight: 1.5, minHeight: 32,
+                      color: isDone ? '#5C6E66' : isActive ? '#2F8A78' : '#8A9890',
+                    }}>
+                      {isDone ? (
+                        <span>
+                          <Sparkles size={11} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+                          {progress?.summary || 'Agent completed successfully'}
+                        </span>
+                      ) : isActive ? (
+                        <span key={currentStep} style={{ animation: 'stepIn 0.3s ease both', display: 'block' }}>
+                          <span style={{
+                            display: 'inline-block', width: 10, height: 10,
+                            border: '1.5px solid rgba(47,138,120,0.25)',
+                            borderTopColor: '#2F8A78', borderRadius: '50%',
+                            animation: 'spin 0.85s linear infinite',
+                            marginRight: 6, verticalAlign: 'middle',
                           }} />
-                        </div>
+                          {currentStep}
+                          {!agent.jobLevel && progress && progress.total > 1 && (
+                            <span style={{ marginLeft: 8, color: '#8A9890', fontSize: 10.5 }}>
+                              {progress.completed}/{progress.total}
+                            </span>
+                          )}
+                        </span>
+                      ) : (
+                        <span style={{ opacity: 0.5 }}>Awaiting upstream agent…</span>
                       )}
                     </div>
-                  )}
 
-                  {/* Done: smart completion summary */}
-                  {isDone && progress?.summary && (
-                    <div style={{
-                      marginTop: 5, paddingLeft: 48,
-                      fontSize: 11.5, color: '#10B981',
-                      animation: 'slideIn 0.4s ease both',
-                    }}>
-                      {progress.summary}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+                    {/* Mini-bar — candidate-level, active only */}
+                    {showProgressBar && (
+                      <div style={{ marginTop: 10, height: 4, borderRadius: 2, background: 'rgba(43,63,57,0.08)', overflow: 'hidden' }}>
+                        <div style={{
+                          height: '100%', borderRadius: 2,
+                          width: `${progressPct}%`,
+                          transition: 'width 0.7s ease',
+                          backgroundImage: 'linear-gradient(90deg, #2F8A78, #3FA38E)',
+                          backgroundSize: '200% 100%',
+                          animation: 'shimmer 1.8s linear infinite',
+                        }} />
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
-
         </main>
+
+        {/* Activity ticker */}
+        <div style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 30,
+          borderTop: '1px solid rgba(43,63,57,0.10)',
+          background: 'rgba(242,235,222,0.92)',
+          backdropFilter: 'blur(12px)',
+          padding: '8px 0',
+          overflow: 'hidden',
+          display: 'flex', alignItems: 'center',
+        }}>
+          {/* Label */}
+          <div style={{
+            flexShrink: 0, padding: '0 14px',
+            fontSize: 10.5, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase',
+            color: isComplete ? '#C9A057' : '#D86F4E',
+            fontFamily: "'DM Sans', sans-serif",
+            borderRight: '1px solid rgba(43,63,57,0.10)',
+          }}>
+            {isComplete ? 'Done' : 'Live'}
+          </div>
+          {/* Scrolling marquee */}
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <div style={{
+              display: 'inline-block',
+              whiteSpace: 'nowrap',
+              fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+              fontSize: 11, color: '#5C6E66',
+              animation: 'marquee 30s linear infinite',
+            }}>
+              {tickerText}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   )
