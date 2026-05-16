@@ -15,7 +15,7 @@ const feats = [
 export default function FeaturesSection({ active }: { active: boolean }) {
   return (
     <Section bg="linear-gradient(135deg,#FAFAFA 0%,#F0EEFF 60%,#FFF1F2 100%)" tone="violet">
-      <div className="relative w-full h-full px-12 lg:px-20 flex flex-col justify-start pt-10 pb-6">
+      <div className="relative w-full h-full px-12 lg:px-20 flex flex-col justify-center py-6 overflow-y-auto">
         <div className="max-w-[1280px] mx-auto w-full">
           <div className="text-center mb-8">
             <motion.span

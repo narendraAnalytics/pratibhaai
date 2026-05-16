@@ -107,6 +107,7 @@ export default function HeroSection({ active }: { active: boolean }) {
               <motion.div
                 animate={{ y: [0, -12, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                className="w-full h-full flex items-center justify-center"
               >
                 <Image
                   src="https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1778774634/bannerimage_yjw0to.png"
