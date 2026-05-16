@@ -39,6 +39,23 @@ export default function LandingPage() {
       .catch(() => {});
   }, [isSignedIn]);
   const [showIntro, setShowIntro] = useState(true);
+  const [showDemo, setShowDemo] = useState(false);
+  const vidRef     = useRef<HTMLVideoElement>(null);
+  const vidWrapRef = useRef<HTMLDivElement>(null);
+  const [vidPlaying, setVidPlaying] = useState(false);
+  const [vidTime,    setVidTime]    = useState(0);
+  const [vidDur,     setVidDur]     = useState(0);
+  const openDemo  = () => setShowDemo(true);
+  const closeDemo = () => {
+    setShowDemo(false);
+    if (vidRef.current) { vidRef.current.pause(); vidRef.current.currentTime = 0; }
+    setVidPlaying(false); setVidTime(0); setVidDur(0);
+  };
+  const vidToggle = () => { const v = vidRef.current; if (!v) return; v.paused ? v.play().then(() => setVidPlaying(true)).catch(() => {}) : (v.pause(), setVidPlaying(false)); };
+  const vidSkip   = (s: number) => { if (vidRef.current) vidRef.current.currentTime = Math.max(0, Math.min(vidRef.current.duration || 0, vidRef.current.currentTime + s)); };
+  const vidSeek   = (e: React.ChangeEvent<HTMLInputElement>) => { const val = Number(e.target.value); setVidTime(val); if (vidRef.current) vidRef.current.currentTime = val; };
+  const fmtTime   = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  const vidFullscreen = () => { if (vidWrapRef.current) { document.fullscreenElement ? document.exitFullscreen() : vidWrapRef.current.requestFullscreen().catch(() => {}); } };
   const [zoom, setZoom] = useState({ s: 1, x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef({ x: 0, y: 0, ox: 0, oy: 0 });
@@ -60,6 +77,7 @@ export default function LandingPage() {
   // Keyboard navigation
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { closeDemo(); return; }
       if (['ArrowDown', 'ArrowRight', 'PageDown'].includes(e.key)) { e.preventDefault(); go(idx + 1); }
       else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(idx - 1); }
       else if (e.key === 'Home') go(0);
@@ -253,7 +271,10 @@ export default function LandingPage() {
             transition={{ duration: 0.45, ease: EASE }}
             className="absolute inset-0"
           >
-            <Current active={true} />
+            {SECTIONS[idx].id === 'hero'
+              ? <HeroSection active={true} onWatchDemo={openDemo} />
+              : <Current active={true} />
+            }
           </motion.div>
         </AnimatePresence>
       </div>
@@ -321,6 +342,81 @@ export default function LandingPage() {
           <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
+
+      {/* Demo video modal */}
+      <AnimatePresence>
+        {showDemo && (
+          <motion.div
+            key="demo-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[210] flex items-center justify-center"
+            style={{ background: 'rgba(8,3,28,0.88)', backdropFilter: 'blur(12px)' }}
+            onClick={closeDemo}
+          >
+            <motion.div
+              initial={{ scale: 0.88, opacity: 0, y: 24 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0, y: 12 }}
+              transition={{ duration: 0.4, ease: EASE }}
+              className="relative"
+              onClick={e => e.stopPropagation()}
+            >
+              <div ref={vidWrapRef} style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', maxWidth: '88vw', maxHeight: '80vh', boxShadow: '0 30px 80px rgba(0,0,0,0.7)' }}>
+                <video
+                  ref={vidRef}
+                  src="https://res.cloudinary.com/dkqbzwicr/video/upload/q_auto/f_auto/v1778912511/prathibaaivideo_mdvppo.webm"
+                  playsInline
+                  preload="metadata"
+                  style={{ display: 'block', maxWidth: '88vw', maxHeight: '80vh' }}
+                  onLoadedMetadata={() => { const d = vidRef.current?.duration; if (d && isFinite(d)) setVidDur(d); }}
+                  onDurationChange={() => { const d = vidRef.current?.duration; if (d && isFinite(d)) setVidDur(d); }}
+                  onTimeUpdate={() => { const v = vidRef.current; if (!v) return; setVidTime(v.currentTime); if (v.duration && isFinite(v.duration)) setVidDur(v.duration); }}
+                  onEnded={() => setVidPlaying(false)}
+                  onClick={vidToggle}
+                />
+                {/* Play overlay — zIndex 2 */}
+                {!vidPlaying && (
+                  <div onClick={vidToggle} style={{ position: 'absolute', inset: 0, zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(8,3,28,0.35)', cursor: 'pointer' }}>
+                    <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg,#7C3AED,#A855F7)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 40px rgba(168,85,247,0.5)' }}>
+                      <svg viewBox="0 0 24 24" width="28" height="28" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                  </div>
+                )}
+                {/* Controls bar — zIndex 10, always above overlay */}
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10, background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(10px)', padding: '10px 16px 12px' }}>
+                  <input type="range" title="Seek video" min={0} max={vidDur > 0 ? vidDur : 100} step={0.1} value={vidTime} onChange={vidSeek}
+                    style={{ width: '100%', accentColor: '#A855F7', marginBottom: 8, display: 'block', cursor: 'pointer' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <button onClick={() => vidSkip(-10)} title="Back 10s" style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: 12, opacity: 0.85 }}>−10s</button>
+                    <button onClick={vidToggle} title={vidPlaying ? 'Pause' : 'Play'} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
+                      {vidPlaying
+                        ? <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                        : <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M8 5v14l11-7z"/></svg>}
+                    </button>
+                    <button onClick={() => vidSkip(10)} title="Forward 10s" style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: 12, opacity: 0.85 }}>+10s</button>
+                    <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, fontVariantNumeric: 'tabular-nums', marginLeft: 4 }}>
+                      {fmtTime(vidTime)} / {fmtTime(vidDur)}
+                    </span>
+                    <button onClick={vidFullscreen} title="Fullscreen" style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', marginLeft: 'auto' }}>
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={closeDemo}
+                className="absolute -top-4 -right-4 z-10 w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer"
+                style={{ background: 'linear-gradient(135deg,#7C3AED,#A855F7)', color: 'white', fontSize: '14px' }}
+              >
+                ✕
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Welcome intro modal */}
       <AnimatePresence>

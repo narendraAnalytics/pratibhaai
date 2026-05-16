@@ -119,7 +119,7 @@ export function GhostBtn({ children, onClick, className = '', large = false }: B
       transition={{ duration: 0.2 }}
       className={`inline-flex items-center gap-2 rounded-full font-semibold border border-purple-200 bg-white/60
         ${large ? 'px-7 py-4 text-base' : 'px-5 py-2.5 text-sm'} ${className}`}
-      style={{ color: '#1F1035' }}
+      style={{ color: '#1F1035', cursor: 'pointer' }}
     >
       {children}
     </M.button>

@@ -1,17 +1,14 @@
-### Plan System — `src/lib/plans.ts`
-Single source of truth for plan config. Always import from here:
-```ts
-import { getPlanFromHas, PLAN_LIMITS, PLAN_BADGE } from '@/lib/plans'
-import type { PlanSlug } from '@/lib/plans'  // 'free' | 'plus' | 'pro'
+### Seek slider (CRITICAL)
+```tsx
+<input type="range" min={0} max={vidDur > 0 ? vidDur : 100} step={0.1}
+  value={vidTime} onChange={vidSeek} title="Seek video" className="vid-seek" />
 ```
+- `vidSeek` **must** call both `setVidTime(val)` AND `vidRef.current.currentTime = val`. Without the state update, React re-renders snap the slider back to the old position, and the next `onTimeUpdate` makes it appear to "jump to the end."
+- `max={vidDur > 0 ? vidDur : 100}` — safe fallback avoids slider pinning at 100% when duration is still 0.
+- Controls bar has explicit `zIndex: 10`; play overlay has `zIndex: 2` — this ensures slider clicks are never intercepted by the overlay.
 
-- `PLAN_LIMITS[plan]` → `{ sessionSeconds, sessionsPerMonth }`
-- `PLAN_BADGE[plan]` → `{ label, bg, color }` — used in landipagenavbar
-- `getPlanFromHas(has)` — reads plan from Clerk session token; used inside `getOrCreateUser()` to sync plan to DB, and directly in Navbar client components via `useAuth().has`
-
-**Lazy plan sync — `src/lib/auth.ts`:** `getOrCreateUser()` calls `getPlanFromHas(has)` on every request. If `clerkPlan !== user.plan` in DB, it updates `users.plan` immediately in the same call. Clerk is the source of truth. To upgrade a user for testing: set `publicMetadata: { "plan": "plus" }` in Clerk Dashboard → the next request automatically syncs the DB.
-
-**Plan-aware session timer:** The session page (`src/app/(dashboard)/session/[sessionId]/page.tsx`) reads `user.plan` after the lazy sync, looks up `PLAN_LIMITS[plan].sessionSeconds`, and passes it as `totalSeconds` prop to `VoiceLearningSession`. Free = 300 s, Plus = 1200 s, Pro = 2700 s.
-
-The fix is to fetch the plan from the server API (which calls currentUser() — always fresh).
-
+### Layout
+- Split: steps list (left, `flex: 1 1 340px`) + video player (right, `flex: 1 1 460px`)
+- Video wrapper: `position: relative`, `borderRadius: 20`, `overflow: hidden`, `boxShadow`
+- Controls bar: `position: absolute, bottom: 0, zIndex: 10` — seek slider + −10s / play-pause / +10s / time / fullscreen
+- Mobile: `showVidMobile` state; ✕ close button (`title="Close video"`) hides video; "Watch how it works" button re-shows it

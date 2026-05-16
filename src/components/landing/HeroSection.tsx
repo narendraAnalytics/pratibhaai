@@ -15,7 +15,7 @@ const item = {
   show: { y: 0, opacity: 1, transition: { duration: 0.45, ease: EASE } },
 };
 
-export default function HeroSection({ active }: { active: boolean }) {
+export default function HeroSection({ active, onWatchDemo }: { active: boolean; onWatchDemo?: () => void }) {
   const router = useRouter();
   const { isSignedIn } = useUser();
 
@@ -65,7 +65,7 @@ export default function HeroSection({ active }: { active: boolean }) {
                 Start Free Trial
                 <Icons.Arrow width={18} height={18} />
               </PrimaryBtn>
-              <GhostBtn large>
+              <GhostBtn large onClick={onWatchDemo}>
                 <Icons.Play width={14} height={14} />
                 Watch Demo
               </GhostBtn>
